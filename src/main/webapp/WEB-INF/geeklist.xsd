@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified">
+  <xs:element name="geeklist">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="postdate"/>
+        <xs:element ref="postdate_timestamp"/>
+        <xs:element ref="editdate"/>
+        <xs:element ref="editdate_timestamp"/>
+        <xs:element ref="thumbs"/>
+        <xs:element ref="username"/>
+        <xs:element ref="title"/>
+        <xs:element ref="description"/>
+        <xs:element maxOccurs="unbounded" ref="comment"/>
+        <xs:element maxOccurs="unbounded" ref="item"/>
+      </xs:sequence>
+      <xs:attribute name="id" use="required" type="xs:integer"/>
+      <xs:attribute name="termsofuse" use="required" type="xs:anyURI"/>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="postdate" type="xs:string"/>
+  <xs:element name="postdate_timestamp" type="xs:integer"/>
+  <xs:element name="editdate" type="xs:string"/>
+  <xs:element name="editdate_timestamp" type="xs:integer"/>
+  <xs:element name="thumbs" type="xs:integer"/>
+  <xs:element name="username" type="xs:NCName"/>
+  <xs:element name="title" type="xs:string"/>
+  <xs:element name="description" type="xs:string"/>
+  <xs:element name="item">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="body"/>
+        <xs:element minOccurs="0" maxOccurs="unbounded" ref="comment"/>
+      </xs:sequence>
+      <xs:attribute name="editdate" use="required"/>
+      <xs:attribute name="id" use="required" type="xs:integer"/>
+      <xs:attribute name="imageid" use="required" type="xs:integer"/>
+      <xs:attribute name="objectid" use="required" type="xs:integer"/>
+      <xs:attribute name="objectname" use="required"/>
+      <xs:attribute name="objecttype" use="required" type="xs:NCName"/>
+      <xs:attribute name="postdate" use="required"/>
+      <xs:attribute name="subtype" use="required" type="xs:NCName"/>
+      <xs:attribute name="thumbs" use="required" type="xs:integer"/>
+      <xs:attribute name="username" use="required"/>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="body" type="xs:string"/>
+  <xs:element name="comment">
+    <xs:complexType mixed="true">
+      <xs:attribute name="date" use="required"/>
+      <xs:attribute name="editdate" use="required"/>
+      <xs:attribute name="postdate" use="required"/>
+      <xs:attribute name="thumbs" use="required" type="xs:integer"/>
+      <xs:attribute name="username" use="required"/>
+    </xs:complexType>
+  </xs:element>
+</xs:schema>

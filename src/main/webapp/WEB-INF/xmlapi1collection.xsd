@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified">
+  <xs:element name="items">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element maxOccurs="unbounded" ref="item"/>
+      </xs:sequence>
+      <xs:attribute name="termsofuse" use="required" type="xs:anyURI"/>
+      <xs:attribute name="totalitems" use="required" type="xs:integer"/>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="item">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="name"/>
+        <xs:element minOccurs="0" ref="yearpublished"/>
+        <xs:element ref="image"/>
+        <xs:element ref="thumbnail"/>
+        <xs:element ref="stats"/>
+        <xs:element ref="status"/>
+        <xs:element ref="numplays"/>
+      </xs:sequence>
+      <xs:attribute name="collid" use="required"/>
+      <xs:attribute name="objectid" use="required" type="xs:integer"/>
+      <xs:attribute name="objecttype" use="required" type="xs:NCName"/>
+      <xs:attribute name="subtype" use="required" type="xs:NCName"/>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="name">
+    <xs:complexType mixed="true">
+      <xs:attribute name="sortindex" use="required" type="xs:integer"/>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="yearpublished" type="xs:integer"/>
+  <xs:element name="image" type="xs:anyURI"/>
+  <xs:element name="thumbnail" type="xs:anyURI"/>
+  <xs:element name="stats">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="rating"/>
+      </xs:sequence>
+      <xs:attribute name="maxplayers" type="xs:integer"/>
+      <xs:attribute name="minplayers" type="xs:integer"/>
+      <xs:attribute name="numowned" use="required" type="xs:integer"/>
+      <xs:attribute name="playingtime" type="xs:integer"/>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="rating">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="usersrated"/>
+        <xs:element ref="average"/>
+        <xs:element ref="bayesaverage"/>
+        <xs:element ref="stddev"/>
+        <xs:element ref="median"/>
+      </xs:sequence>
+      <xs:attribute name="value" use="required"/>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="usersrated">
+    <xs:complexType>
+      <xs:attribute name="value" use="required" type="xs:integer"/>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="average">
+    <xs:complexType>
+      <xs:attribute name="value" use="required" type="xs:decimal"/>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="bayesaverage">
+    <xs:complexType>
+      <xs:attribute name="value" use="required" type="xs:decimal"/>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="stddev">
+    <xs:complexType>
+      <xs:attribute name="value" use="required" type="xs:decimal"/>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="median">
+    <xs:complexType>
+      <xs:attribute name="value" use="required" type="xs:integer"/>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="status">
+    <xs:complexType>
+      <xs:attribute name="fortrade" use="required"/>
+      <xs:attribute name="lastmodified" use="required"/>
+      <xs:attribute name="own" use="required"/>
+      <xs:attribute name="preordered" use="required"/>
+      <xs:attribute name="prevowned" use="required"/>
+      <xs:attribute name="want" use="required"/>
+      <xs:attribute name="wanttobuy" use="required"/>
+      <xs:attribute name="wanttoplay" use="required"/>
+      <xs:attribute name="wishlist" use="required"/>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="numplays" type="xs:integer"/>
+</xs:schema>

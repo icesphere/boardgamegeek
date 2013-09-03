@@ -1,0 +1,39 @@
+.ui-widget, .ui-widget .ui-widget {
+    font-size: 110%;
+}
+
+.ui-datepicker-inline {
+    font-size: 90%;
+}
+
+body, input, a {
+    font-size: 18px;
+}
+
+input {
+    padding: 8px 5px;
+}
+
+#contentDiv {
+    clear: both;
+    padding-top: 15px;
+    padding-bottom: 15px;
+    padding-left: 15px;
+    padding-right: 15px;
+}
+
+.footerText a {
+    font-size: 14px;
+}
+
+.smallTableHeader {
+    font-size: 12px;
+}
+
+.smallText {
+    font-size: 11px;
+}
+
+.navigationLink {
+    padding-bottom: 5px;
+}

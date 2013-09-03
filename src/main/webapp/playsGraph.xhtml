@@ -1,0 +1,92 @@
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:o="http://omnifaces.org/ui"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:f="http://java.sun.com/jsf/core">
+<ui:composition template="/templates/commonLayout.xhtml">
+    <ui:define name="title">
+        <h:outputText value="Games played graph"/>
+    </ui:define>
+    <ui:define name="content">
+        <h:form id="gamesPlayedForm">
+            <p:remoteCommand name="loadChart" actionListener="#{boardGamePlaysGraph.loadChart}" update="gamesPlayedPage" autoRun="true"/>
+            <h:panelGroup layout="block" id="gamesPlayedPage">
+                <h:panelGroup layout="block" rendered="#{!boardGamePlaysGraph.chartLoaded}" styleClass="centerDiv" style="text-align: center;">
+                    <h:graphicImage library="images" name="loading.gif"/>
+                </h:panelGroup>
+                <h:panelGroup layout="block" rendered="#{boardGamePlaysGraph.chartLoaded and !boardGamePlaysGraph.hasPlays()}">
+                    There are no plays for this user
+                </h:panelGroup>
+                <h:panelGroup layout="block" rendered="#{boardGamePlaysGraph.chartLoaded and boardGamePlaysGraph.hasPlays()}">
+                    <div style="padding-bottom: 20px;">
+                        <h:outputLink value="plays.xhtml" styleClass="smallRightPadding">Games Played</h:outputLink>
+                    </div>
+                    <div>
+                        <h:outputText value="Min # plays per game:"/>
+                        <p:spinner id="minPlaysForGame" value="#{boardGamePlaysGraph.minPlaysForGame}"
+                                   min="1" max="100" size="2" styleClass="mediumLeftMargin"
+                                   validatorMessage="You need to choose a number between 1 and 100">
+                            <f:validateLongRange minimum="1" maximum="100"/>
+                        </p:spinner>
+                        <h:message for="minPlaysForGame" styleClass="errorText mediumLeftMargin"/>
+                    </div>
+                    <div style="padding-top:10px;">
+                        <h:outputText value="Min game rating:"/>
+                        <p:spinner id="minGameRating" value="#{boardGamePlaysGraph.minGameRating}"
+                                   min="1" max="10" size="2" styleClass="mediumLeftMargin" stepFactor=".5"
+                                   validatorMessage="You need to choose a number between 1 and 10">
+                            <f:validateLongRange minimum="1" maximum="10"/>
+                        </p:spinner>
+                        <h:message for="minGameRating" styleClass="errorText mediumLeftMargin"/>
+                        <h:outputText value="Max game rating:" styleClass="mediumLeftMargin"/>
+                        <p:spinner id="maxGameRating" value="#{boardGamePlaysGraph.maxGameRating}"
+                                   min="1" max="10" size="2"  styleClass="mediumLeftMargin" stepFactor=".5"
+                                   validatorMessage="You need to choose a number between 1 and 10">
+                            <f:validateLongRange minimum="1" maximum="10"/>
+                        </p:spinner>
+                        <h:message for="maxGameRating" styleClass="errorText mediumLeftMargin"/>
+
+                        <h:message for="gameRatingOrder" styleClass="errorText mediumLeftMargin"/>
+                        <o:validateOrder id="gameRatingOrder" components="minGameRating maxGameRating"
+                                         type="lte" message="Min game rating must be less than or equal to the Max game rating"/>
+                    </div>
+                    <div style="padding-top:10px;">
+                        <h:outputText value="Start date: "/>
+                        <p:calendar id="startPlayDate" value="#{boardGamePlaysGraph.startPlayDate}" styleClass="mediumLeftMargin" required="true"/>
+
+                        <h:outputText value="End date: " styleClass="mediumLeftMargin"/>
+                        <p:calendar id="endPlayDate" value="#{boardGamePlaysGraph.endPlayDate}" styleClass="mediumLeftMargin" required="true"/>
+
+                        <h:message for="playDateOrder" styleClass="errorText mediumLeftMargin"/>
+                        <o:validateOrder id="playDateOrder" components="startPlayDate endPlayDate"
+                                         type="lte" message="Start date must be before or the same as the End date"/>
+                    </div>
+                    <div style="padding-top:10px;">
+                        <h:outputText value="Max # Games to display:"/>
+                        <p:spinner id="maxGamesToShow" value="#{boardGamePlaysGraph.maxGamesToShow}"
+                                   min="1" max="20" size="2" styleClass="mediumLeftMargin"
+                                   validatorMessage="You need to choose a number between 1 and 20">
+                            <f:validateLongRange minimum="1" maximum="20"/>
+                        </p:spinner>
+                        <h:message for="maxGamesToShow" styleClass="errorText mediumLeftMargin"/>
+                    </div>
+                    <div style="padding-top:10px;">
+                        <h:selectBooleanCheckbox id="includeExpansions" value="#{boardGamePlaysGraph.includeExpansions}"/>
+                        <h:outputLabel for="includeExpansions" value="Include Expansions" style="padding-left: 5px;"/>
+                    </div>
+                    <div style="padding-top:10px;">
+                        <p:commandLink actionListener="#{boardGamePlaysGraph.refreshChart}"
+                                       update="gamesPlayedPage" process="@form"
+                                       oncomplete="loadChart()">Update
+                        </p:commandLink>
+                    </div>
+                    <h:panelGroup layout="block" id="playsChart" style="margin-top: 50px;">
+                        <p:barChart value="#{boardGamePlaysGraph.chartPlays}" legendPosition="nw" title="Board Game Plays" style="height:700px;"/>
+                    </h:panelGroup>
+                </h:panelGroup>
+            </h:panelGroup>
+        </h:form>
+    </ui:define>
+</ui:composition>
+</html>

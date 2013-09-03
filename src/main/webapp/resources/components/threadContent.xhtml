@@ -1,0 +1,42 @@
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:composite="http://java.sun.com/jsf/composite"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:f="http://java.sun.com/jsf/core"
+        >
+<composite:interface>
+    <composite:attribute name="thread" required="true"/>
+</composite:interface>
+
+<composite:implementation>
+    <h:panelGroup layout="block">
+        <div style="padding-bottom: 20px;">
+            <a id="bggLink" href="http://boardgamegeek.com/thread/#{cc.attrs.thread.threadId}" target="_blank">View this thread on BGG</a>
+        </div>
+        <div style="padding-bottom: 20px; font-size: 150%;">
+            <h:outputText value="#{cc.attrs.thread.subject}" styleClass="boldText"/>
+        </div>
+        <div style="padding-top:10px;">
+            <ui:repeat value="#{cc.attrs.thread.articles}" var="article">
+                <div class="#{threadView.highlight(article.postDate)?'threadEntryHighlighted':'threadEntry'}" style="position: relative;">
+                    <div style="position: absolute; top: 5px; right: 5px;">
+                        <h:outputText value="Posted " styleClass="smallText"/>
+                        <h:outputText value="#{article.postDate}" styleClass="smallText">
+                            <f:convertDateTime pattern="EEE MMM dd yyyy hh:mm a" />
+                        </h:outputText>
+                    </div>
+                    <div style="padding-top:5px;">
+                        <a href="http://boardgamegeek.com/user/#{article.username}" target="_blank" id="#{article.id}">#{article.username}</a>
+                    </div>
+                    <div style="padding-top:10px;">
+                        <h:outputText value="#{article.content}" escape="false"/>
+                    </div>
+                </div>
+            </ui:repeat>
+        </div>
+        <div style="padding-top:15px; text-align:center;">
+            <a href="#bggLink">Back to top</a>
+        </div>
+    </h:panelGroup>
+</composite:implementation>
+</html>

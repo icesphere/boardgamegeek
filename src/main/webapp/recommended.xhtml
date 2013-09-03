@@ -1,0 +1,312 @@
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:f="http://java.sun.com/jsf/core">
+<ui:composition template="/templates/commonLayout.xhtml">
+    <ui:define name="title">
+        <h:outputText value="Recommended games"/>
+    </ui:define>
+    <ui:define name="head">
+        <script type="text/javascript">
+            function saveSettings(args)
+            {
+                if(!args.validationFailed) {
+                    loadRecommendations();
+                }
+            }
+
+            function recommendationsLoaded(args)
+            {
+                if(!args.allRecommendationsLoaded) {
+                    loadRecommendations();
+                }
+            }
+        </script>
+        <style type="text/css">
+            .error {
+                color: red;
+            }
+            .loading {
+                color: blue;
+            }
+            .loaded {
+                color: green;
+            }
+            .waiting {
+                color: gray;
+            }
+            .scoreParam {
+                width: 100px;
+            }
+            .scoreSetting {
+                float: left;
+                padding-right: 10px;
+            }
+            .ratingBox {
+                height: 20px;
+                width: 100px;
+                float: left;
+            }
+            .yourRating {
+                height: 20px;
+                background-color: red;
+                float: left;
+            }
+            .otherRating {
+                height: 20px;
+                background-color: blue;
+                float: left;
+            }
+            .commonGamesRating {
+                height: 20px;
+                background-color: green;
+                float: left;
+            }
+        </style>
+    </ui:define>
+    <ui:define name="content">
+        <h:form id="recommendedGamesForm">
+            <p:remoteCommand name="setupRecommendGames" actionListener="#{recommendedGames.setupRecommendGames}" update="recommendedGamesPage" autoRun="true"/>
+            <p:remoteCommand name="loadUserGames" actionListener="#{recommendedGames.loadUserGames}" update="recommendedGamesPage"/>
+            <p:remoteCommand name="loadRecommendations" actionListener="#{recommendedGames.loadRecommendations}" update="recommendedGamesPage" oncomplete="recommendationsLoaded(args)"/>
+            <h:panelGroup layout="block" id="recommendedGamesPage">
+
+                <h:panelGroup layout="block" rendered="#{!recommendedGames.allRecommendationsLoaded}">
+
+                    <h:outputText value="Top games for #{userSession.username}: " rendered="#{!recommendedGames.userGamesLoaded and !recommendedGames.settingsLoaded}"/>
+                    <h:outputText value="Loading..." styleClass="loading" rendered="#{!recommendedGames.userGamesLoaded and !recommendedGames.settingsLoaded}"/>
+
+                    <h:panelGroup layout="block" style="padding-top: 15px;" rendered="#{recommendedGames.userGamesLoaded and !recommendedGames.settingsLoaded and empty recommendedGames.topGames}">
+                        You don't have any games with rating 8 or higher.
+                    </h:panelGroup>
+
+                    <h:panelGroup layout="block" style="padding-top: 15px;" rendered="#{recommendedGames.userGamesLoaded and !recommendedGames.settingsLoaded and !empty recommendedGames.topGames}">
+                        <div>
+                            Number of user ratings to look at per game (1-100):
+                            <h:inputText value="#{recommendedGames.recommendationsInfo.numRatingsPerGame}" required="true" label="Number of ratings per game">
+                                <f:validateLongRange minimum="1" maximum="100"/>
+                            </h:inputText>
+                        </div>
+                        <div>
+                            Select games that you want to base recommendations on:
+                        </div>
+                        <h:dataTable value="#{recommendedGames.topGames}" var="game">
+                            <h:column>
+                                <h:selectBooleanCheckbox value="#{recommendedGames.selectedGames[game.id]}"/>
+                            </h:column>
+                            <h:column>
+                                <h:outputText value="#{game.name}"/>
+                            </h:column>
+                        </h:dataTable>
+                        <div style="padding-top: 10px;">
+                            <span class="boldText">Scoring Algorithm:</span>
+                            <div style="padding-bottom: 10px;" class="captionText">
+                                <h:outputText value="Top Games = Up to 20 games with rating 8 or higher"/>
+                                <br/>
+                                <h:outputText value="((Your Game Rating Multiplier)*(your game rating)^(Your Game Rating Exponent) + "/>
+                                <h:outputText value="(Other User Game Rating Multiplier)*(other user game rating)^(Other User Game Rating Exponent) + "/>
+                                <h:outputText value="(Top Games in Common Multiplier)*(# top games in common)^(Top Games in Common Exponent))/(Common Divider)"/>
+                            </div>
+                            <h:outputText value="Your Game Rating Multiplier (0-100): "/>
+                            <h:inputText value="#{recommendedGames.recommendationsInfo.yourGameRatingMultiplier}" styleClass="scoreParam" required="true" label="Your Game Rating Multiplier">
+                                <f:validateLongRange minimum="0" maximum="100"/>
+                            </h:inputText>
+                            <br/>
+                            <h:outputText value="Your Game Rating Exponent (0-5): "/>
+                            <h:inputText value="#{recommendedGames.recommendationsInfo.yourGameRatingExponent}" styleClass="scoreParam" required="true" label="Your Game Rating Exponent">
+                                <f:validateLongRange minimum="0" maximum="5"/>
+                            </h:inputText>
+                            <br/>
+                            <h:outputText value="Other User Game Rating Multiplier (0-100): "/>
+                            <h:inputText value="#{recommendedGames.recommendationsInfo.userGameRatingMultiplier}" styleClass="scoreParam" required="true" label="Other User Game Rating Multiplier">
+                                <f:validateLongRange minimum="0" maximum="100"/>
+                            </h:inputText>
+                            <br/>
+                            <h:outputText value="Other User Game Rating Exponent (0-5): "/>
+                            <h:inputText value="#{recommendedGames.recommendationsInfo.userGameRatingExponent}" styleClass="scoreParam" required="true" label="Other User Game Rating Exponent">
+                                <f:validateLongRange minimum="0" maximum="5"/>
+                            </h:inputText>
+                            <br/>
+                            <h:outputText value="Minimum Top Games in Common (1-10): "/>
+                            <h:inputText value="#{recommendedGames.recommendationsInfo.minGamesInCommon}" styleClass="scoreParam" required="true" label="Minimum Top Games in Common">
+                                <f:validateLongRange minimum="1" maximum="10"/>
+                            </h:inputText>
+                            <br/>
+                            <h:outputText value="Top Games in Common Multiplier (0-100): "/>
+                            <h:inputText value="#{recommendedGames.recommendationsInfo.gamesInCommonMultiplier}" styleClass="scoreParam" required="true" label="Top Games in Common Multiplier">
+                                <f:validateLongRange minimum="0" maximum="100"/>
+                            </h:inputText>
+                            <br/>
+                            <h:outputText value="Top Games in Common Exponent (0-5): "/>
+                            <h:inputText value="#{recommendedGames.recommendationsInfo.gamesInCommonExponent}" styleClass="scoreParam" required="true" label="Top Games in Common Exponent">
+                                <f:validateLongRange minimum="0" maximum="5"/>
+                            </h:inputText>
+                            <br/>
+                            <h:outputText value="Common Divider (1-10000): "/>
+                            <h:inputText value="#{recommendedGames.recommendationsInfo.commonDivider}" styleClass="scoreParam" required="true" label="Common Divider">
+                                <f:validateLongRange minimum="1" maximum="10000"/>
+                            </h:inputText>
+                            <br/>
+                            <h:outputText value="# BGG Top Ranked Games to Exclude (0-1000): "/>
+                            <h:inputText value="#{recommendedGames.recommendationsInfo.topGamesExcluded}" styleClass="scoreParam" required="true" label="# BGG Top Ranked Games to Exclude">
+                                <f:validateLongRange minimum="0" maximum="1000"/>
+                            </h:inputText>
+                        </div>
+                        <div style="padding-top: 5px;">
+                            <p:commandLink value="Load Recommendations" actionListener="#{recommendedGames.saveSettings}"
+                                           process="recommendedGamesPage" update="recommendedGamesPage"
+                                           oncomplete="saveSettings(args)"/>
+                        </div>
+
+                        <h:messages styleClass="error"/>
+
+                    </h:panelGroup>
+
+                    <h:dataTable value="#{recommendedGames.gameRecommendationList}" var="recommendations" rendered="#{!recommendedGames.showRecommendationsLoading}">
+                        <h:column>
+                            <h:outputText value="Game recommendations for #{recommendations.game.name}: "/>
+                            <h:outputText value="Waiting..." styleClass="waiting" rendered="#{!recommendations.loading and !recommendations.loaded and !recommendations.error}"/>
+                            <h:outputText value="Loading..." styleClass="loading" rendered="#{recommendations.loading and !recommendations.loaded and !recommendations.error}"/>
+                            <h:outputText value="Loaded" styleClass="loaded" rendered="#{recommendations.loaded and !recommendations.error}"/>
+                            <h:outputText value="Error" styleClass="error" rendered="#{recommendations.error}"/>
+
+                            <h:panelGroup layout="block" style="padding-left: 20px;">
+                                <h:dataTable value="#{recommendedGames.gameRatings}" var="gameRating" rendered="#{recommendations.game.id eq recommendedGames.currentGameId}">
+                                    <h:column>
+                                        <h:outputText value="Game recommendations for #{gameRating.username}: "/>
+                                        <h:outputText value="Waiting..." styleClass="waiting" rendered="#{!gameRating.loading and !gameRating.loaded and !gameRating.error}"/>
+                                        <h:outputText value="Loading..." styleClass="loading" rendered="#{gameRating.loading and !gameRating.loaded and !gameRating.error}"/>
+                                        <h:outputText value="Loaded" styleClass="loaded" rendered="#{gameRating.loaded and !gameRating.error}"/>
+                                        <h:outputText value="Error" styleClass="error" rendered="#{gameRating.error}"/>
+                                    </h:column>
+                                </h:dataTable>
+                            </h:panelGroup>
+                        </h:column>
+                    </h:dataTable>
+
+                    <h:outputText value="Loading Recommendations..." styleClass="loading" rendered="#{recommendedGames.settingsLoaded and recommendedGames.showRecommendationsLoading}"/>
+
+                </h:panelGroup>
+
+                <h:panelGroup layout="block" rendered="#{recommendedGames.allRecommendationsLoaded}">
+                    <div style="padding-bottom: 10px;">
+                        <p:commandLink value="Create New Recommendations" update="recommendedGamesPage" actionListener="#{recommendedGames.createNewRecommendations}" oncomplete="loadUserGames()"/>
+                    </div>
+                    <h:panelGroup layout="block" style="padding-bottom: 10px;" rendered="#{!empty(recommendedGames.recommendationsInfo.userWithMostGamesInCommon)}">
+                        Most Top Games in Common: <h:outputText value="#{recommendedGames.recommendationsInfo.mostGamesInCommon}"/>
+                        <br/>
+                        Most Top Games In Common User: <h:outputLink value="http://boardgamegeek.com/user/#{recommendedGames.recommendationsInfo.userWithMostGamesInCommon}" target="_blank">#{recommendedGames.recommendationsInfo.userWithMostGamesInCommon}</h:outputLink>
+                    </h:panelGroup>
+                    <h:panelGroup layout="block" style="padding-bottom: 10px;">
+                        <div class="boldText">Scoring Algorithm Settings:</div>
+                        <div style="float: left;">
+                            <div class="scoreSetting">
+                                Number of Ratings per Game: <h:outputText value="#{recommendedGames.recommendationsInfo.numRatingsPerGame}"/>
+                            </div>
+                            <div class="scoreSetting">
+                                Your Game Rating Multiplier: <h:outputText value="#{recommendedGames.recommendationsInfo.yourGameRatingMultiplier}"/>
+                            </div>
+                            <div class="scoreSetting">
+                                Your Game Rating Exponent: <h:outputText value="#{recommendedGames.recommendationsInfo.yourGameRatingExponent}"/>
+                            </div>
+                            <div class="scoreSetting">
+                                Other Users Game Rating Multiplier: <h:outputText value="#{recommendedGames.recommendationsInfo.userGameRatingMultiplier}"/>
+                            </div>
+                            <div class="scoreSetting">
+                                Other Users Game Rating Exponent: <h:outputText value="#{recommendedGames.recommendationsInfo.userGameRatingExponent}"/>
+                            </div>
+                            <div class="scoreSetting">
+                                Minimum Top Games in Common: <h:outputText value="#{recommendedGames.recommendationsInfo.minGamesInCommon}"/>
+                            </div>
+                            <div class="scoreSetting">
+                                Top Games in Common Multiplier: <h:outputText value="#{recommendedGames.recommendationsInfo.gamesInCommonMultiplier}"/>
+                            </div>
+                            <div class="scoreSetting">
+                                Top Games in Common Exponent: <h:outputText value="#{recommendedGames.recommendationsInfo.gamesInCommonExponent}"/>
+                            </div>
+                            <div class="scoreSetting">
+                                Common Divider: <h:outputText value="#{recommendedGames.recommendationsInfo.commonDivider}"/>
+                            </div>
+                            <div style="float: left;">
+                                # BGG Top Ranked Games to Exclude: <h:outputText value="#{recommendedGames.recommendationsInfo.topGamesExcluded}"/>
+                            </div>
+                        </div>
+                        <div style="clear: both; padding-bottom: 10px;" class="captionText">
+                            <h:outputText value="Top Games = Up to 20 games with rating 8 or higher"/>
+                            <div>
+                                <h:outputText value="Scoring algorithm: "/>
+                                <h:outputText value="(#{recommendedGames.recommendationsInfo.yourGameRatingMultiplier}*(your game rating)^#{recommendedGames.recommendationsInfo.yourGameRatingExponent} + "/>
+                                <h:outputText value="#{recommendedGames.recommendationsInfo.userGameRatingMultiplier}*(other user game rating)^#{recommendedGames.recommendationsInfo.userGameRatingExponent} + "/>
+                                <h:outputText value="#{recommendedGames.recommendationsInfo.gamesInCommonMultiplier}*(# games in common)^#{recommendedGames.recommendationsInfo.gamesInCommonExponent})/#{recommendedGames.recommendationsInfo.commonDivider}"/>
+                            </div>
+                            <div>
+                                <h:outputText style="color: red; padding-right: 10px;" value="Red: Your Rating Score"/>
+                                <h:outputText style="color: blue; padding-right: 10px;" value="Blue: Other User Rating Score"/>
+                                <h:outputText style="color: green;" value="Green: Top Games in Common Rating Score"/>
+                            </div>
+                        </div>
+                    </h:panelGroup>
+                    <p:dataTable value="#{recommendedGames.allRecommendedGames}" var="game" style="clear: both;">
+                        <p:column headerText="Name" styleClass="alignLeft" sortBy="#{game.name}">
+                            <h:link outcome="game.xhtml?id=#{game.id}&amp;faces-redirect=true"><img src="#{game.smallThumbnailImage}" alt="#{game.name} image" style="margin-right:10px"/></h:link>
+                            <h:panelGroup rendered="#{userSession.mobile}"><br/></h:panelGroup>
+                            <h:link outcome="game.xhtml?id=#{game.id}&amp;faces-redirect=true"><h:outputText value="#{game.name}"/></h:link>
+                            <h:outputText value=" (#{game.yearPublished})" rendered="#{userSession.mobile}"/>
+                        </p:column>
+                        <p:column headerText="Year Published" styleClass="alignCenter" sortBy="#{game.yearPublished}" rendered="#{!userSession.mobile}">
+                            <h:outputText value="#{game.yearPublished}" rendered="#{game.yearPublished gt 0}"/>
+                            <h:outputText value="N/A" rendered="#{game.yearPublished eq 0}"/>
+                        </p:column>
+                        <p:column styleClass="alignCenter" sortBy="#{game.sortRank}">
+                            <f:facet name="header">
+                                <h:panelGroup styleClass="smallTableHeader">
+                                    <h:outputText value="Rank"/>
+                                </h:panelGroup>
+                            </f:facet>
+                            <h:outputText value="#{game.rank}" rendered="#{game.rank gt 0}"/>
+                            <h:outputText value="N/A" rendered="#{game.rank eq 0}"/>
+                        </p:column>
+                        <p:column styleClass="alignCenter" sortBy="#{game.averageRating}">
+                            <f:facet name="header">
+                                <h:panelGroup styleClass="smallTableHeader">
+                                    <h:outputText value="Avg "/>
+                                    <h:panelGroup rendered="#{userSession.mobile}"><br/></h:panelGroup>
+                                    <h:outputText value="Rating"/>
+                                </h:panelGroup>
+                            </f:facet>
+                            <h:outputText value="#{game.averageRating}"/>
+                            <h:outputText value=" (#{game.ratings} ratings)"/>
+                        </p:column>
+                        <p:column styleClass="alignCenter" sortBy="#{game.recommendationScore}">
+                            <f:facet name="header">
+                                <h:panelGroup styleClass="smallTableHeader">
+                                    <h:outputText value="Recommendation "/>
+                                    <br/>
+                                    <h:outputText value="Score"/>
+                                </h:panelGroup>
+                            </f:facet>
+                            <h:panelGroup>
+                                <div style="float: left;">
+                                    <div style="float: left; padding-right: 15px;">
+                                        <h:outputText value="#{game.recommendationScore}">
+                                            <f:convertNumber type="number" groupingUsed="true" pattern="#0.00"/>
+                                        </h:outputText>
+                                    </div>
+                                    <div class="ratingBox">
+                                        <div class="yourRating" style="width: #{game.yourRatingPercentage}%"></div>
+                                        <div class="otherRating" style="width: #{game.otherRatingPercentage}%"></div>
+                                        <div class="commonGamesRating" style="width: #{game.commonGamesRatingPercentage}%"></div>
+                                    </div>
+                                </div>
+                            </h:panelGroup>
+                        </p:column>
+                    </p:dataTable>
+                </h:panelGroup>
+
+            </h:panelGroup>
+
+        </h:form>
+    </ui:define>
+</ui:composition>
+</html>

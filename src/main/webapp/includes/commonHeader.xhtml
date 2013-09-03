@@ -1,0 +1,47 @@
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui">
+<ui:composition>
+    <div class="topGradient">
+    </div>
+    <div class="menu">
+        <h:form id="navigationForm">
+            <div style="float:left;">
+                <div class="mediumRightPadding navigationLink">
+                    <h:link outcome="/search.xhtml?faces-redirect=true">Search Games</h:link>
+                </div>
+                <div class="mediumRightPadding navigationLink">
+                    <h:link outcome="/topgames.xhtml?faces-redirect=true">Top Games</h:link>
+                </div>
+                <div class="mediumRightPadding navigationLink">
+                    <h:link outcome="/hotgames.xhtml?faces-redirect=true">Hot Games</h:link>
+                </div>
+                <div class="mediumRightPadding navigationLink">
+                    <h:link outcome="/geeklists.xhtml?faces-redirect=true">Geek Lists</h:link>
+                </div>
+                <h:panelGroup layout="block" style="float:left;" rendered="#{userSession.usernameSet}">
+                    <h:panelGroup layout="block" styleClass="mediumRightPadding navigationLink">
+                        <h:link outcome="/recommended.xhtml?faces-redirect=true">Recommended Games</h:link>
+                    </h:panelGroup>
+                    <h:panelGroup layout="block" styleClass="mediumRightPadding navigationLink" rendered="#{userSession.loggedIn}">
+                        <h:link outcome="/subscriptions.xhtml?faces-redirect=true">Subscriptions</h:link>
+                    </h:panelGroup>
+                    <div class="mediumRightPadding navigationLink">
+                        <h:link outcome="/collection.xhtml?faces-redirect=true">Collection</h:link>
+                    </div>
+                    <h:panelGroup layout="block" styleClass="mediumRightPadding navigationLink">
+                        <h:link outcome="/plays.xhtml?faces-redirect=true">Plays</h:link>
+                    </h:panelGroup>
+                    <div class="navigationLink">
+                        <p:commandLink action="#{userSession.logout}" ajax="false">Logout</p:commandLink>
+                    </div>
+                </h:panelGroup>
+                <h:panelGroup layout="block" style="float:left;" rendered="#{!userSession.usernameSet and view.viewId ne '/login.xhtml'}">
+                    <h:link outcome="/login.xhtml?faces-redirect=true">Login</h:link>
+                </h:panelGroup>
+            </div>
+        </h:form>
+    </div>
+</ui:composition>
+</html>

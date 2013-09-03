@@ -1,0 +1,49 @@
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:ui="http://java.sun.com/jsf/facelets">
+<ui:composition template="/templates/commonLayout.xhtml">
+    <ui:define name="title">
+        Subscriptions
+    </ui:define>
+
+    <ui:define name="content">
+        <h:form id="subscriptionsForm">
+            <p:remoteCommand name="loadSubscriptions" actionListener="#{subscriptionView.loadSubscriptions}" update="subscriptionsPage" autoRun="true"/>
+            <h:panelGroup layout="block" id="subscriptionsPage">
+                <h:panelGroup layout="block" rendered="#{!subscriptionView.loaded}" styleClass="centerDiv" style="text-align: center;">
+                    <h:graphicImage library="images" name="loading.gif"/>
+                </h:panelGroup>
+                <h:panelGroup layout="block" rendered="#{subscriptionView.loaded}">
+                    <div class="boldText">
+                        <h:outputText value="Forum Subscriptions" style="margin-right: 10px;"/>
+
+                        <p:commandLink action="#{subscriptionView.markAllForumSubscriptionsAsRead}" value="Mark all read"
+                                       process="@this" update="subscriptionsPage" rendered="#{!empty subscriptionView.subscriptions.forumSubscriptions}"/>
+                    </div>
+                    <p:dataTable value="#{subscriptionView.subscriptions.forumSubscriptions}" var="forumSubscription">
+                        <p:column headerText="Forum" sortBy="#{forumSubscription.forum}">
+                            <h:outputText value="#{forumSubscription.forum}"/>
+                        </p:column>
+                        <p:column headerText="Title" sortBy="#{forumSubscription.subject}">
+                            <p:commandLink action="#{subscriptionView.showForumSubscription(forumSubscription)}">#{forumSubscription.subject}</p:commandLink>
+                        </p:column>
+                    </p:dataTable>
+
+                    <div class="boldText" style="padding-top: 15px;">
+                        <h:outputText value="GeekList Subscriptions" style="margin-right: 10px;"/>
+
+                        <p:commandLink action="#{subscriptionView.markAllGeekListSubscriptionsAsRead}" value="Mark all read"
+                                       process="@this" update="subscriptionsPage" rendered="#{!empty subscriptionView.subscriptions.geekListSubscriptions}"/>
+                    </div>
+                    <p:dataTable value="#{subscriptionView.subscriptions.geekListSubscriptions}" var="geekListSubscription">
+                        <p:column headerText="Title" sortBy="#{geekListSubscription.title}">
+                            <p:commandLink action="#{subscriptionView.showGeekListSubscription(geekListSubscription)}">#{geekListSubscription.title}</p:commandLink>
+                        </p:column>
+                    </p:dataTable>
+                </h:panelGroup>
+            </h:panelGroup>
+        </h:form>
+    </ui:define>
+</ui:composition>
+</html>

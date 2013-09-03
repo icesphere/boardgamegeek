@@ -1,0 +1,73 @@
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:f="http://java.sun.com/jsf/core"
+        >
+<ui:composition template="/templates/commonLayout.xhtml">
+    <ui:define name="title">BGG Geeklists</ui:define>
+
+    <ui:define name="head">
+        <script type="text/javascript">
+            function sortThumbs() {
+                $('#geekListsForm\\:geekListTable\\:thumbsHeader').click();
+            }
+        </script>
+    </ui:define>
+
+    <ui:define name="content">
+        <h:form id="geekListsForm">
+
+            <p:ajaxStatus onstart="statusDialog.show();" onsuccess="statusDialog.hide();"/>
+
+            <p:dialog modal="true" widgetVar="statusDialog" draggable="false" closable="false" resizable="false" showHeader="false">
+                <h:graphicImage library="images" name="loading.gif"/>
+            </p:dialog>
+
+            <p:remoteCommand name="loadGeeklists" actionListener="#{geekLists.load}" update="geekListPage" autoRun="true"/>
+
+            <h:panelGroup layout="block" id="geekListPage">
+
+                <h:panelGroup layout="block" rendered="#{geekLists.loaded}">
+
+                    <h:panelGroup layout="block" style="padding-bottom: 10px;" rendered="#{userSession.user.admin}">
+                        <p:commandLink value="Refresh" action="#{geekLists.refreshGeekLists}" process="@this" update="geekListPage"/>
+                    </h:panelGroup>
+
+                    <div style="padding-bottom: 10px;">
+                        <h:selectOneRadio value="#{geekLists.sort}" styleClass="radioSpacing">
+                            <f:selectItem itemLabel="Hot geek lists" itemValue="hot"/>
+                            <f:selectItem itemLabel="Recent geek lists" itemValue="recent"/>
+
+                            <p:ajax process="@this" update="geekLists"/>
+                        </h:selectOneRadio>
+                    </div>
+
+                    <h:panelGroup layout="block" id="geekLists">
+                        <p:dataTable id="geekListTable" value="#{geekLists.geekLists}" var="geekList" paginator="true" rows="10">
+                            <p:column styleClass="alignCenter" sortBy="#{geekList.thumbs}" id="thumbsHeader">
+                                <f:facet name="header">
+                                    <a href="#" onclick="sortThumbs()"><h:graphicImage library="images" name="arrowup.png"/></a>
+                                </f:facet>
+                                <h:outputText value="#{geekList.thumbs}"/>
+                            </p:column>
+                            <p:column headerText="Title" styleClass="alignLeft" sortBy="#{geekList.title}">
+                                <h:link outcome="geeklist.xhtml?id=#{geekList.id}&amp;faces-redirect=true"><h:outputText value="#{geekList.title}"/></h:link>
+                            </p:column>
+                            <p:column headerText="Creator" styleClass="alignLeft" sortBy="#{geekList.creator}" rendered="#{!userSession.mobile}">
+                                <h:outputText value="#{geekList.creator}"/>
+                            </p:column>
+                            <p:column headerText="# Entries" styleClass="alignCenter" sortBy="#{geekList.entries}" rendered="#{!userSession.mobile}">
+                                <h:outputText value="#{geekList.entries}"/>
+                            </p:column>
+                        </p:dataTable>
+                    </h:panelGroup>
+
+                </h:panelGroup>
+
+            </h:panelGroup>
+
+        </h:form>
+    </ui:define>
+</ui:composition>
+</html>

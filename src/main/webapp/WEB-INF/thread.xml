@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thread id="881590" numarticles="4" link="http://boardgamegeek.com/thread/881590" termsofuse="http://boardgamegeek.com/xmlapi/termsofuse">
+<subject>API for modifying collections/plays?</subject>
+<articles>
+	<article id="10480226" username="XanthosDeia" link="http://boardgamegeek.com/article/10480226#10480226" postdate="2012-11-08T15:42:31-06:00" editdate="2012-11-08T15:42:31-06:00" numedits="0">
+		<subject>API for modifying collections/plays?</subject>
+		<body>Is there a publicly documented API for user authentication and modifying a user's collection/plays? The XML API seems to only cover anonymous data fetch operations.</body>
+	</article>
+	<article id="10480598" username="JeffyJeff" link="http://boardgamegeek.com/article/10480598#10480598" postdate="2012-11-08T16:16:11-06:00" editdate="2012-11-08T16:16:11-06:00" numedits="0">
+		<subject>Re: API for modifying collections/plays?</subject>
+		<body>current api's are read-only, but there are ways not using the xml api to modify/record data including plays</body>
+	</article>
+	<article id="10481235" username="XanthosDeia" link="http://boardgamegeek.com/article/10481235#10481235" postdate="2012-11-08T17:31:16-06:00" editdate="2012-11-08T17:31:16-06:00" numedits="0">
+		<subject>Re: API for modifying collections/plays?</subject>
+		<body>Are they documented anywhere? Or do developers need to reverse-engineer them?</body>
+	</article>
+	<article id="10482365" username="JeffyJeff" link="http://boardgamegeek.com/article/10482365#10482365" postdate="2012-11-08T20:56:40-06:00" editdate="2012-11-08T20:56:40-06:00" numedits="0">
+		<subject>Re: API for modifying collections/plays?</subject>
+		<body>&lt;font color=#2121A4&gt;&lt;div class='quote'&gt;&lt;div class='quotetitle'&gt;&lt;p&gt;&lt;b&gt;XanthosDeia wrote:&lt;/b&gt;&lt;/p&gt;&lt;/div&gt;&lt;div class='quotebody'&gt;&lt;i&gt;Are they documented anywhere? Or do developers need to reverse-engineer them?&lt;/i&gt;&lt;/div&gt;&lt;/div&gt;&lt;/font&gt;&lt;br/&gt;as far as I know undocumented and hence also unsupported... especially since BGG 2.0 (or is it 3.0 now?) roll out will likely break them all, just hoping the xml api doesn't break too badly&lt;br/&gt;&lt;br/&gt;you may want to check the bgg android app which has public source I believe and I think has support for logging plays, for how they are doing it</body>
+	</article>
+</articles>
+</thread>

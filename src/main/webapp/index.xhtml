@@ -1,0 +1,42 @@
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:ui="http://java.sun.com/jsf/facelets">
+<ui:composition template="/templates/commonLayout.xhtml">
+    <ui:define name="content">
+        <h:form>
+            <div>
+                <div>
+                    This website has two main purposes.<br/>
+                    Provide a mobile friendly view of things on boardgamegeek that I often access from my phone.<br/>
+                    Provide additional functionality not currently available.
+                </div>
+                <div style="padding-top:10px;">Current functionality includes:</div>
+                <div class="boldText" style="padding-top:10px;">No login required</div>
+                <div>
+                    Geek Lists <br/>
+                    Search Games <br/>
+                    Hot Games <br/>
+                    Top 100 Games <br/>
+                    Game Pages
+                </div>
+                <div class="boldText" style="padding-top:10px;">Logged in with username only</div>
+                <div>
+                    Game Collection <br/>
+                    Recommended Games <br/>
+                    Graph of played games (not available from the mobile view) <br/>
+                </div>
+                <div class="boldText" style="padding-top:10px;">Logged in with username and password</div>
+                <div style="padding-top:5px;">
+                    <h:outputText value="(The password is used to login to boardgamegeek.com in order to obtain cookies needed to access areas of the site that require a login. These cookies are stored in your browser until you logout.)" styleClass="captionText"/>
+                </div>
+                <div style="padding-top:5px;">
+                    Log plays of games (you can also log a game's expansions at the same time you log a play for a game)<br/>
+                    Subscriptions <br/>
+                    Change game rating <br/>
+                    Recommend geek list
+                </div>
+            </div>
+        </h:form>
+    </ui:define>
+</ui:composition>
+</html>

@@ -1,0 +1,35 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:ui="http://java.sun.com/jsf/facelets">
+    <h:panelGroup layout="block" id="logPlayDiv" rendered="#{boardGame.gameLoaded and logPlay.playMode}">
+        <h:inputHidden value="#{logPlay.play.gameId}"/>
+        <div>
+            <h:outputText value="Date: "/>
+            <br/>
+            <p:calendar value="#{logPlay.play.playDate}" mode="inline"/>
+        </div>
+        <div style="padding-top: 10px;">
+            <h:outputText value="Quantity: "/>
+            <br/>
+            <h:inputText value="#{logPlay.play.quantity}"/>
+        </div>
+
+        <div style="padding-top:20px;">
+            Expansions:
+            <div>
+                <h:dataTable value="#{boardGame.game.expansions}" var="expansion">
+                    <h:column>
+                        <p:selectBooleanCheckbox value="#{logPlay.play.selectedExpansions[expansion.id]}"/>
+                        <h:outputText value=" #{expansion.name}"/>
+                    </h:column>
+                </h:dataTable>
+            </div>
+        </div>
+
+        <div style="padding-top:20px;">
+            <p:commandButton value="Submit" action="#{logPlay.submitPlay}" process="logPlayDiv" update="gamePage" style="margin-right: 10px;"/>
+            <p:commandButton value="Cancel" process="@this" action="#{logPlay.cancelLogPlay}" update="gamePage"/>
+        </div>
+    </h:panelGroup>
+</ui:composition>

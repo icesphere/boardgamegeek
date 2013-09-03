@@ -1,0 +1,129 @@
+<?xml version="1.0" encoding="UTF-8"?><component name="dataSourceStorage">
+  <data-source source="LOCAL" name="BGG DB" product="MySQL" version="5.5.27" jdbc-version="4.0" driver-name="MySQL-AB JDBC Driver" driver-version="mysql-connector-java-5.1.18 ( Revision: tonci.grgin@oracle.com-20110930151701-jfj14ddfq48ifkfq )" uuid="1988a9c7-6bda-4311-ae3e-498138311cb5">
+    <extra-name-characters>#@</extra-name-characters>
+    <identifier-quote-string>`</identifier-quote-string>
+    <jdbc-driver>com.mysql.jdbc.Driver</jdbc-driver>
+    <jdbc-url>jdbc:mysql://localhost:3306/boardgamegeek</jdbc-url>
+    <user-name>bggdb</user-name>
+    <user-password>dfe8dfeddfeddfcedfc8dfcbdfcedfc7df8bdfc4</user-password>
+    <schema-pattern>boardgamegeek.*</schema-pattern>
+    <default-schemas>boardgamegeek.*</default-schemas>
+    <default-dialect>MySQL</default-dialect>
+    <libraries>
+      <library>
+        <url>jar://C:/development/mysql-connector-java-5.1.18-bin.jar!/</url>
+      </library>
+      <library>
+        <url>file://C:/development/mysql-connector-license.txt</url>
+      </library>
+    </libraries>
+    <table name="game_expansions" schema="" catalog="boardgamegeek" type="TABLE">
+      <column name="game_id" sqlType="INT" length="10" precision="0" nullable="false" jdbcType="4" />
+      <column name="expansion_id" sqlType="INT" length="10" precision="0" nullable="false" jdbcType="4" />
+      <foreign-key name="expansion_gameid_fk" columns="game_id" ref-table="games" ref-schema="" ref-catalog="boardgamegeek" ref-columns="id" update-rule="3" delete-rule="3" deferrability="2" />
+      <index name="expansions_expansion_idk" unique="false" columns="expansion_id" />
+    </table>
+    <table name="game_ratings" schema="" catalog="boardgamegeek" type="TABLE">
+      <column name="id" sqlType="INT" length="10" precision="0" nullable="false" jdbcType="4" autoIncrement="true" />
+      <column name="game_id" sqlType="INT" length="10" precision="0" nullable="false" jdbcType="4" />
+      <column name="username" sqlType="VARCHAR" length="100" precision="0" nullable="false" jdbcType="12" />
+      <column name="rating" sqlType="FLOAT" length="12" precision="0" nullable="false" jdbcType="7" def="MA==" />
+      <primary-key name="PRIMARY" columns="id" />
+      <index name="game_ratings_username_fk_idx" unique="false" columns="username" />
+      <index name="game_ratings_game_id_idx" unique="false" columns="game_id" />
+    </table>
+    <table name="games" schema="" catalog="boardgamegeek" type="TABLE">
+      <column name="id" sqlType="INT" length="10" precision="0" nullable="false" jdbcType="4" />
+      <column name="name" sqlType="VARCHAR" length="500" precision="0" nullable="false" jdbcType="12" />
+      <column name="year_published" sqlType="INT" length="10" precision="0" nullable="false" jdbcType="4" />
+      <column name="image" sqlType="VARCHAR" length="200" precision="0" nullable="true" jdbcType="12" />
+      <column name="thumbnail_image" sqlType="VARCHAR" length="200" precision="0" nullable="true" jdbcType="12" />
+      <column name="min_players" sqlType="INT" length="10" precision="0" nullable="true" jdbcType="4" />
+      <column name="max_players" sqlType="INT" length="10" precision="0" nullable="true" jdbcType="4" />
+      <column name="playing_time" sqlType="INT" length="10" precision="0" nullable="true" jdbcType="4" />
+      <column name="num_owned" sqlType="INT" length="10" precision="0" nullable="true" jdbcType="4" />
+      <column name="users_rated" sqlType="INT" length="10" precision="0" nullable="true" jdbcType="4" />
+      <column name="average_rating" sqlType="FLOAT" length="12" precision="0" nullable="true" jdbcType="7" />
+      <column name="bayes_average_rating" sqlType="FLOAT" length="12" precision="0" nullable="true" jdbcType="7" />
+      <column name="description" sqlType="TEXT" length="65535" precision="0" nullable="true" jdbcType="-1" />
+      <column name="last_updated" sqlType="DATETIME" length="19" precision="0" nullable="true" jdbcType="93" />
+      <column name="rank" sqlType="INT" length="10" precision="0" nullable="false" jdbcType="4" def="MA==" />
+      <column name="ratings" sqlType="INT" length="10" precision="0" nullable="false" jdbcType="4" def="MA==" />
+      <column name="categories" sqlType="VARCHAR" length="500" precision="0" nullable="true" jdbcType="12" />
+      <column name="mechanics" sqlType="VARCHAR" length="500" precision="0" nullable="true" jdbcType="12" />
+      <column name="last_played" sqlType="DATETIME" length="19" precision="0" nullable="true" jdbcType="93" />
+      <primary-key name="PRIMARY" columns="id" />
+      <index name="games_rank_idx" unique="false" columns="rank" />
+      <index name="games_name_idx" unique="false" columns="name" />
+    </table>
+    <table name="parent_games" schema="" catalog="boardgamegeek" type="TABLE">
+      <column name="game_id" sqlType="INT" length="10" precision="0" nullable="false" jdbcType="4" />
+      <column name="parent_game_id" sqlType="INT" length="10" precision="0" nullable="false" jdbcType="4" />
+      <foreign-key name="parent_games_gameid_fk" columns="game_id" ref-table="games" ref-schema="" ref-catalog="boardgamegeek" ref-columns="id" update-rule="3" delete-rule="3" deferrability="2" />
+      <index name="parent_games_gameid_fk_idx" unique="false" columns="game_id" />
+      <index name="parent_games_parent_id_idx" unique="false" columns="parent_game_id" />
+    </table>
+    <table name="user_game_recommendations" schema="" catalog="boardgamegeek" type="TABLE">
+      <column name="user_id" sqlType="INT" length="10" precision="0" nullable="false" jdbcType="4" />
+      <column name="game_id" sqlType="INT" length="10" precision="0" nullable="false" jdbcType="4" />
+      <column name="score" sqlType="DOUBLE" length="22" precision="0" nullable="false" jdbcType="8" def="MA==" />
+      <column name="your_rating_score" sqlType="DOUBLE" length="22" precision="0" nullable="false" jdbcType="8" def="MA==" />
+      <column name="other_rating_score" sqlType="DOUBLE" length="22" precision="0" nullable="false" jdbcType="8" def="MA==" />
+      <column name="common_games_score" sqlType="DOUBLE" length="22" precision="0" nullable="false" jdbcType="8" def="MA==" />
+      <foreign-key name="user_game_recommendations_game_fk" columns="game_id" ref-table="games" ref-schema="" ref-catalog="boardgamegeek" ref-columns="id" update-rule="3" delete-rule="3" deferrability="2" />
+      <foreign-key name="user_game_recommendations_user_fk" columns="user_id" ref-table="users" ref-schema="" ref-catalog="boardgamegeek" ref-columns="id" update-rule="3" delete-rule="3" deferrability="2" />
+      <index name="user_game_recommendations_user_fk_idx" unique="false" columns="user_id" />
+      <index name="user_game_recommendations_game_fk_idx" unique="false" columns="game_id" />
+    </table>
+    <table name="user_game_recommendations_info" schema="" catalog="boardgamegeek" type="TABLE">
+      <column name="user_id" sqlType="INT" length="10" precision="0" nullable="false" jdbcType="4" />
+      <column name="your_game_rating_multiplier" sqlType="FLOAT" length="12" precision="0" nullable="false" jdbcType="7" def="MA==" />
+      <column name="user_game_rating_multiplier" sqlType="FLOAT" length="12" precision="0" nullable="false" jdbcType="7" def="MA==" />
+      <column name="your_game_rating_exponent" sqlType="FLOAT" length="12" precision="0" nullable="false" jdbcType="7" def="MA==" />
+      <column name="user_game_rating_exponent" sqlType="FLOAT" length="12" precision="0" nullable="false" jdbcType="7" def="MA==" />
+      <column name="games_in_common_exponent" sqlType="FLOAT" length="12" precision="0" nullable="false" jdbcType="7" def="MA==" />
+      <column name="common_divider" sqlType="FLOAT" length="12" precision="0" nullable="false" jdbcType="7" def="MA==" />
+      <column name="games_in_common_multiplier" sqlType="FLOAT" length="12" precision="0" nullable="false" jdbcType="7" def="MA==" />
+      <column name="user_with_most_games_in_common" sqlType="VARCHAR" length="100" precision="0" nullable="true" jdbcType="12" />
+      <column name="most_games_in_common" sqlType="INT" length="10" precision="0" nullable="false" jdbcType="4" def="MA==" />
+      <column name="num_ratings_per_game" sqlType="INT" length="10" precision="0" nullable="false" jdbcType="4" def="MA==" />
+      <column name="min_games_in_common" sqlType="INT" length="10" precision="0" nullable="false" jdbcType="4" def="MA==" />
+      <column name="top_games_excluded" sqlType="INT" length="10" precision="0" nullable="false" jdbcType="4" def="MA==" />
+      <foreign-key name="game_recommend_info_user_fk" columns="user_id" ref-table="users" ref-schema="" ref-catalog="boardgamegeek" ref-columns="id" update-rule="3" delete-rule="3" deferrability="2" />
+      <index name="game_recommend_info_user_fk_idx" unique="false" columns="user_id" />
+    </table>
+    <table name="user_games" schema="" catalog="boardgamegeek" type="TABLE">
+      <column name="user_id" sqlType="INT" length="10" precision="0" nullable="false" jdbcType="4" />
+      <column name="game_id" sqlType="INT" length="10" precision="0" nullable="false" jdbcType="4" />
+      <column name="rating" sqlType="FLOAT" length="12" precision="0" nullable="false" jdbcType="7" def="MA==" />
+      <column name="owned" sqlType="BIT" length="0" precision="0" nullable="false" jdbcType="-7" def="MA==" />
+      <column name="previously_owned" sqlType="BIT" length="0" precision="0" nullable="false" jdbcType="-7" def="MA==" />
+      <column name="for_trade" sqlType="BIT" length="0" precision="0" nullable="false" jdbcType="-7" def="MA==" />
+      <column name="want" sqlType="BIT" length="0" precision="0" nullable="false" jdbcType="-7" def="MA==" />
+      <column name="want_to_play" sqlType="BIT" length="0" precision="0" nullable="false" jdbcType="-7" def="MA==" />
+      <column name="wish_list" sqlType="BIT" length="0" precision="0" nullable="false" jdbcType="-7" def="MA==" />
+      <column name="pre_ordered" sqlType="BIT" length="0" precision="0" nullable="false" jdbcType="-7" def="MA==" />
+      <column name="last_modified" sqlType="DATETIME" length="19" precision="0" nullable="true" jdbcType="93" />
+      <column name="want_to_buy" sqlType="BIT" length="0" precision="0" nullable="false" jdbcType="-7" def="MA==" />
+      <column name="last_updated" sqlType="DATETIME" length="19" precision="0" nullable="true" jdbcType="93" />
+      <column name="num_plays" sqlType="INT" length="10" precision="0" nullable="false" jdbcType="4" def="MA==" />
+      <column name="collection_id" sqlType="INT" length="10" precision="0" nullable="true" jdbcType="4" def="MA==" />
+      <foreign-key name="user_game_game_id_fk" columns="game_id" ref-table="games" ref-schema="" ref-catalog="boardgamegeek" ref-columns="id" update-rule="3" delete-rule="3" deferrability="2" />
+      <foreign-key name="user_game_user_id_fk" columns="user_id" ref-table="users" ref-schema="" ref-catalog="boardgamegeek" ref-columns="id" update-rule="3" delete-rule="3" deferrability="2" />
+      <index name="user_games_rating_idx" unique="false" columns="rating" />
+    </table>
+    <table name="users" schema="" catalog="boardgamegeek" type="TABLE">
+      <column name="id" sqlType="INT" length="10" precision="0" nullable="false" jdbcType="4" autoIncrement="true" />
+      <column name="username" sqlType="VARCHAR" length="100" precision="0" nullable="false" jdbcType="12" />
+      <column name="collection_loaded" sqlType="BIT" length="0" precision="0" nullable="false" jdbcType="-7" def="MA==" />
+      <column name="logins" sqlType="INT" length="10" precision="0" nullable="false" jdbcType="4" def="MA==" />
+      <column name="last_login" sqlType="DATETIME" length="19" precision="0" nullable="true" jdbcType="93" />
+      <column name="created_date" sqlType="DATETIME" length="19" precision="0" nullable="true" jdbcType="93" />
+      <column name="collection_error" sqlType="BIT" length="0" precision="0" nullable="false" jdbcType="-7" def="MA==" />
+      <column name="admin" sqlType="BIT" length="0" precision="0" nullable="false" jdbcType="-7" def="MA==" />
+      <column name="top_games_loaded" sqlType="BIT" length="0" precision="0" nullable="false" jdbcType="-7" def="MA==" />
+      <primary-key name="PRIMARY" columns="id" />
+      <index name="USERNAME_IDX" unique="false" columns="username" />
+    </table>
+  </data-source>
+</component>

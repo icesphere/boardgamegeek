@@ -1,0 +1,62 @@
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:f="http://java.sun.com/jsf/core">
+<ui:composition template="/templates/commonLayout.xhtml">
+    <ui:define name="title">
+        <h:outputText value="Games played"/>
+    </ui:define>
+    <ui:define name="content">
+        <h:form id="gamesPlayedForm">
+            <p:remoteCommand name="loadPlays" actionListener="#{boardGamePlays.loadPlays}" update="gamesPlayedPage" autoRun="true"/>
+            <h:panelGroup layout="block" id="gamesPlayedPage">
+                <h:panelGroup layout="block" rendered="#{!boardGamePlays.loaded}" styleClass="centerDiv" style="text-align: center;">
+                    <h:graphicImage library="images" name="loading.gif"/>
+                </h:panelGroup>
+                <h:panelGroup layout="block" rendered="#{boardGamePlays.loaded and empty boardGamePlays.plays}">
+                    <h:outputText value="There are no plays for this user" rendered="#{!boardGamePlays.showingPlaysForGame}"/>
+                    <h:outputText value="You have not logged any plays for this game" rendered="#{boardGamePlays.showingPlaysForGame}"/>
+                </h:panelGroup>
+                <h:panelGroup layout="block" rendered="#{boardGamePlays.loaded and !empty boardGamePlays.plays}">
+                    <div style="padding-bottom: 20px;">
+                        <h:outputLink value="http://www.boardgamegeek.com/plays/bymonth/user/#{userSession.username}/subtype/boardgame" target="_blank" styleClass="smallRightPadding">
+                            BGG Games Played Page
+                        </h:outputLink>
+                    </div>
+                    <h:panelGroup layout="block" style="padding-bottom: 20px;" rendered="#{!userSession.mobile}">
+                        <h:outputLink value="playsGraph.xhtml" styleClass="smallRightPadding">Games Played Graph</h:outputLink>
+                    </h:panelGroup>
+                    <h:panelGroup layout="block" style="padding-bottom: 20px;" rendered="#{boardGamePlays.showingPlaysForGame}">
+                        <h:link outcome="/game.xhtml?id=#{boardGamePlays.gameId}&amp;faces-redirect=true">Back to Game</h:link>
+                    </h:panelGroup>
+                    <h:panelGroup layout="block">
+                        <p:dataTable value="#{boardGamePlays.plays}" var="play">
+                            <p:column headerText="Game" sortBy="#{play.item.name}">
+                                <h:outputText value="#{play.item.name}"/>
+                                <h:outputText value="(#{play.quantity} plays)" style="padding-left: 5px;" rendered="#{play.quantity ne '1'}"/>
+                            </p:column>
+                            <p:column styleClass="alignCenter" sortBy="#{userSession.userGamesMap.get(play.item.gameId).rating}" rendered="#{!boardGamePlays.showingPlaysForGame}">
+                                <f:facet name="header">
+                                    <h:panelGroup styleClass="smallTableHeader">
+                                        <h:outputText value="Your "/>
+                                        <h:panelGroup rendered="#{userSession.mobile}"><br/></h:panelGroup>
+                                        <h:outputText value="Rating"/>
+                                    </h:panelGroup>
+                                </f:facet>
+                                <h:panelGroup>
+                                    <h:outputText value="#{userSession.userGamesMap.get(play.item.gameId).rating}" rendered="#{userSession.userGamesMap.get(play.item.gameId).rating gt 0}"/>
+                                    <h:outputText value="N/A" rendered="#{userSession.userGamesMap.get(play.item.gameId).rating eq 0}"/>
+                                </h:panelGroup>
+                            </p:column>
+                            <p:column headerText="Date played" sortBy="#{play.date}">
+                                <h:outputText value="#{play.date}"/>
+                            </p:column>
+                        </p:dataTable>
+                    </h:panelGroup>
+                </h:panelGroup>
+            </h:panelGroup>
+        </h:form>
+    </ui:define>
+</ui:composition>
+</html>

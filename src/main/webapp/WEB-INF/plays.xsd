@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified">
+  <xs:element name="plays">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element maxOccurs="unbounded" ref="play"/>
+      </xs:sequence>
+      <xs:attribute name="page" use="required" type="xs:integer"/>
+      <xs:attribute name="termsofuse" use="required" type="xs:anyURI"/>
+      <xs:attribute name="total" use="required" type="xs:integer"/>
+      <xs:attribute name="userid" use="required" type="xs:integer"/>
+      <xs:attribute name="username" use="required" type="xs:NCName"/>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="play">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="item"/>
+      </xs:sequence>
+      <xs:attribute name="date" use="required" type="xs:NMTOKEN"/>
+      <xs:attribute name="id" use="required" type="xs:integer"/>
+      <xs:attribute name="incomplete" use="required" type="xs:integer"/>
+      <xs:attribute name="length" use="required" type="xs:integer"/>
+      <xs:attribute name="location" use="required"/>
+      <xs:attribute name="nowinstats" use="required" type="xs:integer"/>
+      <xs:attribute name="quantity" use="required" type="xs:integer"/>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="item">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="subtypes"/>
+      </xs:sequence>
+      <xs:attribute name="name" use="required"/>
+      <xs:attribute name="objectid" use="required" type="xs:integer"/>
+      <xs:attribute name="objecttype" use="required" type="xs:NCName"/>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="subtypes">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element maxOccurs="unbounded" ref="subtype"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="subtype">
+    <xs:complexType>
+      <xs:attribute name="value" use="required" type="xs:NCName"/>
+    </xs:complexType>
+  </xs:element>
+</xs:schema>

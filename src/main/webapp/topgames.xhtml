@@ -1,0 +1,51 @@
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:ui="http://java.sun.com/jsf/facelets">
+<ui:composition template="/templates/commonLayout.xhtml">
+    <ui:define name="title">
+        <h:outputText value="Loading games..." rendered="#{!topGames.loaded}"/>
+        <h:outputText value="Top games" rendered="#{topGames.loaded}"/>
+    </ui:define>
+    <ui:define name="content">
+        <h:form id="hotGamesForm">
+            <p:ajaxStatus onstart="statusDialog.show();" onsuccess="statusDialog.hide();"/>
+            <p:dialog modal="true" widgetVar="statusDialog" draggable="false" closable="false" resizable="false" showHeader="false">
+                <h:graphicImage library="images" name="loading.gif"/>
+            </p:dialog>
+
+            <p:remoteCommand name="refreshHotGames" actionListener="#{topGames.loadTopGames}" update="topGamesPage :pageTitle" autoRun="true"/>
+            <h:panelGroup layout="block" id="topGamesPage">
+                <h:panelGroup layout="block" rendered="#{topGames.loaded}">
+                    <h:panelGroup layout="block">
+                        <p:dataTable value="#{topGames.topGames}" var="game" filteredValue="#{topGames.filteredTopGames}">
+                            <p:column headerText="Name" styleClass="alignLeft" sortBy="#{game.name}"
+                                      filterBy="#{game.name}" filterMatchMode="contains">
+                                <h:link outcome="game.xhtml?id=#{game.id}&amp;faces-redirect=true"><img src="#{game.smallThumbnailImage}" alt="#{game.name} image" style="margin-right:10px"/></h:link>
+                                <h:panelGroup rendered="#{userSession.mobile}"><br/></h:panelGroup>
+                                <h:link outcome="game.xhtml?id=#{game.id}&amp;faces-redirect=true"><h:outputText value="#{game.name}"/></h:link>
+                                <h:outputText value=" (#{game.yearPublished})" rendered="#{userSession.mobile}"/>
+                            </p:column>
+                            <p:column headerText="Year Published" styleClass="alignCenter" sortBy="#{game.yearPublished}" rendered="#{!userSession.mobile}">
+                                <h:outputText value="#{game.yearPublished}" rendered="#{game.yearPublished gt 0}"/>
+                                <h:outputText value="N/A" rendered="#{game.yearPublished eq 0}"/>
+                            </p:column>
+                            <p:column headerText="Rank" styleClass="alignCenter" sortBy="#{game.sortRank}">
+                                <h:outputText value="#{game.rank}" rendered="#{game.rank gt 0}"/>
+                                <h:outputText value="N/A" rendered="#{game.rank eq 0}"/>
+                            </p:column>
+                            <p:column headerText="Avg Rating" styleClass="alignCenter" sortBy="#{game.averageRating}">
+                                <h:outputText value="#{game.averageRating}"/>
+                                <h:outputText value=" (#{game.ratings} ratings)"/>
+                            </p:column>
+                            <p:column headerText="# Plays" styleClass="alignCenter" sortBy="#{userSession.userGamesMap.get(game.id).numPlays}" rendered="#{!userSession.mobile and userSession.usernameSet}">
+                                <h:outputText value="#{userSession.userGamesMap.get(game.id).numPlays}"/>
+                            </p:column>
+                        </p:dataTable>
+                    </h:panelGroup>
+                </h:panelGroup>
+            </h:panelGroup>
+        </h:form>
+    </ui:define>
+</ui:composition>
+</html>

@@ -1,0 +1,43 @@
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:sr="http://java.sun.com/jsf/composite/components"
+        >
+<ui:composition template="/templates/commonLayout.xhtml">
+    <ui:define name="title">
+        <h:outputText value="Loading thread..." rendered="#{!threadView.loaded and !threadView.errorLoadingThread}"/>
+        <h:outputText value="Error loading thread" rendered="#{threadView.errorLoadingThread}"/>
+        <h:outputText value="#{threadView.thread.subject}" rendered="#{threadView.loaded and !threadView.errorLoadingThread}"/>
+    </ui:define>
+
+    <ui:define name="head">
+        <script type="text/javascript">
+            function scrollToFirstSubscriptionEntry(args)
+            {
+                if(args.firstSubscriptionEntryId != "0")
+                {
+                    window.location.hash = '#'+args.firstSubscriptionEntryId;
+                }
+            }
+        </script>
+    </ui:define>
+
+    <ui:define name="content">
+        <h:form id="threadForm">
+            <p:remoteCommand name="loadThread" actionListener="#{threadView.loadThread}" update="threadPage :pageTitle" autoRun="true" oncomplete="scrollToFirstSubscriptionEntry(args)"/>
+            <h:panelGroup layout="block" id="threadPage">
+                <h:panelGroup layout="block" rendered="#{!threadView.loaded and !threadView.errorLoadingThread}" styleClass="centerDiv" style="text-align: center;">
+                    <h:graphicImage library="images" name="loading.gif"/>
+                </h:panelGroup>
+                <h:panelGroup layout="block" styleClass="errorText" rendered="#{threadView.errorLoadingThread}">
+                    Error loading thread
+                </h:panelGroup>
+                <h:panelGroup layout="block" id="threadContent" rendered="#{threadView.loaded and !threadView.errorLoadingThread}">
+                    <sr:threadContent thread="#{threadView.thread}"/>
+                </h:panelGroup>
+            </h:panelGroup>
+        </h:form>
+    </ui:define>
+</ui:composition>
+</html>

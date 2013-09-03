@@ -1,0 +1,38 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dataset>
+    <users id="1" username="admin"/>
+    <users id="2" username="testuser1"/>
+
+    <games id="1" name="test game 1" description="test game 1 description"
+           year_published="2010" image="" thumbnail_image="" min_players="2" max_players="4"
+           playing_time="60" num_owned="4567" users_rated="345" average_rating="7.34456"
+           bayes_average_rating="6.99123" last_updated="2012-09-01 09:09:09"/>    
+
+    <games id="2" name="test game 1 expansion 1" description="test game 1 expansion 1 description"
+           year_published="2011" image="" thumbnail_image="" min_players="2" max_players="4"
+           playing_time="60" num_owned="345" users_rated="55" average_rating="7.94456"
+           bayes_average_rating="0" last_updated="2012-09-01 09:09:09"/>   
+
+    <games id="3" name="test game 1 expansion 2" description="test game 1 expansion 2 description"
+           year_published="2011" image="" thumbnail_image="" min_players="2" max_players="4"
+           playing_time="60" num_owned="345" users_rated="55" average_rating="7.94456"
+           bayes_average_rating="0" last_updated="2012-09-01 09:09:09"/>
+
+    <games id="4" name="test game 2" description="test game 2 description"
+           year_published="2012" image="" thumbnail_image="" min_players="2" max_players="5"
+           playing_time="45" num_owned="2567" users_rated="145" average_rating="7.84456"
+           bayes_average_rating="7.19123" last_updated="2012-09-01 09:09:09"/>
+
+    <user_games user_id="2" game_id="1" rating="7" owned="1" previously_owned="0"
+                for_trade="0" want="0" want_to_play="1" want_to_buy="0" wish_list="0"
+                pre_ordered="0" last_modified="2012-08-01 08:08:08"
+                last_updated="2012-09-01 09:09:09" num_plays="5"/>
+
+    <user_games user_id="2" game_id="2" rating="8.5" owned="1" previously_owned="0"
+                for_trade="0" want="0" want_to_play="1" want_to_buy="0" wish_list="0"
+                pre_ordered="0" last_modified="2012-08-01 08:08:08"
+                last_updated="2012-09-01 09:09:09" num_plays="25"/>
+    
+    <game_expansions game_id="1" expansion_id="2"/>
+    <game_expansions game_id="1" expansion_id="3"/>
+</dataset>

@@ -1,0 +1,118 @@
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:f="http://java.sun.com/jsf/core">
+<ui:composition template="/templates/commonLayout.xhtml">
+    <ui:define name="title">
+        <h:outputText value="Loading collection..." rendered="#{!userSession.collectionLoaded}"/>
+        <h:outputText value="#{userSession.username}'s collection" rendered="#{userSession.collectionLoaded}"/>
+    </ui:define>
+    <ui:define name="content">
+        <h:form id="collectionForm">
+            <p:ajaxStatus onstart="statusDialog.show();" onsuccess="statusDialog.hide();"/>
+            <p:dialog modal="true" widgetVar="statusDialog" draggable="false" closable="false" resizable="false" showHeader="false">
+                <h:graphicImage library="images" name="loading.gif"/>
+            </p:dialog>
+
+            <p:remoteCommand name="refreshPage" actionListener="#{userSession.syncGames}" update="collectionPage :pageTitle" autoRun="true"/>
+            <h:panelGroup layout="block" id="collectionPage">
+                <h:panelGroup layout="block" rendered="#{userSession.collectionLoaded and !userSession.hasGames()}">
+                    There are no games in this user's collection
+                </h:panelGroup>
+                <h:panelGroup layout="block" rendered="#{userSession.collectionLoaded and userSession.hasGames()}">
+                    <div style="padding-bottom: 10px;">
+                        <p:commandLink actionListener="#{userSession.refreshCollection}" update="collectionPage" oncomplete="refreshPage()">Refresh Collection</p:commandLink>
+                    </div>
+                    <div style="padding-bottom: 10px;">
+                        <h:selectBooleanCheckbox value="#{userSession.hideCollectionExpansions}">
+                            <p:ajax process="@this" update="collectionPage"/>
+                        </h:selectBooleanCheckbox>
+                        <h:outputText value="Hide expansions" style="padding-left: 5px;"/>
+                    </div>
+                    <div style="padding-bottom: 10px;">
+                        <h:selectBooleanCheckbox value="#{userSession.showLastPlayed}">
+                            <p:ajax process="@this" update="collectionPage" listener="#{userSession.loadLastPlayed}"/>
+                        </h:selectBooleanCheckbox>
+                        <h:outputText value="Show last played" style="padding-left: 5px;"/>
+                    </div>
+                    <h:panelGroup layout="block">
+                        <p:dataTable value="#{userSession.collectionGames}" var="game" filteredValue="#{userSession.filteredGames}">
+                            <p:column styleClass="alignLeft" sortBy="#{game.name}"
+                                      filterBy="#{game.name}" filterMatchMode="contains">
+                                <f:facet name="header">
+                                    <h:outputText styleClass="smallTableHeader" value="Name"/>
+                                </f:facet>
+                                <h:link outcome="game.xhtml?id=#{game.id}&amp;faces-redirect=true"><img src="#{game.smallThumbnailImage}" alt="#{game.name} image" style="margin-right:10px"/></h:link>
+                                <h:panelGroup rendered="#{userSession.mobile}"><br/></h:panelGroup>
+                                <h:link outcome="game.xhtml?id=#{game.id}&amp;faces-redirect=true"><h:outputText value="#{game.name}"/></h:link>
+                                <h:outputText value=" (#{game.yearPublished})" rendered="#{userSession.mobile}"/>
+                            </p:column>
+                            <p:column headerText="Year Published" styleClass="alignCenter" sortBy="#{game.yearPublished}" rendered="#{!userSession.mobile}">
+                                <h:outputText value="#{game.yearPublished}"/>
+                            </p:column>
+                            <p:column styleClass="alignCenter" sortBy="#{game.sortRank}">
+                                <f:facet name="header">
+                                    <h:outputText styleClass="smallTableHeader" value="Rank"/>
+                                </f:facet>
+                                <h:outputText value="#{game.rank}" rendered="#{game.rank gt 0}"/>
+                                <h:outputText value="N/A" rendered="#{game.rank eq 0}"/>
+                            </p:column>
+                            <p:column styleClass="alignCenter" sortBy="#{userSession.userGamesMap.get(game.id).rating}">
+                                <f:facet name="header">
+                                    <h:panelGroup styleClass="smallTableHeader">
+                                        <h:outputText value="Your "/>
+                                        <h:panelGroup rendered="#{userSession.mobile}"><br/></h:panelGroup>
+                                        <h:outputText value="Rating"/>
+                                    </h:panelGroup>
+                                </f:facet>
+                                <h:panelGroup rendered="#{ratingView.gameId eq game.id}">
+                                    <h:inputText value="#{ratingView.rating}" required="true" requiredMessage="Rating required" size="3"/>
+                                    <br/>
+                                    <p:commandLink process=":collectionForm:collectionPage" value="Save" action="#{ratingView.saveRating}"
+                                                                   update=":collectionForm:collectionPage" style="margin-right: 10px;"/>
+                                    <p:commandLink process="@this" value="Cancel" action="#{ratingView.cancelChangeRating}" update=":collectionForm:collectionPage"/>
+                                </h:panelGroup>
+                                <h:panelGroup rendered="#{ratingView.gameId ne game.id}">
+                                    <h:outputText value="#{userSession.userGamesMap.get(game.id).rating}" rendered="#{userSession.userGamesMap.get(game.id).rating gt 0}"/>
+                                    <h:outputText value="N/A" rendered="#{userSession.userGamesMap.get(game.id).rating eq 0}"/>
+                                    <br/>
+                                    <p:commandLink value="Change" action="#{ratingView.showGameRating(game.id, userSession.userGamesMap.get(game.id).rating)}"
+                                                   update=":collectionForm:collectionPage" styleClass="smallText"
+                                                   rendered="#{userSession.loggedIn and userSession.userGamesMap.get(game.id).collectionId gt 0}" />
+                                </h:panelGroup>
+                            </p:column>
+                            <p:column headerText="User Avg Rating" styleClass="alignCenter" sortBy="#{game.averageRating}" rendered="#{!userSession.mobile}">
+                                <h:outputText value="#{game.averageRating}"/>
+                                <h:outputText value=" (#{game.ratings} ratings)"/>
+                            </p:column>
+                            <p:column styleClass="alignCenter" sortBy="#{userSession.userGamesMap.get(game.id).numPlays}">
+                                <f:facet name="header">
+                                    <h:panelGroup styleClass="smallTableHeader">
+                                        <h:outputText value="# "/>
+                                        <h:panelGroup rendered="#{userSession.mobile}"><br/></h:panelGroup>
+                                        <h:outputText value="Plays"/>
+                                    </h:panelGroup>
+                                </f:facet>
+                                <h:outputText value="#{userSession.userGamesMap.get(game.id).numPlays}"/>
+                            </p:column>
+                            <p:column rendered="#{userSession.showLastPlayed}" sortBy="#{game.lastPlayed}">
+                                <f:facet name="header">
+                                    <h:panelGroup styleClass="smallTableHeader">
+                                        <h:outputText value="Last "/>
+                                        <h:panelGroup rendered="#{userSession.mobile}"><br/></h:panelGroup>
+                                        <h:outputText value="Played"/>
+                                    </h:panelGroup>
+                                </f:facet>
+                                <h:outputText value="#{game.lastPlayed}">
+                                    <f:convertDateTime pattern="MMM dd, yyyy" />
+                                </h:outputText>
+                            </p:column>
+                        </p:dataTable>
+                    </h:panelGroup>
+                </h:panelGroup>
+            </h:panelGroup>
+        </h:form>
+    </ui:define>
+</ui:composition>
+</html>
