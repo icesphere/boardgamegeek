@@ -23,7 +23,7 @@
                     </div>
                     <h:panelGroup layout="block">
                         <h:panelGroup layout="block" style="padding-bottom: 10px;" rendered="#{userSession.usernameSet}">
-                            <h:link outcome="/plays.xhtml?gameId=#{boardGame.game.id}&amp;faces-redirect=true">Your Plays</h:link>
+                            <h:link outcome="/plays.xhtml?gameId=#{boardGame.game.id}&amp;faces-redirect=true">Your Plays (#{userSession.userGamesMap.get(boardGame.game.id).numPlays})</h:link>
                             <p:commandLink value="Log Play" process="@this" actionListener="#{logPlay.loadPlay}"
                                            update="gamePage" style="margin-left: 20px;" rendered="#{userSession.loggedIn}"/>
                         </h:panelGroup>

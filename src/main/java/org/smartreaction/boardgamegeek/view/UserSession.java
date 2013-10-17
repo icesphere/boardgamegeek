@@ -19,7 +19,6 @@ import javax.ejb.EJB;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.ManagedProperty;
 import javax.faces.bean.SessionScoped;
-import javax.faces.context.FacesContext;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.core.Cookie;
@@ -209,13 +208,14 @@ public class UserSession implements Serializable
             int status = response.getStatus();
             if (status == 200) {
                 cookies = new ArrayList<>();
+                int maxAge = 2592000; //30 days
                 for (NewCookie newCookie : response.getCookies()) {
                     Cookie cookie = new Cookie(newCookie.getName(), newCookie.getValue(), "/", "boardgamegeek.com");
                     cookies.add(cookie);
 
-                    FacesContext.getCurrentInstance()
-                            .getExternalContext()
-                            .addResponseCookie(newCookie.getName(), newCookie.getValue(), null);
+                    javax.servlet.http.Cookie responseCookie = new javax.servlet.http.Cookie(newCookie.getName(), newCookie.getValue());
+                    responseCookie.setMaxAge(maxAge);
+                    Faces.getResponse().addCookie(responseCookie);
                 }
                 usernameSet = true;
                 loggedIn = true;

@@ -47,10 +47,10 @@ public class BoardGamePlays
         }
 
         if (showingPlaysForGame) {
-            plays = boardGameGeekService.getPlays(userSession.getUsername());
+            plays = boardGameGeekService.getPlays(userSession.getUsername(), gameId);
         }
         else {
-            plays = boardGameGeekService.getPlays(userSession.getUsername(), gameId);
+            plays = boardGameGeekService.getPlays(userSession.getUsername());
         }
 
         loaded = true;
