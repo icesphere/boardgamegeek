@@ -2,7 +2,6 @@ package org.smartreaction.boardgamegeek.view;
 
 import org.smartreaction.boardgamegeek.business.SubscriptionUtil;
 import org.smartreaction.boardgamegeek.model.ForumSubscription;
-import org.smartreaction.boardgamegeek.model.ForumThread;
 import org.smartreaction.boardgamegeek.model.GeekListSubscription;
 import org.smartreaction.boardgamegeek.model.Subscriptions;
 
@@ -58,14 +57,12 @@ public class SubscriptionView
 
     public String showForumSubscription(ForumSubscription subscription)
     {
-        boardGameGeek.markSubscriptionAsRead(subscription.getForumId(), true);
-        return "thread.xhtml?id="+subscription.getForumId()+"&lastUpdated="+subscription.getLastUpdated().getTime()+"&faces-redirect=true";
+        return "thread.xhtml?id="+subscription.getForumId()+"&markSubscriptionRead=true&lastUpdated="+subscription.getLastUpdated().getTime()+"&faces-redirect=true";
     }
 
     public String showGeekListSubscription(GeekListSubscription subscription)
     {
-        boardGameGeek.markSubscriptionAsRead(subscription.getGeekListId(), false);
-        return "geeklist.xhtml?id="+subscription.getGeekListId()+"&lastUpdated="+subscription.getLastUpdated().getTime()+"&faces-redirect=true";
+        return "geeklist.xhtml?id="+subscription.getGeekListId()+"&markSubscriptionRead=true&lastUpdated="+subscription.getLastUpdated().getTime()+"&faces-redirect=true";
     }
 
     public void markAllForumSubscriptionsAsRead()

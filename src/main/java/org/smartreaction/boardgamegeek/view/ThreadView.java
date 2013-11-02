@@ -5,11 +5,11 @@ import org.primefaces.context.RequestContext;
 import org.smartreaction.boardgamegeek.model.ForumThread;
 import org.smartreaction.boardgamegeek.model.ThreadArticle;
 import org.smartreaction.boardgamegeek.services.BoardGameGeekService;
-import org.smartreaction.boardgamegeek.xml.thread.Thread;
 
 import javax.annotation.PostConstruct;
 import javax.ejb.EJB;
 import javax.faces.bean.ManagedBean;
+import javax.faces.bean.ManagedProperty;
 import javax.faces.bean.ViewScoped;
 import java.util.Date;
 
@@ -17,6 +17,9 @@ import java.util.Date;
 @ViewScoped
 public class ThreadView
 {
+    @ManagedProperty(value="#{boardGameGeek}")
+    BoardGameGeek boardGameGeek;
+
     @EJB
     BoardGameGeekService boardGameGeekService;
 
@@ -39,6 +42,10 @@ public class ThreadView
         String lastUpdatedParam = Faces.getRequestParameter("lastUpdated");
         if (lastUpdatedParam != null) {
             lastUpdated = new Date(Long.parseLong(lastUpdatedParam));
+        }
+        String markSubscriptionReadParam = Faces.getRequestParameter("markSubscriptionRead");
+        if ("true".equals(markSubscriptionReadParam)) {
+            boardGameGeek.markSubscriptionAsReadAsynchronous(threadId, true);
         }
     }
 
@@ -84,8 +91,9 @@ public class ThreadView
         return lastUpdated != null && postDate != null && lastUpdated.before(postDate);
     }
 
-    public long getFirstSubscriptionEntryId()
+    @SuppressWarnings("UnusedDeclaration")
+    public void setBoardGameGeek(BoardGameGeek boardGameGeek)
     {
-        return firstSubscriptionEntryId;
+        this.boardGameGeek = boardGameGeek;
     }
 }

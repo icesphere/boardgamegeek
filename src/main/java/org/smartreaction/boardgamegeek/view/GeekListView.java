@@ -48,6 +48,10 @@ public class GeekListView
         if (lastUpdatedParam != null) {
             lastUpdated = new Date(Long.parseLong(lastUpdatedParam));
         }
+        String markSubscriptionReadParam = Faces.getRequestParameter("markSubscriptionRead");
+        if ("true".equals(markSubscriptionReadParam)) {
+            boardGameGeek.markSubscriptionAsReadAsynchronous(geekListId, false);
+        }
     }
 
     public void loadGeekList()

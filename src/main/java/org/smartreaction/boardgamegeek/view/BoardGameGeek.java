@@ -8,6 +8,7 @@ import org.smartreaction.boardgamegeek.db.entities.UserGame;
 import org.smartreaction.boardgamegeek.model.Play;
 import org.smartreaction.boardgamegeek.util.BoardGameGeekUtil;
 
+import javax.ejb.Asynchronous;
 import javax.ejb.EJB;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.ManagedProperty;
@@ -73,6 +74,12 @@ public class BoardGameGeek {
         else {
             return "failed";
         }
+    }
+
+    @Asynchronous
+    public String markSubscriptionAsReadAsynchronous(long id, boolean forumSubscription)
+    {
+        return markSubscriptionAsRead(id, forumSubscription);
     }
 
     public String markSubscriptionAsRead(long id, boolean forumSubscription)
