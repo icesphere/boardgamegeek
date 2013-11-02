@@ -6,6 +6,7 @@ import com.google.common.cache.LoadingCache;
 import org.apache.commons.lang.math.RandomUtils;
 import org.joda.time.DateTime;
 import org.smartreaction.boardgamegeek.db.entities.Game;
+import org.smartreaction.boardgamegeek.db.entities.GameComment;
 import org.smartreaction.boardgamegeek.services.BoardGameGeekService;
 import org.smartreaction.boardgamegeek.xml.hotgames.Item;
 import org.smartreaction.boardgamegeek.xml.hotgames.Items;
@@ -13,6 +14,7 @@ import org.smartreaction.boardgamegeek.xml.hotgames.Items;
 import javax.annotation.PostConstruct;
 import javax.ejb.*;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 @Singleton
@@ -25,6 +27,9 @@ public class BoardGameCache
     @EJB
     BoardGameGeekService boardGameGeekService;
 
+    @EJB
+    BoardGameRefresher boardGameRefresher;
+
     LoadingCache<Long, Game> games;
 
     List<Game> hotGames;
@@ -32,6 +37,8 @@ public class BoardGameCache
 
     List<Game> topGames;
     private DateTime topGamesLastUpdated;
+
+    LoadingCache<Long, List<GameComment>> gameComments;
 
     @PostConstruct
     public void  setup()
@@ -49,11 +56,23 @@ public class BoardGameCache
             );
 
         loadHotGames();
+
+        gameComments = CacheBuilder.newBuilder()
+            .maximumSize(20)
+            .build(
+                    new CacheLoader<Long, List<GameComment>>()
+                    {
+                        public List<GameComment> load(Long gameId)
+                        {
+                            return boardGameUtil.getGameComments(getGame(gameId));
+                        }
+                    }
+            );
     }
 
     private void loadHotGames()
     {
-        hotGames = new ArrayList<Game>();
+        hotGames = new ArrayList<>();
         Items hotGameItems = boardGameGeekService.getHotGames();
         for (Item hotGameItem : hotGameItems.getItem()) {
             Game game = getGame(hotGameItem.getId().longValue());
@@ -69,25 +88,13 @@ public class BoardGameCache
         try {
             Game game = games.getUnchecked(gameId);
             if (shouldRefreshGame(game)) {
-                refreshGame(game);
+                boardGameRefresher.refreshGame(game, this);
             }
             return game;
         }
         catch (Exception e) {
             e.printStackTrace();
             return null;
-        }
-    }
-
-    @Asynchronous
-    public void refreshGame(Game game)
-    {
-        try {
-            boardGameUtil.syncGame(game);
-            games.put(game.getId(), game);
-        }
-        catch (Exception e) {
-            e.printStackTrace();
         }
     }
 
@@ -129,7 +136,7 @@ public class BoardGameCache
 
     private void loadTopGames()
     {
-        topGames = new ArrayList<Game>(100);
+        topGames = new ArrayList<>(100);
         for (Long gameId : boardGameGeekService.getTopGameIds()) {
             Game game = getGame(gameId);
             if (game != null) {
@@ -148,5 +155,31 @@ public class BoardGameCache
     public BoardGameUtil getBoardGameUtil()
     {
         return boardGameUtil;
+    }
+
+    public List<GameComment> getGameComments(Game game)
+    {
+        try {
+            List<GameComment> comments = gameComments.getUnchecked(game.getId());
+            if (shouldRefreshGameComments(game)) {
+                game.setCommentsLastUpdated(new Date());
+                boardGameRefresher.refreshGameComments(game, this);
+            }
+            return comments;
+        }
+        catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    private boolean shouldRefreshGameComments(Game game)
+    {
+        if (game.getCommentsLastUpdated() == null) {
+            return true;
+        }
+        DateTime expiredTime = new DateTime(game.getCommentsLastUpdated());
+        expiredTime = expiredTime.plusDays(3);
+        return DateTime.now().isAfter(expiredTime);
     }
 }

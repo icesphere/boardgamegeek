@@ -3,12 +3,14 @@ package org.smartreaction.boardgamegeek.view;
 import org.omnifaces.util.Faces;
 import org.smartreaction.boardgamegeek.business.BoardGameCache;
 import org.smartreaction.boardgamegeek.db.entities.Game;
+import org.smartreaction.boardgamegeek.db.entities.GameComment;
 
 import javax.annotation.PostConstruct;
 import javax.ejb.EJB;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.ManagedProperty;
 import javax.faces.bean.ViewScoped;
+import java.util.List;
 
 @ManagedBean
 @ViewScoped
@@ -23,6 +25,10 @@ public class BoardGame
     private Game game;
 
     private boolean gameLoaded;
+
+    private List<GameComment> gameComments;
+
+    private boolean showGameComments;
 
     @PostConstruct
     public void setup()
@@ -53,6 +59,19 @@ public class BoardGame
         gameLoaded = false;
     }
 
+    public void loadGameComments()
+    {
+        if (gameComments == null) {
+            gameComments = boardGameCache.getGameComments(game);
+        }
+        showGameComments = true;
+    }
+
+    public void hideGameComments()
+    {
+        showGameComments = false;
+    }
+
     public Game getGame()
     {
         return game;
@@ -72,5 +91,15 @@ public class BoardGame
     public void setUserSession(UserSession userSession)
     {
         this.userSession = userSession;
+    }
+
+    public List<GameComment> getGameComments()
+    {
+        return gameComments;
+    }
+
+    public boolean isShowGameComments()
+    {
+        return showGameComments;
     }
 }

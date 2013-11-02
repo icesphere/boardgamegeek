@@ -220,7 +220,7 @@ public class BoardGameUtil
         }
         else {
             List<Game> existingExpansions = gameDao.getExpansions(game.getId());
-            List<Long> existingExpansionIds = new ArrayList<Long>();
+            List<Long> existingExpansionIds = new ArrayList<>();
             for (Game expansion : existingExpansions) {
                 existingExpansionIds.add(expansion.getId());
             }
@@ -239,7 +239,7 @@ public class BoardGameUtil
 
     private List<Long> getExpansionIds(org.smartreaction.boardgamegeek.xml.game.Item gameItem)
     {
-        List<Long> expansionIds = new ArrayList<Long>();
+        List<Long> expansionIds = new ArrayList<>();
         for (Link link : gameItem.getLink()) {
             if (link.getType().equals(BoardGameGeekConstants.EXPANSION_TYPE) && !link.isInbound()) {
                 expansionIds.add(NumberUtils.toLong(link.getId()));
@@ -269,7 +269,7 @@ public class BoardGameUtil
         }
         else {
             List<Game> existingParentGames = gameDao.getParentGames(game.getId());
-            List<Long> existingParentGameIds = new ArrayList<Long>();
+            List<Long> existingParentGameIds = new ArrayList<>();
             for (Game parentGame : existingParentGames) {
                 existingParentGameIds.add(parentGame.getId());
             }
@@ -288,7 +288,7 @@ public class BoardGameUtil
 
     private List<Long> getParentGameIds(org.smartreaction.boardgamegeek.xml.game.Item gameItem)
     {
-        List<Long> parentGameIds = new ArrayList<Long>();
+        List<Long> parentGameIds = new ArrayList<>();
         for (Link link : gameItem.getLink()) {
             if (link.getType().equals(BoardGameGeekConstants.EXPANSION_TYPE) && link.isInbound()) {
                 parentGameIds.add(NumberUtils.toLong(link.getId()));
@@ -299,7 +299,7 @@ public class BoardGameUtil
 
     private String getCategories(org.smartreaction.boardgamegeek.xml.game.Item gameItem)
     {
-        List<String> categories = new ArrayList<String>(0);
+        List<String> categories = new ArrayList<>(0);
         for (Link link : gameItem.getLink()) {
             if (link.getType().equals(BoardGameGeekConstants.CATEGORY_TYPE)) {
                 categories.add(link.getValue());
@@ -315,7 +315,7 @@ public class BoardGameUtil
 
     private String getMechanics(org.smartreaction.boardgamegeek.xml.game.Item gameItem)
     {
-        List<String> mechanics = new ArrayList<String>(0);
+        List<String> mechanics = new ArrayList<>(0);
         for (Link link : gameItem.getLink()) {
             if (link.getType().equals(BoardGameGeekConstants.MECHANIC_TYPE)) {
                 mechanics.add(link.getValue());
@@ -394,6 +394,15 @@ public class BoardGameUtil
         return gameRatings;
     }
 
+    public List<GameComment> getGameComments(Game game)
+    {
+        List<GameComment> gameComments = gameDao.getGameComments(game.getId());
+        if (gameComments.isEmpty()) {
+            gameComments = loadGameComments(game);
+        }
+        return gameComments;
+    }
+
     public void addGameRecommendationsForUser(List<Long> topUserGameIds, Set<Long> processedUsers, double userGameRating,
                                               GameRating gameRating, Map<Long, UserGame> userGamesMap,
                                               Map<Long, RecommendedGame> recommendedGameMap, UserGameRecommendationsInfo recommendationsInfo) throws MalformedURLException, JAXBException
@@ -459,7 +468,7 @@ public class BoardGameUtil
 
     private List<GameRating> loadGameRatings(long gameId) throws MalformedURLException, JAXBException
     {
-        List<GameRating> ratings = new ArrayList<GameRating>();
+        List<GameRating> ratings = new ArrayList<>();
 
         org.smartreaction.boardgamegeek.xml.gamewithrating.Item gameItem = boardGameGeekService.getGameWithRatings(gameId);
 
@@ -468,11 +477,59 @@ public class BoardGameUtil
             gameRating.setGameId(gameId);
             gameRating.setUsername(comment.getUsername());
             gameRating.setRating(NumberUtils.toFloat(comment.getRating()));
+
             gameDao.createGameRating(gameRating);
+
             ratings.add(gameRating);
         }
 
         return ratings;
+    }
+
+    public List<GameComment> loadGameComments(Game game)
+    {
+        gameDao.deleteGameComments(game.getId());
+
+        List<GameComment> comments = new ArrayList<>();
+
+        int page = 1;
+
+        while (page <= 10) {
+            List<GameComment> gameCommentsForPage = getGameCommentsForPage(game, page);
+            if (!gameCommentsForPage.isEmpty()) {
+                comments.addAll(gameCommentsForPage);
+                page++;
+            }
+            else {
+                break;
+            }
+        }
+
+        game.setCommentsLastUpdated(new Date());
+        gameDao.updateGame(game);
+
+        return comments;
+    }
+
+    private List<GameComment> getGameCommentsForPage(Game game, int page)
+    {
+        List<GameComment> comments = new ArrayList<>();
+
+        org.smartreaction.boardgamegeek.xml.gamewithrating.Item gameItem = boardGameGeekService.getGameWithComments(game.getId(), page);
+
+        for (Comment comment : gameItem.getComments().getComment()) {
+            GameComment gameComment = new GameComment();
+            gameComment.setGameId(game.getId());
+            gameComment.setUsername(comment.getUsername());
+            gameComment.setRating(NumberUtils.toFloat(comment.getRating()));
+            gameComment.setComment(comment.getValue());
+
+            gameDao.createGameComment(gameComment);
+
+            comments.add(gameComment);
+        }
+
+        return comments;
     }
 
     public List<UserGame> getTopUserGames(long userId)

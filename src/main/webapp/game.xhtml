@@ -1,13 +1,19 @@
 <html xmlns="http://www.w3.org/1999/xhtml"
       xmlns:h="http://java.sun.com/jsf/html"
       xmlns:p="http://primefaces.org/ui"
-      xmlns:ui="http://java.sun.com/jsf/facelets">
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:sr="http://java.sun.com/jsf/composite/components">
+
 <ui:composition template="/templates/commonLayout.xhtml">
+
     <ui:define name="title">
         <h:outputText value="#{boardGame.game.name}"/>
     </ui:define>
+
     <ui:define name="content">
+
         <h:form id="gameForm">
+
             <p:remoteCommand name="refreshPage" actionListener="#{boardGame.syncGame}" update="gamePage"/>
             <h:panelGroup id="gamePage">
                 <h:panelGroup layout="block" rendered="#{!boardGame.gameLoaded}" styleClass="centerDiv" style="text-align: center;">
@@ -102,10 +108,42 @@
                             </h:column>
                         </h:dataTable>
                     </h:panelGroup>
+
+                    <h:panelGroup layout="block" id="gameCommentsSection" style="padding-top: 10px;">
+                        <h:panelGroup rendered="#{!boardGame.showGameComments}">
+                            <sr:linkWithSpinner linkText="Show game comments" actionMethod="#{boardGame.loadGameComments}"
+                                                process="@this" update=":gameForm:gameCommentsSection"/>
+                        </h:panelGroup>
+
+                        <p:commandLink value="Hide game comments" action="#{boardGame.hideGameComments}"
+                                       process="@this" update="gameCommentsSection" rendered="#{boardGame.showGameComments}"/>
+
+                        <h:panelGroup layout="block" style="padding-top: 10px;" rendered="#{boardGame.showGameComments}">
+                            <h:outputText value="Comments: " styleClass="boldText"/>
+
+                            <p:dataTable value="#{boardGame.gameComments}" var="comment" paginator="true" rows="10">
+                                <p:column headerText="User" sortBy="#{comment.username}">
+                                    <h:outputText value="#{comment.username}"/>
+                                </p:column>
+
+                                <p:column headerText="Rating" sortBy="#{comment.rating}">
+                                    <h:outputText value="#{comment.rating}"/>
+                                </p:column>
+
+                                <p:column headerText="Comment">
+                                    <h:outputText value="#{comment.comment}"/>
+                                </p:column>
+                            </p:dataTable>
+                        </h:panelGroup>
+                    </h:panelGroup>
+
                 </h:panelGroup>
                 <ui:include src="includes/logPlay.xhtml"/>
             </h:panelGroup>
+
         </h:form>
+
     </ui:define>
+
 </ui:composition>
 </html>

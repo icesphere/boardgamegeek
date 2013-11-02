@@ -50,18 +50,9 @@ public class FacesFilter implements Filter
                 httpResponse.sendRedirect(httpRequest.getContextPath() + "/login.xhtml");
                 return;
             }
-
-            addCacheHeaders(httpResponse);
         }
 
         chain.doFilter(request, response);
-    }
-
-    private void addCacheHeaders(HttpServletResponse httpResponse)
-    {
-        httpResponse.setHeader("Cache-Control", "no-cache, no-store, must-revalidate"); // HTTP 1.1.
-        httpResponse.setHeader("Pragma", "no-cache"); // HTTP 1.0.
-        httpResponse.setDateHeader("Expires", 0); // Proxies.
     }
 
     @Override

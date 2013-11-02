@@ -56,6 +56,10 @@ public class Game
     @Temporal(TemporalType.TIMESTAMP)
     private Date lastPlayed;
 
+    @Column(name = "comments_last_updated")
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date commentsLastUpdated;
+
     @Column
     private int rank;
 
@@ -418,5 +422,15 @@ public class Game
     public void setLastPlayed(Date lastPlayed)
     {
         this.lastPlayed = lastPlayed;
+    }
+
+    public Date getCommentsLastUpdated()
+    {
+        return commentsLastUpdated;
+    }
+
+    public void setCommentsLastUpdated(Date commentsLastUpdated)
+    {
+        this.commentsLastUpdated = commentsLastUpdated;
     }
 }

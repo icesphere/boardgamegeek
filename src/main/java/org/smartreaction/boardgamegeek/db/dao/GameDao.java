@@ -76,7 +76,7 @@ public class GameDao
         query.setParameter("userId", userId);
         List<UserGame> userGames = query.getResultList();
 
-        Map<Long, UserGame> userGamesMap = new HashMap<Long, UserGame>(userGames.size());
+        Map<Long, UserGame> userGamesMap = new HashMap<>(userGames.size());
         for (UserGame userGame : userGames) {
             userGamesMap.put(userGame.getGameId(), userGame);
         }
@@ -123,9 +123,21 @@ public class GameDao
         return query.getResultList();
     }
 
+    public List<GameComment> getGameComments(long gameId)
+    {
+        TypedQuery<GameComment> query = em.createQuery("select gc from GameComment gc where gc.gameId = :gameId", GameComment.class);
+        query.setParameter("gameId", gameId);
+        return query.getResultList();
+    }
+
     public void createGameRating(GameRating gameRating)
     {
         em.persist(gameRating);
+    }
+
+    public void createGameComment(GameComment gameComment)
+    {
+        em.persist(gameComment);
     }
 
     public List<Game> getUserGameRecommendations(long userId)
@@ -134,7 +146,7 @@ public class GameDao
         query.setParameter("userId", userId);
         List<UserGameRecommendation> recommendations = query.getResultList();
 
-        List<Game> games = new ArrayList<Game>(recommendations.size());
+        List<Game> games = new ArrayList<>(recommendations.size());
         for (UserGameRecommendation recommendation : recommendations) {
             Game game = getGame(recommendation.getGameId());
             game.setRecommendationScore(recommendation.getScore());
@@ -173,6 +185,14 @@ public class GameDao
         Query query = em.createQuery("delete from UserGame ug where ug.userId = :userId");
         query.setParameter("userId", userId);
         query.executeUpdate();
+    }
+
+    public void deleteGameComments(long gameId)
+    {
+        Query query = em.createQuery("delete from GameComment gc where gc.gameId = :gameId");
+        query.setParameter("gameId", gameId);
+        query.executeUpdate();
+        em.flush();
     }
 
 }

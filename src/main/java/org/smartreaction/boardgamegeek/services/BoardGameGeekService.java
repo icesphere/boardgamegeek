@@ -75,6 +75,20 @@ public class BoardGameGeekService
         return items.getItem();
     }
 
+    public org.smartreaction.boardgamegeek.xml.gamewithrating.Item getGameWithComments(long gameId, int page)
+    {
+        try {
+            JAXBContext jc = JAXBContext.newInstance("org.smartreaction.boardgamegeek.xml.gamewithrating");
+            Unmarshaller unmarshaller = jc.createUnmarshaller();
+            URL url = new URL("http://boardgamegeek.com/xmlapi2/thing?id=" + gameId+"&comments=1&page="+page);
+            org.smartreaction.boardgamegeek.xml.gamewithrating.Items items = (org.smartreaction.boardgamegeek.xml.gamewithrating.Items) unmarshaller.unmarshal(url);
+            return items.getItem();
+        }
+        catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
     public Geeklist getGeekList(long geekListId) throws JAXBException, IOException
     {
         JAXBContext jc = JAXBContext.newInstance("org.smartreaction.boardgamegeek.xml.geeklist");
