@@ -4,11 +4,11 @@ import com.sun.jersey.api.client.ClientResponse;
 import com.sun.jersey.api.client.WebResource;
 import com.sun.jersey.core.util.MultivaluedMapImpl;
 import org.smartreaction.boardgamegeek.BoardGameGeekConstants;
+import org.smartreaction.boardgamegeek.business.BoardGameAsynchronous;
 import org.smartreaction.boardgamegeek.db.entities.UserGame;
 import org.smartreaction.boardgamegeek.model.Play;
 import org.smartreaction.boardgamegeek.util.BoardGameGeekUtil;
 
-import javax.ejb.Asynchronous;
 import javax.ejb.EJB;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.ManagedProperty;
@@ -22,6 +22,9 @@ import java.text.SimpleDateFormat;
 public class BoardGameGeek {
     @EJB
     BoardGameGeekUtil boardGameGeekUtil;
+
+    @EJB
+    BoardGameAsynchronous boardGameAsynchronous;
 
     @ManagedProperty(value="#{userSession}")
     UserSession userSession;
@@ -76,13 +79,7 @@ public class BoardGameGeek {
         }
     }
 
-    @Asynchronous
-    public String markSubscriptionAsReadAsynchronous(long id, boolean forumSubscription)
-    {
-        return markSubscriptionAsRead(id, forumSubscription);
-    }
-
-    public String markSubscriptionAsRead(long id, boolean forumSubscription)
+    public void markSubscriptionAsRead(long id, boolean forumSubscription)
     {
         MultivaluedMap<String, String> formParams = new MultivaluedMapImpl();
         formParams.add("action", "markallread");
@@ -112,15 +109,7 @@ public class BoardGameGeek {
 
         builder = getBuilderWithCookies(builder);
 
-        ClientResponse response = builder.post(ClientResponse.class, formParams);
-
-        int status = response.getStatus();
-        if (status == 200) {
-            return "success";
-        }
-        else {
-            return "failed";
-        }
+        boardGameAsynchronous.asynchronousPost(builder, formParams);
     }
 
     public String changeGameRating(long gameId, float rating)

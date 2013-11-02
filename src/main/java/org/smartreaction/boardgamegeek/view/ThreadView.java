@@ -45,7 +45,7 @@ public class ThreadView
         }
         String markSubscriptionReadParam = Faces.getRequestParameter("markSubscriptionRead");
         if ("true".equals(markSubscriptionReadParam)) {
-            boardGameGeek.markSubscriptionAsReadAsynchronous(threadId, true);
+            boardGameGeek.markSubscriptionAsRead(threadId, true);
         }
     }
 

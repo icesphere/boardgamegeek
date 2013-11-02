@@ -50,7 +50,7 @@ public class GeekListView
         }
         String markSubscriptionReadParam = Faces.getRequestParameter("markSubscriptionRead");
         if ("true".equals(markSubscriptionReadParam)) {
-            boardGameGeek.markSubscriptionAsReadAsynchronous(geekListId, false);
+            boardGameGeek.markSubscriptionAsRead(geekListId, false);
         }
     }
 

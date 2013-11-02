@@ -28,7 +28,7 @@ public class BoardGameCache
     BoardGameGeekService boardGameGeekService;
 
     @EJB
-    BoardGameRefresher boardGameRefresher;
+    BoardGameAsynchronous boardGameAsynchronous;
 
     LoadingCache<Long, Game> games;
 
@@ -88,7 +88,7 @@ public class BoardGameCache
         try {
             Game game = games.getUnchecked(gameId);
             if (shouldRefreshGame(game)) {
-                boardGameRefresher.refreshGame(game, this);
+                boardGameAsynchronous.refreshGame(game, this);
             }
             return game;
         }
@@ -163,7 +163,7 @@ public class BoardGameCache
             List<GameComment> comments = gameComments.getUnchecked(game.getId());
             if (shouldRefreshGameComments(game)) {
                 game.setCommentsLastUpdated(new Date());
-                boardGameRefresher.refreshGameComments(game, this);
+                boardGameAsynchronous.refreshGameComments(game, this);
             }
             return comments;
         }
