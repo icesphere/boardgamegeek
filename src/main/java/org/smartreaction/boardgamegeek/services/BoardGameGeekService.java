@@ -8,6 +8,8 @@ import org.smartreaction.boardgamegeek.BoardGameGeekConstants;
 import org.smartreaction.boardgamegeek.model.ForumThread;
 import org.smartreaction.boardgamegeek.model.ThreadArticle;
 import org.smartreaction.boardgamegeek.xml.collection.Items;
+import org.smartreaction.boardgamegeek.xml.forumlist.Forum;
+import org.smartreaction.boardgamegeek.xml.forumlist.Forums;
 import org.smartreaction.boardgamegeek.xml.game.Item;
 import org.smartreaction.boardgamegeek.xml.geeklist.Geeklist;
 import org.smartreaction.boardgamegeek.xml.plays.Play;
@@ -230,5 +232,17 @@ public class BoardGameGeekService
         }
         URL url = new URL(sb.toString());
         return ((Plays) unmarshaller.unmarshal(url)).getPlay();
+    }
+
+    public List<Forum> getForumList(long gameId) throws JAXBException, IOException
+    {
+        JAXBContext jc = JAXBContext.newInstance("org.smartreaction.boardgamegeek.xml.forumlist");
+        Unmarshaller unmarshaller = jc.createUnmarshaller();
+        URL url = new URL("http://boardgamegeek.com/xmlapi/forumlist/?type=thing&id=" + gameId);
+        URLConnection con = url.openConnection();
+        con.setConnectTimeout(20000);
+        con.setReadTimeout(120000);
+        InputStream in = con.getInputStream();
+        return ((Forums) unmarshaller.unmarshal(in)).getForum();
     }
 }
