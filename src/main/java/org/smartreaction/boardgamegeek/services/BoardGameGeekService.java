@@ -238,7 +238,7 @@ public class BoardGameGeekService
     {
         JAXBContext jc = JAXBContext.newInstance("org.smartreaction.boardgamegeek.xml.forumlist");
         Unmarshaller unmarshaller = jc.createUnmarshaller();
-        URL url = new URL("http://boardgamegeek.com/xmlapi/forumlist/?type=thing&id=" + gameId);
+        URL url = new URL("http://boardgamegeek.com/xmlapi2/forumlist/?type=thing&id=" + gameId);
         URLConnection con = url.openConnection();
         con.setConnectTimeout(20000);
         con.setReadTimeout(120000);

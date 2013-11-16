@@ -140,6 +140,30 @@
                         </h:panelGroup>
                     </h:panelGroup>
 
+                    <h:panelGroup layout="block" id="gameForumsSection" style="padding-top: 10px;">
+                        <h:panelGroup rendered="#{!boardGame.showForums}">
+                            <sr:linkWithSpinner linkText="Show game forums" actionMethod="#{boardGame.loadForums}"
+                                                process="@this" update=":gameForm:gameForumsSection"/>
+                        </h:panelGroup>
+
+                        <p:commandLink value="Hide game forums" action="#{boardGame.hideForums}"
+                                       process="@this" update="gameForumsSection" rendered="#{boardGame.showForums}"/>
+
+                        <h:panelGroup layout="block" style="padding-top: 10px;" rendered="#{boardGame.showForums}">
+                            <h:outputText value="Forums: " styleClass="boldText"/>
+
+                            <p:dataTable value="#{boardGame.forums}" var="forum">
+                                <p:column headerText="Title">
+                                    <h:outputText value="#{forum.title}"/>
+                                </p:column>
+
+                                <p:column headerText="Last Post">
+                                    <h:outputText value="#{forum.lastpostdate}"/>
+                                </p:column>
+                            </p:dataTable>
+                        </h:panelGroup>
+                    </h:panelGroup>
+
                 </h:panelGroup>
                 <ui:include src="includes/logPlay.xhtml"/>
             </h:panelGroup>
