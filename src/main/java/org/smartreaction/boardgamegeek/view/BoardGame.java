@@ -34,6 +34,10 @@ public class BoardGame {
 
     private boolean showForums;
 
+    private boolean showDescription;
+
+    private boolean showExpansions;
+
     @PostConstruct
     public void setup() {
         long gameId = Long.parseLong(Faces.getRequestParameter("id"));
@@ -116,5 +120,21 @@ public class BoardGame {
 
     public List<Forum> getForums() {
         return forums;
+    }
+
+    public boolean isShowDescription() {
+        return showDescription;
+    }
+
+    public void setShowDescription(boolean showDescription) {
+        this.showDescription = showDescription;
+    }
+
+    public boolean isShowExpansions() {
+        return showExpansions;
+    }
+
+    public void setShowExpansions(boolean showExpansions) {
+        this.showExpansions = showExpansions;
     }
 }
