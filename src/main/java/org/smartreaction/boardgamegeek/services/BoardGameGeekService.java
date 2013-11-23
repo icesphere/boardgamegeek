@@ -238,11 +238,26 @@ public class BoardGameGeekService
     {
         JAXBContext jc = JAXBContext.newInstance("org.smartreaction.boardgamegeek.xml.forumlist");
         Unmarshaller unmarshaller = jc.createUnmarshaller();
-        URL url = new URL("http://boardgamegeek.com/xmlapi/forumlist/?type=thing&id=" + gameId);
+        URL url = new URL("http://boardgamegeek.com/xmlapi2/forumlist/?type=thing&id=" + gameId);
         URLConnection con = url.openConnection();
         con.setConnectTimeout(20000);
         con.setReadTimeout(120000);
         InputStream in = con.getInputStream();
         return ((Forums) unmarshaller.unmarshal(in)).getForum();
+    }
+
+    public List<org.smartreaction.boardgamegeek.xml.forum.Thread> getForumThreads(long forumId) {
+        try {
+            JAXBContext jc = JAXBContext.newInstance("org.smartreaction.boardgamegeek.xml.forum");
+            Unmarshaller unmarshaller = jc.createUnmarshaller();
+            URL url = new URL("http://boardgamegeek.com/xmlapi2/forum?id=" + forumId);
+            URLConnection con = url.openConnection();
+            con.setConnectTimeout(20000);
+            con.setReadTimeout(120000);
+            InputStream in = con.getInputStream();
+            return ((org.smartreaction.boardgamegeek.xml.forum.Forum) unmarshaller.unmarshal(in)).getThreads().getThread();
+        } catch (JAXBException | IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 }

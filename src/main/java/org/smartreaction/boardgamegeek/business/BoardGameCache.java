@@ -8,11 +8,14 @@ import org.joda.time.DateTime;
 import org.smartreaction.boardgamegeek.db.entities.Game;
 import org.smartreaction.boardgamegeek.db.entities.GameComment;
 import org.smartreaction.boardgamegeek.services.BoardGameGeekService;
+import org.smartreaction.boardgamegeek.xml.forumlist.Forum;
 import org.smartreaction.boardgamegeek.xml.hotgames.Item;
 import org.smartreaction.boardgamegeek.xml.hotgames.Items;
 
 import javax.annotation.PostConstruct;
 import javax.ejb.*;
+import javax.xml.bind.JAXBException;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -181,5 +184,13 @@ public class BoardGameCache
         DateTime expiredTime = new DateTime(game.getCommentsLastUpdated());
         expiredTime = expiredTime.plusDays(3);
         return DateTime.now().isAfter(expiredTime);
+    }
+
+    public List<Forum> getForums(long gameId) {
+        try {
+            return boardGameGeekService.getForumList(gameId);
+        } catch (JAXBException | IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 }

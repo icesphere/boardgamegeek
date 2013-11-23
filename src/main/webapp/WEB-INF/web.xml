@@ -31,7 +31,7 @@
         <url-pattern>*.xhtml</url-pattern>
     </servlet-mapping>
 
-   <!-- <error-page>
+    <error-page>
         <exception-type>javax.faces.application.ViewExpiredException</exception-type>
         <location>/errors/viewExpired.xhtml</location>
     </error-page>
@@ -42,7 +42,7 @@
     <error-page>
         <error-code>404</error-code>
         <location>/errors/notFound.xhtml</location>
-    </error-page>-->
+    </error-page>
 
     <welcome-file-list>
         <welcome-file>index.xhtml</welcome-file>

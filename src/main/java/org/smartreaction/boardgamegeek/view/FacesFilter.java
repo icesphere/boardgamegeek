@@ -42,7 +42,8 @@ public class FacesFilter implements Filter
                     && !requestURI.endsWith("/index.xhtml") && !requestURI.endsWith("/geeklists.xhtml")
                     && !requestURI.endsWith("/geeklist.xhtml") && !requestURI.endsWith("/game.xhtml")
                     && !requestURI.endsWith("/hotgames.xhtml") && !requestURI.endsWith("/topgames.xhtml")
-                    && !requestURI.endsWith("/search.xhtml") && !requestURI.endsWith("/thread.xhtml")) {
+                    && !requestURI.endsWith("/search.xhtml") && !requestURI.endsWith("/thread.xhtml")
+                    && !requestURI.endsWith("/forum.xhtml")) {
                 String redirectPage = requestURI.substring(requestURI.lastIndexOf("/") + 1);
                 if (!StringUtils.isEmpty(redirectPage) && !redirectPage.startsWith("error")) {
                     httpRequest.getSession().setAttribute("redirectPage", redirectPage);

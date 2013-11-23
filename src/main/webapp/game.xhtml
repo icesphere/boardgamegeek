@@ -24,8 +24,7 @@
                         <p:commandLink actionListener="#{boardGame.refreshGame}" update="gamePage" oncomplete="refreshPage()">Refresh Game</p:commandLink>
                     </div>
                     <div style="padding-bottom: 20px;">
-                        <h:outputLink value="#{boardGame.game.gameLink}" target="_blank" style="margin-right: 20px;">BGG Game Page</h:outputLink>
-                        <h:outputLink value="#{boardGame.game.forumsLink}" target="_blank">BGG Forums</h:outputLink>
+                        <h:outputLink value="#{boardGame.game.gameLink}" target="_blank">BGG Game Page</h:outputLink>
                     </div>
                     <h:panelGroup layout="block">
                         <h:panelGroup layout="block" style="padding-bottom: 10px;" rendered="#{userSession.usernameSet}">
@@ -58,6 +57,12 @@
 
                             <h:outputText value="Playing Time"/>
                             <h:outputText value="#{boardGame.game.playingTimeString}"/>
+
+                            <h:outputText value="Designers"/>
+                            <h:outputText value="#{boardGame.game.designers}"/>
+
+                            <h:outputText value="Publishers"/>
+                            <h:outputText value="#{boardGame.game.publishers}"/>
 
                             <h:outputText value="Your Rating" rendered="#{userSession.loggedIn}"/>
                             <h:panelGroup rendered="#{userSession.loggedIn and ratingView.gameId eq boardGame.game.id}">
@@ -92,24 +97,47 @@
                             <h:outputText value="Mechanics"/>
                             <h:outputText value="#{boardGame.game.mechanics}"/>
                         </h:panelGrid>
-                        <div>
-                            <h:outputText value="Description" styleClass="boldText"/>
-                        </div>
-                        <div>
-                            <h:outputText value="#{boardGame.game.escapedDescription}"/>
-                        </div>
-                        <h:outputText styleClass="boldText" value="Expansions" rendered="#{!empty boardGame.game.expansions}"/>
-                        <h:dataTable value="#{boardGame.game.expansions}" var="expansion" rendered="#{!empty boardGame.game.expansions}">
-                            <h:column>
-                                <h:link outcome="game.xhtml?id=#{expansion.id}"><h:outputText value="#{expansion.name}"/></h:link>
-                            </h:column>
-                        </h:dataTable>
-                        <h:outputText styleClass="boldText" value="Expands" rendered="#{!empty boardGame.game.parentGames}"/>
-                        <h:dataTable value="#{boardGame.game.parentGames}" var="parentGame" rendered="#{!empty boardGame.game.parentGames}">
-                            <h:column>
-                                <h:link outcome="game.xhtml?id=#{parentGame.id}"><h:outputText value="#{parentGame.name}"/></h:link>
-                            </h:column>
-                        </h:dataTable>
+
+                        <h:panelGroup layout="block" id="descriptionSection" style="padding-top: 10px;">
+                            <h:panelGroup rendered="#{!boardGame.showDescription}">
+                                <sr:linkWithSpinner linkText="Show description" actionMethod="#{boardGame.setShowDescription(true)}"
+                                                    process="@this" update=":gameForm:descriptionSection"/>
+                            </h:panelGroup>
+
+                            <p:commandLink value="Hide description" action="#{boardGame.setShowDescription(false)}"
+                                           process="@this" update="descriptionSection" rendered="#{boardGame.showDescription}"/>
+
+                            <h:panelGroup layout="block" style="padding-top: 10px;" rendered="#{boardGame.showDescription}">
+                                <h:outputText value="Description" styleClass="boldText"/>
+                                <br/>
+                                <h:outputText value="#{boardGame.game.escapedDescription}"/>
+                            </h:panelGroup>
+                        </h:panelGroup>
+
+                        <h:panelGroup layout="block" id="expansionsSection" style="padding-top: 10px;">
+                            <h:panelGroup rendered="#{!boardGame.showExpansions}">
+                                <sr:linkWithSpinner linkText="Show expansions/expands" actionMethod="#{boardGame.setShowExpansions(true)}"
+                                                    process="@this" update=":gameForm:expansionsSection"/>
+                            </h:panelGroup>
+
+                            <p:commandLink value="Hide expansions/expands" action="#{boardGame.setShowExpansions(false)}"
+                                           process="@this" update="expansionsSection" rendered="#{boardGame.showExpansions}"/>
+
+                            <h:panelGroup layout="block" style="padding-top: 10px;" rendered="#{boardGame.showExpansions}">
+                                <h:outputText styleClass="boldText" value="Expansions" rendered="#{!empty boardGame.game.expansions}"/>
+                                <h:dataTable value="#{boardGame.game.expansions}" var="expansion" rendered="#{!empty boardGame.game.expansions}">
+                                    <h:column>
+                                        <h:link outcome="game.xhtml?id=#{expansion.id}"><h:outputText value="#{expansion.name}"/></h:link>
+                                    </h:column>
+                                </h:dataTable>
+                                <h:outputText styleClass="boldText" value="Expands" rendered="#{!empty boardGame.game.parentGames}"/>
+                                <h:dataTable value="#{boardGame.game.parentGames}" var="parentGame" rendered="#{!empty boardGame.game.parentGames}">
+                                    <h:column>
+                                        <h:link outcome="game.xhtml?id=#{parentGame.id}"><h:outputText value="#{parentGame.name}"/></h:link>
+                                    </h:column>
+                                </h:dataTable>
+                            </h:panelGroup>
+                        </h:panelGroup>
                     </h:panelGroup>
 
                     <h:panelGroup layout="block" id="gameCommentsSection" style="padding-top: 10px;">
@@ -135,6 +163,30 @@
 
                                 <p:column headerText="Comment">
                                     <h:outputText value="#{comment.comment}"/>
+                                </p:column>
+                            </p:dataTable>
+                        </h:panelGroup>
+                    </h:panelGroup>
+
+                    <h:panelGroup layout="block" id="gameForumsSection" style="padding-top: 10px;">
+                        <h:panelGroup rendered="#{!boardGame.showForums}">
+                            <sr:linkWithSpinner linkText="Show game forums" actionMethod="#{boardGame.loadForums}"
+                                                process="@this" update=":gameForm:gameForumsSection"/>
+                        </h:panelGroup>
+
+                        <p:commandLink value="Hide game forums" action="#{boardGame.hideForums}"
+                                       process="@this" update="gameForumsSection" rendered="#{boardGame.showForums}"/>
+
+                        <h:panelGroup layout="block" style="padding-top: 10px;" rendered="#{boardGame.showForums}">
+                            <h:outputText value="Forums: " styleClass="boldText"/>
+
+                            <p:dataTable value="#{boardGame.forums}" var="forum">
+                                <p:column headerText="Title">
+                                    <h:link value="#{forum.title}" outcome="/forum.xhtml?id=#{forum.id}&amp;gameId=#{boardGame.game.id}&amp;faces-redirect=true"/>
+                                </p:column>
+
+                                <p:column headerText="Last Post">
+                                    <h:outputText value="#{forum.lastPostDate}"/>
                                 </p:column>
                             </p:dataTable>
                         </h:panelGroup>

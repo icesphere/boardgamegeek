@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified">
+  <xs:element name="forum">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="threads"/>
+      </xs:sequence>
+      <xs:attribute name="id" use="required" type="xs:integer"/>
+      <xs:attribute name="lastpostdate" use="required"/>
+      <xs:attribute name="noposting" use="required" type="xs:integer"/>
+      <xs:attribute name="numposts" use="required" type="xs:integer"/>
+      <xs:attribute name="numthreads" use="required" type="xs:integer"/>
+      <xs:attribute name="termsofuse" use="required" type="xs:anyURI"/>
+      <xs:attribute name="title" use="required" type="xs:NCName"/>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="threads">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element maxOccurs="unbounded" ref="thread"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="thread">
+    <xs:complexType>
+      <xs:attribute name="author" use="required" type="xs:NCName"/>
+      <xs:attribute name="id" use="required" type="xs:integer"/>
+      <xs:attribute name="lastpostdate" use="required"/>
+      <xs:attribute name="numarticles" use="required" type="xs:integer"/>
+      <xs:attribute name="postdate" use="required"/>
+      <xs:attribute name="subject" use="required"/>
+    </xs:complexType>
+  </xs:element>
+</xs:schema>
