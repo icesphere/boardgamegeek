@@ -20,7 +20,7 @@
         <setting name="validation-enabled" value="true" />
         <setting name="provider-name" value="" />
         <datasource-mapping>
-          <factory-entry name="BGGPU" value="1988a9c7-6bda-4311-ae3e-498138311cb5" />
+          <factory-entry name="BGGPU" value="bc861bfd-7fc9-4325-ab8b-d5cd7e3459af" />
         </datasource-mapping>
         <deploymentDescriptor name="persistence.xml" url="file://$MODULE_DIR$/src/main/resources/META-INF/persistence.xml" />
       </configuration>

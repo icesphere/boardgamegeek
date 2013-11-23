@@ -1,3 +1,24 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project version="4" />
+<project version="4">
+  <component name="DataSourceManagerImpl" format="xml" hash="2040648553">
+    <data-source source="LOCAL" name="MySQL - boardgamegeek@localhost" uuid="bc861bfd-7fc9-4325-ab8b-d5cd7e3459af">
+      <driver-ref>mysql</driver-ref>
+      <synchronize>true</synchronize>
+      <jdbc-driver>com.mysql.jdbc.Driver</jdbc-driver>
+      <jdbc-url>jdbc:mysql://localhost:3306/boardgamegeek</jdbc-url>
+      <user-name>bggdb</user-name>
+      <user-password>dfe8dfeddfeddfcedfc8dfcbdfcedfc7df8bdfc4</user-password>
+      <default-dialect>mysql</default-dialect>
+      <driver-properties>
+        <property name="zeroDateTimeBehavior" value="convertToNull" />
+        <property name="tinyInt1isBit" value="false" />
+      </driver-properties>
+      <libraries>
+        <library>
+          <url>file://$USER_HOME$/glassfish4/glassfish/lib/mysql-connector-java-5.1.26-bin.jar</url>
+        </library>
+      </libraries>
+    </data-source>
+  </component>
+</project>
 

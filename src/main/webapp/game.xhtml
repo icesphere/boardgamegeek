@@ -58,6 +58,12 @@
                             <h:outputText value="Playing Time"/>
                             <h:outputText value="#{boardGame.game.playingTimeString}"/>
 
+                            <h:outputText value="Designers"/>
+                            <h:outputText value="#{boardGame.game.designers}"/>
+
+                            <h:outputText value="Publishers"/>
+                            <h:outputText value="#{boardGame.game.publishers}"/>
+
                             <h:outputText value="Your Rating" rendered="#{userSession.loggedIn}"/>
                             <h:panelGroup rendered="#{userSession.loggedIn and ratingView.gameId eq boardGame.game.id}">
                                 <h:inputText value="#{ratingView.rating}" required="true" requiredMessage="Rating required" size="3"/>

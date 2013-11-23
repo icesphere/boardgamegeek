@@ -168,8 +168,10 @@ public class BoardGameUtil
             game.setBayesAverageRating(NumberUtils.toFloat(gameItem.getStatistics().getRatings().getBayesaverage().getValue()));
             game.setRank(getGameRank(gameItem.getStatistics().getRatings().getRanks()));
             game.setRatings(NumberUtils.toInt(gameItem.getStatistics().getRatings().getUsersrated().getValue()));
-            game.setCategories(getCategories(gameItem));
-            game.setMechanics(getMechanics(gameItem));
+            game.setCategories(StringUtils.abbreviate(getListFromType(gameItem, BoardGameGeekConstants.CATEGORY_TYPE), 500));
+            game.setMechanics(StringUtils.abbreviate(getListFromType(gameItem, BoardGameGeekConstants.MECHANIC_TYPE), 500));
+            game.setDesigners(StringUtils.abbreviate(getListFromType(gameItem, BoardGameGeekConstants.DESIGNER_TYPE), 500));
+            game.setPublishers(StringUtils.abbreviate(getListFromType(gameItem, BoardGameGeekConstants.PUBLISHER_TYPE), 2000));
         }
         catch (Exception e) {
             System.out.println("Error updating game from xml: " + game.getName() + game.getId() + " error: "+e.getMessage());
@@ -297,32 +299,16 @@ public class BoardGameUtil
         return parentGameIds;
     }
 
-    private String getCategories(org.smartreaction.boardgamegeek.xml.game.Item gameItem)
+    private String getListFromType(org.smartreaction.boardgamegeek.xml.game.Item gameItem, String type)
     {
-        List<String> categories = new ArrayList<>(0);
+        List<String> list = new ArrayList<>(0);
         for (Link link : gameItem.getLink()) {
-            if (link.getType().equals(BoardGameGeekConstants.CATEGORY_TYPE)) {
-                categories.add(link.getValue());
+            if (link.getType().equals(type)) {
+                list.add(link.getValue());
             }
         }
-        if (!categories.isEmpty()) {
-            return StringUtils.join(categories, ", ");
-        }
-        else {
-            return null;
-        }
-    }
-
-    private String getMechanics(org.smartreaction.boardgamegeek.xml.game.Item gameItem)
-    {
-        List<String> mechanics = new ArrayList<>(0);
-        for (Link link : gameItem.getLink()) {
-            if (link.getType().equals(BoardGameGeekConstants.MECHANIC_TYPE)) {
-                mechanics.add(link.getValue());
-            }
-        }
-        if (!mechanics.isEmpty()) {
-            return StringUtils.join(mechanics, ", ");
+        if (!list.isEmpty()) {
+            return StringUtils.join(list, ", ");
         }
         else {
             return null;

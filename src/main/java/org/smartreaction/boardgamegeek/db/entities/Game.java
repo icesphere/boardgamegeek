@@ -72,6 +72,12 @@ public class Game
     @Column
     private String mechanics;
 
+    @Column
+    private String designers;
+
+    @Column
+    private String publishers;
+
     @Transient
     private List<Game> expansions;
 
@@ -357,6 +363,22 @@ public class Game
     public void setMechanics(String mechanics)
     {
         this.mechanics = mechanics;
+    }
+
+    public String getDesigners() {
+        return designers;
+    }
+
+    public void setDesigners(String designers) {
+        this.designers = designers;
+    }
+
+    public String getPublishers() {
+        return publishers;
+    }
+
+    public void setPublishers(String publishers) {
+        this.publishers = publishers;
     }
 
     public double getRecommendationScore()
