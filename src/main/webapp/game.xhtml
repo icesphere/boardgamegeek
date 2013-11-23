@@ -24,8 +24,7 @@
                         <p:commandLink actionListener="#{boardGame.refreshGame}" update="gamePage" oncomplete="refreshPage()">Refresh Game</p:commandLink>
                     </div>
                     <div style="padding-bottom: 20px;">
-                        <h:outputLink value="#{boardGame.game.gameLink}" target="_blank" style="margin-right: 20px;">BGG Game Page</h:outputLink>
-                        <h:outputLink value="#{boardGame.game.forumsLink}" target="_blank">BGG Forums</h:outputLink>
+                        <h:outputLink value="#{boardGame.game.gameLink}" target="_blank">BGG Game Page</h:outputLink>
                     </div>
                     <h:panelGroup layout="block">
                         <h:panelGroup layout="block" style="padding-bottom: 10px;" rendered="#{userSession.usernameSet}">
@@ -154,11 +153,11 @@
 
                             <p:dataTable value="#{boardGame.forums}" var="forum">
                                 <p:column headerText="Title">
-                                    <h:outputText value="#{forum.title}"/>
+                                    <h:link value="#{forum.title}" outcome="/forum.xhtml?id=#{forum.id}&amp;gameId=#{boardGame.game.id}&amp;faces-redirect=true"/>
                                 </p:column>
 
                                 <p:column headerText="Last Post">
-                                    <h:outputText value="#{forum.lastpostdate}"/>
+                                    <h:outputText value="#{forum.lastPostDate}"/>
                                 </p:column>
                             </p:dataTable>
                         </h:panelGroup>

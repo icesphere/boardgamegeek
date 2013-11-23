@@ -1,0 +1,35 @@
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:ui="http://java.sun.com/jsf/facelets">
+<ui:composition template="/templates/commonLayout.xhtml">
+    <ui:define name="title">
+        <h:outputText value="Game forum"/>
+    </ui:define>
+    <ui:define name="content">
+        <h:form id="forumForm">
+            <h:panelGroup layout="block" id="forumPage">
+                <div style="padding-bottom: 20px;">
+                    <h:outputLink value="http://www.boardgamegeek.com/forum/#{forumView.forumId}" target="_blank">
+                        BGG Forum Page
+                    </h:outputLink>
+                </div>
+                <h:panelGroup layout="block" style="padding-bottom: 20px;" rendered="#{forumView.gameId gt 0}">
+                    <h:link value="Back to Game" outcome="/game.xhtml?id=#{forumView.gameId}&amp;faces-redirect=true"/>
+                </h:panelGroup>
+                <h:panelGroup layout="block">
+                    <p:dataTable value="#{forumView.threads}" var="thread">
+                        <p:column headerText="Subject" sortBy="#{thread.subject}">
+                            <h:link value="#{thread.subject}" outcome="/thread.xhtml?id=#{thread.id}&amp;gameId=#{forumView.gameId}&amp;forumId=#{forumView.forumId}&amp;faces-redirect=true"/>
+                        </p:column>
+
+                        <p:column headerText="Last Post">
+                            <h:outputText value="#{thread.lastPostDate}"/>
+                        </p:column>
+                    </p:dataTable>
+                </h:panelGroup>
+            </h:panelGroup>
+        </h:form>
+    </ui:define>
+</ui:composition>
+</html>

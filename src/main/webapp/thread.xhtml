@@ -2,8 +2,7 @@
       xmlns:h="http://java.sun.com/jsf/html"
       xmlns:p="http://primefaces.org/ui"
       xmlns:ui="http://java.sun.com/jsf/facelets"
-      xmlns:sr="http://java.sun.com/jsf/composite/components"
-        >
+      xmlns:sr="http://java.sun.com/jsf/composite/components">
 <ui:composition template="/templates/commonLayout.xhtml">
     <ui:define name="title">
         <h:outputText value="Loading thread..." rendered="#{!threadView.loaded and !threadView.errorLoadingThread}"/>

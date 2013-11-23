@@ -13,6 +13,12 @@
         <div style="padding-bottom: 20px;">
             <a id="bggLink" href="http://boardgamegeek.com/thread/#{cc.attrs.thread.threadId}" target="_blank">View this thread on BGG</a>
         </div>
+        <h:panelGroup layout="block" style="padding-bottom: 20px;" rendered="#{threadView.gameId gt 0}">
+            <h:link value="Back to Game" outcome="/game.xhtml?id=#{threadView.gameId}&amp;faces-redirect=true"/>
+        </h:panelGroup>
+        <h:panelGroup layout="block" style="padding-bottom: 20px;" rendered="#{threadView.forumId gt 0}">
+            <h:link value="Back to Forum" outcome="/forum.xhtml?id=#{threadView.forumId}&amp;gameId=#{threadView.gameId}&amp;faces-redirect=true"/>
+        </h:panelGroup>
         <div style="padding-bottom: 20px; font-size: 150%;">
             <h:outputText value="#{cc.attrs.thread.subject}" styleClass="boldText"/>
         </div>

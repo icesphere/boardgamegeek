@@ -1,5 +1,6 @@
 package org.smartreaction.boardgamegeek.view;
 
+import org.apache.commons.lang.StringUtils;
 import org.omnifaces.util.Faces;
 import org.primefaces.context.RequestContext;
 import org.smartreaction.boardgamegeek.model.ForumThread;
@@ -35,6 +36,10 @@ public class ThreadView
 
     private long firstSubscriptionEntryId;
 
+    private long forumId;
+
+    private long gameId;
+
     @PostConstruct
     public void load()
     {
@@ -46,6 +51,16 @@ public class ThreadView
         String markSubscriptionReadParam = Faces.getRequestParameter("markSubscriptionRead");
         if ("true".equals(markSubscriptionReadParam)) {
             boardGameGeek.markSubscriptionAsRead(threadId, true);
+        }
+
+        String forumIdParameter = Faces.getRequestParameter("forumId");
+        if (!StringUtils.isEmpty(forumIdParameter)) {
+            forumId = Long.parseLong(forumIdParameter);
+        }
+
+        String gameIdParameter = Faces.getRequestParameter("gameId");
+        if (!StringUtils.isEmpty(gameIdParameter)) {
+            gameId = Long.parseLong(gameIdParameter);
         }
     }
 
@@ -89,6 +104,14 @@ public class ThreadView
     public boolean highlight(Date postDate)
     {
         return lastUpdated != null && postDate != null && lastUpdated.before(postDate);
+    }
+
+    public long getForumId() {
+        return forumId;
+    }
+
+    public long getGameId() {
+        return gameId;
     }
 
     @SuppressWarnings("UnusedDeclaration")
