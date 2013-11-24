@@ -1,6 +1,7 @@
 package org.smartreaction.boardgamegeek.view;
 
 import org.smartreaction.boardgamegeek.db.entities.Game;
+import org.smartreaction.boardgamegeek.db.entities.UserGame;
 import org.smartreaction.boardgamegeek.model.Play;
 
 import javax.annotation.PostConstruct;
@@ -18,6 +19,9 @@ public class LogPlay
 
     @ManagedProperty(value="#{boardGameGeek}")
     BoardGameGeek boardGameGeek;
+
+    @ManagedProperty(value = "#{userSession}")
+    UserSession userSession;
 
     private boolean playMode;
 
@@ -59,6 +63,8 @@ public class LogPlay
             showPlayError = true;
         }
         else {
+            UserGame userGame = userSession.getUserGamesMap().get(boardGame.getGame().getId());
+            userGame.setNumPlays(userGame.getNumPlays() + play.getQuantity());
             showPlayMessage = true;
             StringBuilder sb = new StringBuilder("You have logged ");
             sb.append(response);
@@ -89,6 +95,12 @@ public class LogPlay
     public void setBoardGame(BoardGame boardGame)
     {
         this.boardGame = boardGame;
+    }
+
+    @SuppressWarnings("UnusedDeclaration")
+    public void setUserSession(UserSession userSession)
+    {
+        this.userSession = userSession;
     }
 
     public Play getPlay()
