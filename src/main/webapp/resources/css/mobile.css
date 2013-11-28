@@ -43,11 +43,19 @@ input {
     padding-bottom: 5px;
 }
 
+.navigationLink .ui-commandlink {
+    font-size: 18px;
+}
+
 .backToTopLink {
+    display: inline;
+    text-align: center;
+    margin-top: 5px;
+    padding-bottom: 5px;
     padding-top: 5px;
     width: 100%;
     position: fixed;
-    bottom: 15px;
+    bottom: 0;
     background-color: white;
     z-index: 500;
 }
