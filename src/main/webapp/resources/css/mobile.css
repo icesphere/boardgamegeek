@@ -6,6 +6,14 @@
     font-size: 90%;
 }
 
+.ui-paginator-pages .ui-paginator-page,
+.ui-paginator .ui-paginator-first,
+.ui-paginator .ui-paginator-prev,
+.ui-paginator .ui-paginator-next,
+.ui-paginator .ui-paginator-last {
+    font-size: 90%;
+}
+
 body, input, a {
     font-size: 18px;
 }
@@ -16,10 +24,7 @@ input {
 
 #contentDiv {
     clear: both;
-    padding-top: 15px;
-    padding-bottom: 15px;
-    padding-left: 15px;
-    padding-right: 15px;
+    padding: 10px 10px 0 10px;
 }
 
 .footerText a {
