@@ -151,3 +151,9 @@ a {
 .radioSpacing td {
     padding-right: 10px;
 }
+
+.backToTopLink {
+    text-align: center;
+    margin-top: 5px;
+    padding-bottom: 5px;
+}
