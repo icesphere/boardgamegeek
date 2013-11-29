@@ -192,6 +192,27 @@
                         </h:panelGroup>
                     </h:panelGroup>
 
+                    <h:panelGroup layout="block" id="gamePlaysSection" style="padding-top: 10px;"
+                                  rendered="#{userSession.usernameSet and userSession.userGamesMap.get(boardGame.game.id).numPlays gt 0}">
+                        <h:panelGroup rendered="#{!boardGame.showGamePlays}">
+                            <sr:linkWithSpinner linkText="Show game plays graph" actionMethod="#{boardGame.loadGamePlays}"
+                                                process="@this" update=":gameForm:gamePlaysSection"/>
+                        </h:panelGroup>
+
+                        <p:commandLink value="Hide game plays graph" action="#{boardGame.hideGamePlays}"
+                                       process="@this" update="gamePlaysSection" rendered="#{boardGame.showGamePlays}"/>
+
+                        <h:panelGroup layout="block" style="padding-top: 10px;" rendered="#{boardGame.showGamePlays}">
+                            <h:outputText value="Plays Graph: " styleClass="boldText"/>
+
+                            <h:panelGroup layout="block">
+                                <p:calendar rendered="false"/>
+                                <p:lineChart value="#{singleGamePlaysGraph.chartPlays}" legendPosition="nw"
+                                             title="" style="height:200px; width: 400px;"/>
+                            </h:panelGroup>
+                        </h:panelGroup>
+                    </h:panelGroup>
+
                 </h:panelGroup>
                 <ui:include src="includes/logPlay.xhtml"/>
             </h:panelGroup>

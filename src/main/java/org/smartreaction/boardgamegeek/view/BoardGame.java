@@ -11,6 +11,9 @@ import javax.ejb.EJB;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.ManagedProperty;
 import javax.faces.bean.ViewScoped;
+import javax.xml.bind.JAXBException;
+import java.net.MalformedURLException;
+import java.text.ParseException;
 import java.util.List;
 
 @ManagedBean
@@ -18,6 +21,9 @@ import java.util.List;
 public class BoardGame {
     @ManagedProperty(value = "#{userSession}")
     UserSession userSession;
+
+    @ManagedProperty(value = "#{singleGamePlaysGraph}")
+    SingleGamePlaysGraph singleGamePlaysGraph;
 
     @EJB
     BoardGameCache boardGameCache;
@@ -37,6 +43,10 @@ public class BoardGame {
     private boolean showDescription;
 
     private boolean showExpansions;
+
+    private boolean showGamePlays;
+
+    private boolean gamePlaysLoaded;
 
     @PostConstruct
     public void setup() {
@@ -83,6 +93,17 @@ public class BoardGame {
 
     public void hideForums() {
         showForums = false;
+    }
+
+    public void loadGamePlays() throws ParseException, JAXBException, MalformedURLException {
+        if (!gamePlaysLoaded) {
+            singleGamePlaysGraph.loadChart(game.getId());
+        }
+        showGamePlays = true;
+    }
+
+    public void hideGamePlays() {
+        showGamePlays = false;
     }
 
     public Game getGame() {
@@ -136,5 +157,17 @@ public class BoardGame {
 
     public void setShowExpansions(boolean showExpansions) {
         this.showExpansions = showExpansions;
+    }
+
+    public boolean isShowGamePlays() {
+        return showGamePlays;
+    }
+
+    public void setShowGamePlays(boolean showGamePlays) {
+        this.showGamePlays = showGamePlays;
+    }
+
+    public void setSingleGamePlaysGraph(SingleGamePlaysGraph singleGamePlaysGraph) {
+        this.singleGamePlaysGraph = singleGamePlaysGraph;
     }
 }

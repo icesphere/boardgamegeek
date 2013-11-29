@@ -88,11 +88,10 @@ public class BoardGamePlaysGraph
         chartLoaded = false;
     }
 
-    private void loadPlays() throws JAXBException, MalformedURLException
-    {
-        playsByGameMap = new LinkedHashMap<Long, List<Play>>();
+    private void loadPlays() throws JAXBException, MalformedURLException, ParseException {
+        playsByGameMap = new LinkedHashMap<>();
 
-        List<UserGame> gamesByRating = new ArrayList<UserGame>();
+        List<UserGame> gamesByRating = new ArrayList<>();
         for (UserGame userGame : userSession.getUserGamesMap().values()) {
             gamesByRating.add(userGame);
         }
@@ -131,13 +130,13 @@ public class BoardGamePlaysGraph
         return false;
     }
 
-    private void checkFirstAndLastPlayDate(List<Play> playsForGame)
-    {
-        DateTime gameFirstPlayDate = new DateTime(playsForGame.get(0).getDate());
+    private void checkFirstAndLastPlayDate(List<Play> playsForGame) throws ParseException {
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+        DateTime gameFirstPlayDate = new DateTime(sdf.parse(playsForGame.get(0).getDate()));
         if (firstPlayDate == null || gameFirstPlayDate.isBefore(firstPlayDate)) {
             firstPlayDate = gameFirstPlayDate;
         }
-        DateTime gameLastPlayDate = new DateTime(playsForGame.get(playsForGame.size() - 1).getDate());
+        DateTime gameLastPlayDate = new DateTime(sdf.parse(playsForGame.get(playsForGame.size() - 1).getDate()));
         if (lastPlayDate == null || gameLastPlayDate.isAfter(lastPlayDate)) {
             lastPlayDate = gameLastPlayDate;
         }
@@ -174,7 +173,7 @@ public class BoardGamePlaysGraph
 
     private void loadLabels()
     {
-        labels = new ArrayList<String>();
+        labels = new ArrayList<>();
 
         String firstLabel = getLabel(firstPlayDate);
         String lastLabel = getLabel(lastPlayDate);
