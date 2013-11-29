@@ -3,7 +3,6 @@ package org.smartreaction.boardgamegeek.view;
 import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.lang.math.NumberUtils;
 import org.joda.time.DateTime;
-import org.joda.time.Months;
 import org.primefaces.model.chart.CartesianChartModel;
 import org.primefaces.model.chart.ChartSeries;
 import org.smartreaction.boardgamegeek.xml.plays.Play;
@@ -21,7 +20,6 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Date;
 import java.util.List;
 
 @ManagedBean
@@ -38,48 +36,29 @@ public class SingleGamePlaysGraph {
 
     private String scope;
 
-    private boolean chartLoaded;
-
     private CartesianChartModel chartPlays;
-
-    DateTime firstPlayDate;
-    DateTime lastPlayDate;
 
     private List<String> labels;
 
     private List<Play> plays;
 
-    private int playTime = 0;
+    private int playTime = 3;
+    private DateTime startPlayDate;
+    private DateTime endPlayDate;
 
     public void loadChart(long gameId) throws MalformedURLException, JAXBException, ParseException {
-        firstPlayDate = null;
-        lastPlayDate = null;
-
         loadPlays(gameId);
         if (!plays.isEmpty()) {
             setScope();
             loadLabels();
             addGamePlaysToChart();
         }
-        chartLoaded = true;
     }
 
     private void loadPlays(long gameId) throws JAXBException, MalformedURLException, ParseException {
         plays = getPlaysForGame(gameId);
         if (!plays.isEmpty()) {
             Collections.reverse(plays);
-            checkFirstAndLastPlayDate();
-        }
-    }
-
-    private void checkFirstAndLastPlayDate() throws ParseException {
-        DateTime gameFirstPlayDate = new DateTime(simpleDateFormat.parse(plays.get(0).getDate()));
-        if (firstPlayDate == null || gameFirstPlayDate.isBefore(firstPlayDate)) {
-            firstPlayDate = gameFirstPlayDate;
-        }
-        DateTime gameLastPlayDate = new DateTime(simpleDateFormat.parse(plays.get(plays.size() - 1).getDate()));
-        if (lastPlayDate == null || gameLastPlayDate.isAfter(lastPlayDate)) {
-            lastPlayDate = gameLastPlayDate;
         }
     }
 
@@ -90,30 +69,29 @@ public class SingleGamePlaysGraph {
         sb.append(userSession.getUsername());
         sb.append("&id=").append(gameId);
         if (playTime > 0) {
-            Date startPlayDate;
             if (playTime == 6) {
-                startPlayDate = new DateTime().minusMonths(6).toDate();
+                startPlayDate = new DateTime().minusMonths(6);
             }
             else {
-                startPlayDate = new DateTime().minusYears(playTime).toDate();
+                startPlayDate = new DateTime().minusYears(playTime);
             }
-            Date endPlayDate = new Date();
-            sb.append("&mindate=").append(simpleDateFormat.format(startPlayDate));
-            sb.append("&maxdate=").append(simpleDateFormat.format(endPlayDate));
+            endPlayDate = new DateTime();
+            sb.append("&mindate=").append(simpleDateFormat.format(startPlayDate.toDate()));
+            sb.append("&maxdate=").append(simpleDateFormat.format(endPlayDate.toDate()));
         }
         URL url = new URL(sb.toString());
         return ((Plays) unmarshaller.unmarshal(url)).getPlay();
     }
 
-    private void setScope() {
-        int numGames = plays.size();
-        int monthsBetween = Months.monthsBetween(firstPlayDate, lastPlayDate).getMonths();
-
-        if (monthsBetween < 4 || (monthsBetween < 6 && numGames < 10)) {
+    private void setScope()
+    {
+        if (playTime == 6) {
             scope = SCOPE_MONTHS;
-        } else if (monthsBetween < 12 || (monthsBetween < 18 && numGames < 10)) {
+        }
+        else if (playTime == 1) {
             scope = SCOPE_QUARTERS;
-        } else {
+        }
+        else {
             scope = SCOPE_YEARS;
         }
     }
@@ -121,13 +99,13 @@ public class SingleGamePlaysGraph {
     private void loadLabels() {
         labels = new ArrayList<>();
 
-        String firstLabel = getLabel(firstPlayDate);
-        String lastLabel = getLabel(lastPlayDate);
+        String firstLabel = getLabel(startPlayDate);
+        String lastLabel = getLabel(endPlayDate);
 
         labels.add(firstLabel);
         if (!firstLabel.equals(lastLabel)) {
-            String nextLabel = getNextLabel(firstPlayDate);
-            DateTime currentLabelDate = firstPlayDate;
+            String nextLabel = getNextLabel(startPlayDate);
+            DateTime currentLabelDate = startPlayDate;
             while (!nextLabel.equals(lastLabel)) {
                 labels.add(nextLabel);
                 nextLabel = getNextLabel(currentLabelDate);
@@ -243,14 +221,6 @@ public class SingleGamePlaysGraph {
 
     public CartesianChartModel getChartPlays() {
         return chartPlays;
-    }
-
-    public boolean hasPlays() {
-        return !plays.isEmpty();
-    }
-
-    public boolean isChartLoaded() {
-        return chartLoaded;
     }
 
     @SuppressWarnings("UnusedDeclaration")
