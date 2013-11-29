@@ -6,14 +6,6 @@
     font-size: 90%;
 }
 
-.ui-paginator-pages .ui-paginator-page,
-.ui-paginator .ui-paginator-first,
-.ui-paginator .ui-paginator-prev,
-.ui-paginator .ui-paginator-next,
-.ui-paginator .ui-paginator-last {
-    font-size: 80%;
-}
-
 input {
     padding: 8px 5px;
 }
