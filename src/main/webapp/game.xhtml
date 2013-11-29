@@ -229,7 +229,7 @@
                                 <p:ajax process="@this" update="gamePlaysGraph"
                                         onstart="changeChartYearsStart();"
                                         oncomplete="changeChartYearsComplete();"
-                                        listener="#{singleGamePlaysGraph.loadChart(boardGame.game.id)}"/>
+                                        listener="#{singleGamePlaysGraph.loadChart(boardGame.game)}"/>
                             </h:selectOneRadio>
 
                             <h:graphicImage id="gamePlaysChartLoadingImage" library="images" name="loadingSmall.gif" style="display:none;"/>

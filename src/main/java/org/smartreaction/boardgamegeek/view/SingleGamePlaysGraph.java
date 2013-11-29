@@ -1,10 +1,10 @@
 package org.smartreaction.boardgamegeek.view;
 
-import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.lang.math.NumberUtils;
 import org.joda.time.DateTime;
 import org.primefaces.model.chart.CartesianChartModel;
 import org.primefaces.model.chart.ChartSeries;
+import org.smartreaction.boardgamegeek.db.entities.Game;
 import org.smartreaction.boardgamegeek.xml.plays.Play;
 import org.smartreaction.boardgamegeek.xml.plays.Plays;
 
@@ -46,28 +46,29 @@ public class SingleGamePlaysGraph {
     private DateTime startPlayDate;
     private DateTime endPlayDate;
 
-    public void loadChart(long gameId) throws MalformedURLException, JAXBException, ParseException {
-        loadPlays(gameId);
-        if (!plays.isEmpty()) {
-            setScope();
-            loadLabels();
-            addGamePlaysToChart();
-        }
+    private Game game;
+
+    public void loadChart(Game game) throws MalformedURLException, JAXBException, ParseException {
+        this.game = game;
+        loadPlays();
+        setScope();
+        loadLabels();
+        addGamePlaysToChart();
     }
 
-    private void loadPlays(long gameId) throws JAXBException, MalformedURLException, ParseException {
-        plays = getPlaysForGame(gameId);
+    private void loadPlays() throws JAXBException, MalformedURLException, ParseException {
+        plays = getPlaysForGame();
         if (!plays.isEmpty()) {
             Collections.reverse(plays);
         }
     }
 
-    private List<Play> getPlaysForGame(long gameId) throws JAXBException, MalformedURLException {
+    private List<Play> getPlaysForGame() throws JAXBException, MalformedURLException {
         JAXBContext jc = JAXBContext.newInstance("org.smartreaction.boardgamegeek.xml.plays");
         Unmarshaller unmarshaller = jc.createUnmarshaller();
         StringBuilder sb = new StringBuilder("http://boardgamegeek.com/xmlapi2/plays?username=");
         sb.append(userSession.getUsername());
-        sb.append("&id=").append(gameId);
+        sb.append("&id=").append(game.getId());
         if (playTime > 0) {
             if (playTime == 6) {
                 startPlayDate = new DateTime().minusMonths(6);
@@ -169,8 +170,7 @@ public class SingleGamePlaysGraph {
 
         ChartSeries gameSeries = new ChartSeries();
 
-        String gameName = StringEscapeUtils.escapeJavaScript(plays.get(0).getItem().getName());
-        gameSeries.setLabel(gameName);
+        gameSeries.setLabel(game.getName());
 
         int playQuantity = 0;
         String currentLabel = labels.get(0);

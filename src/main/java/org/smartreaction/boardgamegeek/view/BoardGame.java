@@ -100,7 +100,7 @@ public class BoardGame {
 
     public void loadGamePlays() throws ParseException, JAXBException, MalformedURLException {
         if (!gamePlaysLoaded) {
-            singleGamePlaysGraph.loadChart(game.getId());
+            singleGamePlaysGraph.loadChart(game);
             gamePlaysLoaded = true;
         }
         showGamePlays = true;
