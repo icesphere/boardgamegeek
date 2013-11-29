@@ -2,12 +2,28 @@
       xmlns:h="http://java.sun.com/jsf/html"
       xmlns:p="http://primefaces.org/ui"
       xmlns:ui="http://java.sun.com/jsf/facelets"
-      xmlns:sr="http://java.sun.com/jsf/composite/components">
+      xmlns:sr="http://java.sun.com/jsf/composite/components" xmlns:f="http://java.sun.com/jsf/core">
 
 <ui:composition template="/templates/commonLayout.xhtml">
 
     <ui:define name="title">
         <h:outputText value="#{boardGame.game.name}"/>
+    </ui:define>
+
+    <ui:define name="head">
+        <script type="text/javascript">
+            function changeChartYearsStart()
+            {
+                $('#gameForm\\:gamePlaysChart').hide();
+                $('#gameForm\\:gamePlaysChartLoadingImage').show();
+            }
+            function changeChartYearsComplete()
+            {
+                $('#gameForm\\:gamePlaysChartLoadingImage').hide();
+                $('#gameForm\\:gamePlaysChart').show();
+                window.scrollTo(0, document.body.scrollHeight);
+            }
+        </script>
     </ui:define>
 
     <ui:define name="content">
@@ -202,13 +218,24 @@
                         <p:commandLink value="Hide game plays graph" action="#{boardGame.hideGamePlays}"
                                        process="@this" update="gamePlaysSection" rendered="#{boardGame.showGamePlays}"/>
 
-                        <h:panelGroup layout="block" style="padding-top: 10px;" rendered="#{boardGame.showGamePlays}">
+                        <h:panelGroup id="gamePlaysGraph" layout="block" style="padding-top: 10px;" rendered="#{boardGame.showGamePlays}">
                             <h:outputText value="Plays Graph: " styleClass="boldText"/>
 
-                            <h:panelGroup layout="block">
-                                <p:calendar rendered="false"/>
+                            <h:selectOneRadio value="#{singleGamePlaysGraph.playTime}" styleClass="radioSpacing">
+                                <f:selectItem itemValue="0" itemLabel="All"/>
+                                <f:selectItem itemValue="2" itemLabel="2 years"/>
+                                <f:selectItem itemValue="1" itemLabel="1 year"/>
+                                <f:selectItem itemValue="6" itemLabel="6 months"/>
+                                <p:ajax process="@this" update="gamePlaysGraph"
+                                        onstart="changeChartYearsStart();"
+                                        oncomplete="changeChartYearsComplete();"
+                                        listener="#{singleGamePlaysGraph.loadChart(boardGame.game.id)}"/>
+                            </h:selectOneRadio>
+
+                            <h:graphicImage id="gamePlaysChartLoadingImage" library="images" name="loadingSmall.gif" style="display:none;"/>
+                            <h:panelGroup id="gamePlaysChart" layout="block">
                                 <p:lineChart value="#{singleGamePlaysGraph.chartPlays}" legendPosition="nw"
-                                             title="" style="height:200px; width: 400px;"/>
+                                             title="" style="height:200px; width: 500px;"/>
                             </h:panelGroup>
                         </h:panelGroup>
                     </h:panelGroup>

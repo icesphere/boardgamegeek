@@ -14,10 +14,6 @@
     font-size: 80%;
 }
 
-body, input, a {
-    font-size: 18px;
-}
-
 input {
     padding: 8px 5px;
 }
@@ -27,6 +23,10 @@ input {
     padding: 10px 10px 0 10px;
 }
 
+.footerText {
+    margin-bottom: 30px;
+}
+
 .footerText a {
     font-size: 14px;
 }
@@ -34,17 +34,12 @@ input {
 .smallTableHeader {
     font-size: 12px;
 }
-
 .smallText {
     font-size: 11px;
 }
 
 .navigationLink {
     padding-bottom: 5px;
-}
-
-.navigationLink .ui-commandlink {
-    font-size: 18px;
 }
 
 .backToTopLink {
@@ -58,4 +53,8 @@ input {
     bottom: 0;
     background-color: white;
     z-index: 500;
+}
+
+.menu {
+    margin: 0 10px;
 }

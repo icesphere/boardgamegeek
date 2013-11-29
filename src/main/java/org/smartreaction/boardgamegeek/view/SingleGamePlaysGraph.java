@@ -21,6 +21,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Date;
 import java.util.List;
 
 @ManagedBean
@@ -32,6 +33,8 @@ public class SingleGamePlaysGraph {
     public static final String SCOPE_MONTHS = "months";
     public static final String SCOPE_QUARTERS = "quarters";
     public static final String SCOPE_YEARS = "years";
+
+    private SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd");
 
     private String scope;
 
@@ -45,6 +48,8 @@ public class SingleGamePlaysGraph {
     private List<String> labels;
 
     private List<Play> plays;
+
+    private int playTime = 0;
 
     public void loadChart(long gameId) throws MalformedURLException, JAXBException, ParseException {
         firstPlayDate = null;
@@ -68,12 +73,11 @@ public class SingleGamePlaysGraph {
     }
 
     private void checkFirstAndLastPlayDate() throws ParseException {
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-        DateTime gameFirstPlayDate = new DateTime(sdf.parse(plays.get(0).getDate()));
+        DateTime gameFirstPlayDate = new DateTime(simpleDateFormat.parse(plays.get(0).getDate()));
         if (firstPlayDate == null || gameFirstPlayDate.isBefore(firstPlayDate)) {
             firstPlayDate = gameFirstPlayDate;
         }
-        DateTime gameLastPlayDate = new DateTime(sdf.parse(plays.get(plays.size() - 1).getDate()));
+        DateTime gameLastPlayDate = new DateTime(simpleDateFormat.parse(plays.get(plays.size() - 1).getDate()));
         if (lastPlayDate == null || gameLastPlayDate.isAfter(lastPlayDate)) {
             lastPlayDate = gameLastPlayDate;
         }
@@ -85,6 +89,18 @@ public class SingleGamePlaysGraph {
         StringBuilder sb = new StringBuilder("http://boardgamegeek.com/xmlapi2/plays?username=");
         sb.append(userSession.getUsername());
         sb.append("&id=").append(gameId);
+        if (playTime > 0) {
+            Date startPlayDate;
+            if (playTime == 6) {
+                startPlayDate = new DateTime().minusMonths(6).toDate();
+            }
+            else {
+                startPlayDate = new DateTime().minusYears(playTime).toDate();
+            }
+            Date endPlayDate = new Date();
+            sb.append("&mindate=").append(simpleDateFormat.format(startPlayDate));
+            sb.append("&maxdate=").append(simpleDateFormat.format(endPlayDate));
+        }
         URL url = new URL(sb.toString());
         return ((Plays) unmarshaller.unmarshal(url)).getPlay();
     }
@@ -240,5 +256,15 @@ public class SingleGamePlaysGraph {
     @SuppressWarnings("UnusedDeclaration")
     public void setUserSession(UserSession userSession) {
         this.userSession = userSession;
+    }
+
+    public int getPlayTime()
+    {
+        return playTime;
+    }
+
+    public void setPlayTime(int playTime)
+    {
+        this.playTime = playTime;
     }
 }
