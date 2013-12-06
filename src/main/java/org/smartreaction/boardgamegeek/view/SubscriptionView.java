@@ -57,12 +57,24 @@ public class SubscriptionView
 
     public String showForumSubscription(ForumSubscription subscription)
     {
-        return "thread.xhtml?id="+subscription.getForumId()+"&markSubscriptionRead=true&lastUpdated="+subscription.getLastUpdated().getTime()+"&faces-redirect=true";
+        String threadLink = "thread.xhtml?id=" + subscription.getForumId() + "&markSubscriptionRead=true&faces-redirect=true";
+
+        if (subscription.getLastUpdated() != null) {
+            threadLink += "&lastUpdated=" + subscription.getLastUpdated().getTime();
+        }
+
+        return threadLink;
     }
 
     public String showGeekListSubscription(GeekListSubscription subscription)
     {
-        return "geeklist.xhtml?id="+subscription.getGeekListId()+"&markSubscriptionRead=true&lastUpdated="+subscription.getLastUpdated().getTime()+"&faces-redirect=true";
+        String geekListLink = "geeklist.xhtml?id=" + subscription.getGeekListId() + "&markSubscriptionRead=true&faces-redirect=true";
+
+        if (subscription.getLastUpdated() != null) {
+            geekListLink += "&lastUpdated=" + subscription.getLastUpdated().getTime();
+        }
+
+        return geekListLink;
     }
 
     public void markAllForumSubscriptionsAsRead()
