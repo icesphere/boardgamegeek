@@ -52,6 +52,9 @@ public class BoardGame {
     public void setup() {
         long gameId = Long.parseLong(Faces.getRequestParameter("id"));
         loadGame(gameId);
+        if (userSession.isUsernameSet() && userSession.getGames() == null) {
+            userSession.syncGames();
+        }
         gameLoaded = true;
     }
 
@@ -97,7 +100,8 @@ public class BoardGame {
 
     public void loadGamePlays() throws ParseException, JAXBException, MalformedURLException {
         if (!gamePlaysLoaded) {
-            singleGamePlaysGraph.loadChart(game.getId());
+            singleGamePlaysGraph.loadChart(game);
+            gamePlaysLoaded = true;
         }
         showGamePlays = true;
     }
@@ -167,6 +171,7 @@ public class BoardGame {
         this.showGamePlays = showGamePlays;
     }
 
+    @SuppressWarnings("UnusedDeclaration")
     public void setSingleGamePlaysGraph(SingleGamePlaysGraph singleGamePlaysGraph) {
         this.singleGamePlaysGraph = singleGamePlaysGraph;
     }

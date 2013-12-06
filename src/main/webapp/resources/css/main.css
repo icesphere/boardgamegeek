@@ -15,7 +15,6 @@ article, aside, details, figcaption, figure, footer, header, hgroup, menu, nav, 
 
 body {
     line-height: 1;
-    font-family: Times, serif;
 }
 
 ol, ul {
@@ -75,7 +74,7 @@ table {
 
 .footerText {
     font-size: 12px;
-    margin: 0 20px 10px 20px;
+    margin-bottom: 10px;
 }
 
 .errorText {
@@ -173,10 +172,6 @@ a {
 
 .navigationLink {
     float: left;
-}
-
-.navigationLink .ui-commandlink {
-    font-size: 16px;
 }
 
 .radioSpacing td {

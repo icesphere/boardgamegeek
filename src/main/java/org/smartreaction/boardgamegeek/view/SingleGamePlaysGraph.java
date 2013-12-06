@@ -1,11 +1,10 @@
 package org.smartreaction.boardgamegeek.view;
 
-import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.lang.math.NumberUtils;
 import org.joda.time.DateTime;
-import org.joda.time.Months;
 import org.primefaces.model.chart.CartesianChartModel;
 import org.primefaces.model.chart.ChartSeries;
+import org.smartreaction.boardgamegeek.db.entities.Game;
 import org.smartreaction.boardgamegeek.xml.plays.Play;
 import org.smartreaction.boardgamegeek.xml.plays.Plays;
 
@@ -33,71 +32,67 @@ public class SingleGamePlaysGraph {
     public static final String SCOPE_QUARTERS = "quarters";
     public static final String SCOPE_YEARS = "years";
 
+    private SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd");
+
     private String scope;
 
-    private boolean chartLoaded;
-
     private CartesianChartModel chartPlays;
-
-    DateTime firstPlayDate;
-    DateTime lastPlayDate;
 
     private List<String> labels;
 
     private List<Play> plays;
 
-    public void loadChart(long gameId) throws MalformedURLException, JAXBException, ParseException {
-        firstPlayDate = null;
-        lastPlayDate = null;
+    private int playTime = 3;
+    private DateTime startPlayDate;
+    private DateTime endPlayDate;
 
-        loadPlays(gameId);
-        if (!plays.isEmpty()) {
-            setScope();
-            loadLabels();
-            addGamePlaysToChart();
-        }
-        chartLoaded = true;
+    private Game game;
+
+    public void loadChart(Game game) throws MalformedURLException, JAXBException, ParseException {
+        this.game = game;
+        loadPlays();
+        setScope();
+        loadLabels();
+        addGamePlaysToChart();
     }
 
-    private void loadPlays(long gameId) throws JAXBException, MalformedURLException, ParseException {
-        plays = getPlaysForGame(gameId);
+    private void loadPlays() throws JAXBException, MalformedURLException, ParseException {
+        plays = getPlaysForGame();
         if (!plays.isEmpty()) {
             Collections.reverse(plays);
-            checkFirstAndLastPlayDate();
         }
     }
 
-    private void checkFirstAndLastPlayDate() throws ParseException {
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-        DateTime gameFirstPlayDate = new DateTime(sdf.parse(plays.get(0).getDate()));
-        if (firstPlayDate == null || gameFirstPlayDate.isBefore(firstPlayDate)) {
-            firstPlayDate = gameFirstPlayDate;
-        }
-        DateTime gameLastPlayDate = new DateTime(sdf.parse(plays.get(plays.size() - 1).getDate()));
-        if (lastPlayDate == null || gameLastPlayDate.isAfter(lastPlayDate)) {
-            lastPlayDate = gameLastPlayDate;
-        }
-    }
-
-    private List<Play> getPlaysForGame(long gameId) throws JAXBException, MalformedURLException {
+    private List<Play> getPlaysForGame() throws JAXBException, MalformedURLException {
         JAXBContext jc = JAXBContext.newInstance("org.smartreaction.boardgamegeek.xml.plays");
         Unmarshaller unmarshaller = jc.createUnmarshaller();
         StringBuilder sb = new StringBuilder("http://boardgamegeek.com/xmlapi2/plays?username=");
         sb.append(userSession.getUsername());
-        sb.append("&id=").append(gameId);
+        sb.append("&id=").append(game.getId());
+        if (playTime > 0) {
+            if (playTime == 6) {
+                startPlayDate = new DateTime().minusMonths(6);
+            }
+            else {
+                startPlayDate = new DateTime().minusYears(playTime);
+            }
+            endPlayDate = new DateTime();
+            sb.append("&mindate=").append(simpleDateFormat.format(startPlayDate.toDate()));
+            sb.append("&maxdate=").append(simpleDateFormat.format(endPlayDate.toDate()));
+        }
         URL url = new URL(sb.toString());
         return ((Plays) unmarshaller.unmarshal(url)).getPlay();
     }
 
-    private void setScope() {
-        int numGames = plays.size();
-        int monthsBetween = Months.monthsBetween(firstPlayDate, lastPlayDate).getMonths();
-
-        if (monthsBetween < 4 || (monthsBetween < 6 && numGames < 10)) {
+    private void setScope()
+    {
+        if (playTime == 6) {
             scope = SCOPE_MONTHS;
-        } else if (monthsBetween < 12 || (monthsBetween < 18 && numGames < 10)) {
+        }
+        else if (playTime == 1) {
             scope = SCOPE_QUARTERS;
-        } else {
+        }
+        else {
             scope = SCOPE_YEARS;
         }
     }
@@ -105,13 +100,13 @@ public class SingleGamePlaysGraph {
     private void loadLabels() {
         labels = new ArrayList<>();
 
-        String firstLabel = getLabel(firstPlayDate);
-        String lastLabel = getLabel(lastPlayDate);
+        String firstLabel = getLabel(startPlayDate);
+        String lastLabel = getLabel(endPlayDate);
 
         labels.add(firstLabel);
         if (!firstLabel.equals(lastLabel)) {
-            String nextLabel = getNextLabel(firstPlayDate);
-            DateTime currentLabelDate = firstPlayDate;
+            String nextLabel = getNextLabel(startPlayDate);
+            DateTime currentLabelDate = startPlayDate;
             while (!nextLabel.equals(lastLabel)) {
                 labels.add(nextLabel);
                 nextLabel = getNextLabel(currentLabelDate);
@@ -175,8 +170,7 @@ public class SingleGamePlaysGraph {
 
         ChartSeries gameSeries = new ChartSeries();
 
-        String gameName = StringEscapeUtils.escapeJavaScript(plays.get(0).getItem().getName());
-        gameSeries.setLabel(gameName);
+        gameSeries.setLabel(game.getName());
 
         int playQuantity = 0;
         String currentLabel = labels.get(0);
@@ -229,16 +223,18 @@ public class SingleGamePlaysGraph {
         return chartPlays;
     }
 
-    public boolean hasPlays() {
-        return !plays.isEmpty();
-    }
-
-    public boolean isChartLoaded() {
-        return chartLoaded;
-    }
-
     @SuppressWarnings("UnusedDeclaration")
     public void setUserSession(UserSession userSession) {
         this.userSession = userSession;
+    }
+
+    public int getPlayTime()
+    {
+        return playTime;
+    }
+
+    public void setPlayTime(int playTime)
+    {
+        this.playTime = playTime;
     }
 }
