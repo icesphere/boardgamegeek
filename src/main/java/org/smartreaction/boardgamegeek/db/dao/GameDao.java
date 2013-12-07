@@ -195,4 +195,25 @@ public class GameDao
         em.flush();
     }
 
+    public List<UserPlay> getUserPlays(long userId)
+    {
+        TypedQuery<UserPlay> query = em.createQuery("select up from UserPlay up where up.userId = :userId order by up.playId desc", UserPlay.class);
+        query.setParameter("userId", userId);
+
+        return query.getResultList();
+    }
+
+    public List<UserPlay> getUserPlaysForGame(long userId, long gameId)
+    {
+        TypedQuery<UserPlay> query = em.createQuery("select up from UserPlay up where up.userId = :userId and up.gameId = :gameId order by up.playId desc", UserPlay.class);
+        query.setParameter("userId", userId);
+        query.setParameter("gameId", gameId);
+
+        return query.getResultList();
+    }
+
+    public void createUserPlay(UserPlay userPlay)
+    {
+        em.persist(userPlay);
+    }
 }

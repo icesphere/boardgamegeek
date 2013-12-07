@@ -12,6 +12,7 @@ import org.smartreaction.boardgamegeek.xml.game.*;
 import org.smartreaction.boardgamegeek.xml.gamewithrating.Comment;
 import org.smartreaction.boardgamegeek.xml.collection.Item;
 import org.smartreaction.boardgamegeek.xml.collection.Items;
+import org.smartreaction.boardgamegeek.xml.plays.Play;
 
 import javax.ejb.Asynchronous;
 import javax.ejb.EJB;
@@ -568,5 +569,49 @@ public class BoardGameUtil
     public void deleteUserGames(long userId)
     {
         gameDao.deleteUserGames(userId);
+    }
+
+    public List<UserPlay> getUserPlays(User user)
+    {
+        return gameDao.getUserPlays(user.getId());
+    }
+
+    public List<UserPlay> getUserPlaysForGame(User user, long gameId)
+    {
+        return gameDao.getUserPlaysForGame(user.getId(), gameId);
+    }
+
+    public void updateUserPlays(User user)
+    {
+        try {
+            List<UserPlay> userPlays = getUserPlays(user);
+
+            UserPlay lastUserPlay = null;
+            if (!userPlays.isEmpty()) {
+                lastUserPlay = userPlays.get(0);
+            }
+
+            List<Play> plays = boardGameGeekService.getPlays(user.getUsername(), null, user.getPlaysLastUpdated());
+
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+            for (Play play : plays) {
+                long playId = Long.parseLong(play.getId());
+                if (lastUserPlay == null || playId > lastUserPlay.getPlayId()) {
+                    UserPlay userPlay = new UserPlay();
+                    userPlay.setPlayId(playId);
+                    userPlay.setUserId(user.getId());
+                    userPlay.setGameId(play.getItem().getGameId());
+                    userPlay.setQuantity(Integer.parseInt(play.getQuantity()));
+                    userPlay.setPlayDate(sdf.parse(play.getDate()));
+
+                    gameDao.createUserPlay(userPlay);
+                }
+            }
+
+            user.setPlaysLastUpdated(new Date());
+        }
+        catch (MalformedURLException | JAXBException | ParseException e) {
+            e.printStackTrace();
+        }
     }
 }

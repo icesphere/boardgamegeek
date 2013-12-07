@@ -216,12 +216,26 @@ public class BoardGameGeekService
         }
     }
 
-    public List<Play> getPlays(String username) throws MalformedURLException, JAXBException
+    public List<Play> getPlays(String username, Long gameId, Date startPlayDate) throws JAXBException, MalformedURLException
     {
-        return getPlays(username, null);
+        List<Play> allPlays = new ArrayList<>();
+        int page = 1;
+        boolean finished = false;
+        while (!finished) {
+            List<Play> plays = getPlays(username, gameId, startPlayDate, page);
+            if (!plays.isEmpty()) {
+                allPlays.addAll(plays);
+                page++;
+            }
+            else {
+                finished = true;
+            }
+        }
+
+        return allPlays;
     }
 
-    public List<Play> getPlays(String username, Long gameId) throws JAXBException, MalformedURLException
+    public List<Play> getPlays(String username, Long gameId, Date startPlayDate, int page) throws JAXBException, MalformedURLException
     {
         JAXBContext jc = JAXBContext.newInstance("org.smartreaction.boardgamegeek.xml.plays");
         Unmarshaller unmarshaller = jc.createUnmarshaller();
@@ -230,6 +244,12 @@ public class BoardGameGeekService
         if (gameId != null) {
             sb.append("&id=").append(gameId);
         }
+        if (startPlayDate != null) {
+            sb.append("&mindate=");
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+            sb.append(sdf.format(startPlayDate));
+        }
+        sb.append("&page=").append(page);
         URL url = new URL(sb.toString());
         return ((Plays) unmarshaller.unmarshal(url)).getPlay();
     }

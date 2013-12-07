@@ -1,8 +1,9 @@
 package org.smartreaction.boardgamegeek.view;
 
 import org.omnifaces.util.Faces;
-import org.smartreaction.boardgamegeek.services.BoardGameGeekService;
-import org.smartreaction.boardgamegeek.xml.plays.Play;
+import org.smartreaction.boardgamegeek.business.BoardGameCache;
+import org.smartreaction.boardgamegeek.business.BoardGameUtil;
+import org.smartreaction.boardgamegeek.db.entities.UserPlay;
 
 import javax.annotation.PostConstruct;
 import javax.ejb.EJB;
@@ -21,9 +22,12 @@ public class BoardGamePlays
     UserSession userSession;
 
     @EJB
-    BoardGameGeekService boardGameGeekService;
+    BoardGameUtil boardGameUtil;
 
-    private List<Play> plays;
+    @EJB
+    BoardGameCache boardGameCache;
+
+    private List<UserPlay> plays;
 
     private boolean loaded;
 
@@ -46,17 +50,23 @@ public class BoardGamePlays
             userSession.syncGames();
         }
 
+        boardGameUtil.updateUserPlays(userSession.getUser());
+
         if (showingPlaysForGame) {
-            plays = boardGameGeekService.getPlays(userSession.getUsername(), gameId);
+            plays = boardGameUtil.getUserPlaysForGame(userSession.getUser(), gameId);
         }
         else {
-            plays = boardGameGeekService.getPlays(userSession.getUsername());
+            plays = boardGameUtil.getUserPlays(userSession.getUser());
+        }
+
+        for (UserPlay play : plays) {
+            play.setGame(boardGameCache.getGame(play.getGameId()));
         }
 
         loaded = true;
     }
 
-    public List<Play> getPlays()
+    public List<UserPlay> getPlays()
     {
         return plays;
     }

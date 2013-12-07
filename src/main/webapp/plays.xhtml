@@ -32,11 +32,11 @@
                     </h:panelGroup>
                     <h:panelGroup layout="block">
                         <p:dataTable value="#{boardGamePlays.plays}" var="play">
-                            <p:column headerText="Game" sortBy="#{play.item.name}">
-                                <h:outputText value="#{play.item.name}"/>
+                            <p:column headerText="Game" sortBy="#{play.game.name}">
+                                <h:link value="#{play.game.name}" outcome="/game.xhtml?id=#{play.gameId}&amp;faces-redirect=true"/>
                                 <h:outputText value="(#{play.quantity} plays)" style="padding-left: 5px;" rendered="#{play.quantity ne '1'}"/>
                             </p:column>
-                            <p:column styleClass="alignCenter" sortBy="#{userSession.userGamesMap.get(play.item.gameId).rating}" rendered="#{!boardGamePlays.showingPlaysForGame}">
+                            <p:column styleClass="alignCenter" sortBy="#{userSession.userGamesMap.get(play.gameId).rating}" rendered="#{!boardGamePlays.showingPlaysForGame}">
                                 <f:facet name="header">
                                     <h:panelGroup styleClass="smallTableHeader">
                                         <h:outputText value="Your "/>
@@ -45,12 +45,12 @@
                                     </h:panelGroup>
                                 </f:facet>
                                 <h:panelGroup>
-                                    <h:outputText value="#{userSession.userGamesMap.get(play.item.gameId).rating}" rendered="#{userSession.userGamesMap.get(play.item.gameId).rating gt 0}"/>
-                                    <h:outputText value="N/A" rendered="#{userSession.userGamesMap.get(play.item.gameId).rating eq 0}"/>
+                                    <h:outputText value="#{userSession.userGamesMap.get(play.gameId).rating}" rendered="#{userSession.userGamesMap.get(play.gameId).rating gt 0}"/>
+                                    <h:outputText value="N/A" rendered="#{userSession.userGamesMap.get(play.gameId).rating eq 0}"/>
                                 </h:panelGroup>
                             </p:column>
-                            <p:column headerText="Date played" sortBy="#{play.date}">
-                                <h:outputText value="#{play.date}"/>
+                            <p:column headerText="Date played" sortBy="#{play.playDate}">
+                                <h:outputText value="#{play.playDate}"/>
                             </p:column>
                         </p:dataTable>
                     </h:panelGroup>

@@ -11,9 +11,8 @@ import org.smartreaction.boardgamegeek.db.dao.UserDao;
 import org.smartreaction.boardgamegeek.db.entities.Game;
 import org.smartreaction.boardgamegeek.db.entities.User;
 import org.smartreaction.boardgamegeek.db.entities.UserGame;
-import org.smartreaction.boardgamegeek.services.BoardGameGeekService;
+import org.smartreaction.boardgamegeek.db.entities.UserPlay;
 import org.smartreaction.boardgamegeek.util.UAgentInfo;
-import org.smartreaction.boardgamegeek.xml.plays.Play;
 
 import javax.ejb.EJB;
 import javax.faces.bean.ManagedBean;
@@ -27,7 +26,6 @@ import javax.ws.rs.core.NewCookie;
 import javax.xml.bind.JAXBException;
 import java.io.Serializable;
 import java.net.MalformedURLException;
-import java.text.SimpleDateFormat;
 import java.util.*;
 
 @ManagedBean
@@ -45,9 +43,6 @@ public class UserSession implements Serializable
 
     @EJB
     BoardGameUtil boardGameUtil;
-
-    @EJB
-    BoardGameGeekService boardGameGeekService;
 
     private boolean usernameSet;
     private boolean loggedIn;
@@ -250,12 +245,12 @@ public class UserSession implements Serializable
     public void loadLastPlayed()
     {
         if (!loadedLastPlayed) {
+            boardGameUtil.updateUserPlays(user);
             for (Game game : games) {
                 try {
-                    List<Play> plays = boardGameGeekService.getPlays(username, game.getId());
-                    if (!plays.isEmpty()) {
-                        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd");
-                        game.setLastPlayed(simpleDateFormat.parse(plays.get(0).getDate()));
+                    List<UserPlay> userPlaysForGame = boardGameUtil.getUserPlaysForGame(user, game.getId());
+                    if (!userPlaysForGame.isEmpty()) {
+                        game.setLastPlayed(userPlaysForGame.get(0).getPlayDate());
                     }
                 }
                 catch (Exception e) {

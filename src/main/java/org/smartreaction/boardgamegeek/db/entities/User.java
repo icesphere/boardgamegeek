@@ -37,6 +37,10 @@ public class User
     @Column(name = "top_games_loaded")
     private boolean topGamesLoaded;
 
+    @Column(name = "plays_last_updated")
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date playsLastUpdated;
+
     public long getId()
     {
         return id;
@@ -125,5 +129,15 @@ public class User
     public void setTopGamesLoaded(boolean topGamesLoaded)
     {
         this.topGamesLoaded = topGamesLoaded;
+    }
+
+    public Date getPlaysLastUpdated()
+    {
+        return playsLastUpdated;
+    }
+
+    public void setPlaysLastUpdated(Date playsLastUpdated)
+    {
+        this.playsLastUpdated = playsLastUpdated;
     }
 }
