@@ -1,21 +1,19 @@
 package org.smartreaction.boardgamegeek.view;
 
-import org.apache.commons.lang.math.NumberUtils;
 import org.joda.time.DateTime;
 import org.primefaces.model.chart.CartesianChartModel;
 import org.primefaces.model.chart.ChartSeries;
+import org.smartreaction.boardgamegeek.business.BoardGameCache;
+import org.smartreaction.boardgamegeek.business.BoardGameUtil;
 import org.smartreaction.boardgamegeek.db.entities.Game;
-import org.smartreaction.boardgamegeek.xml.plays.Play;
-import org.smartreaction.boardgamegeek.xml.plays.Plays;
+import org.smartreaction.boardgamegeek.db.entities.UserPlay;
 
+import javax.ejb.EJB;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.ManagedProperty;
 import javax.faces.bean.ViewScoped;
-import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
-import javax.xml.bind.Unmarshaller;
 import java.net.MalformedURLException;
-import java.net.URL;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -28,11 +26,15 @@ public class SingleGamePlaysGraph {
     @ManagedProperty(value = "#{userSession}")
     UserSession userSession;
 
+    @EJB
+    BoardGameUtil boardGameUtil;
+
+    @EJB
+    BoardGameCache boardGameCache;
+
     public static final String SCOPE_MONTHS = "months";
     public static final String SCOPE_QUARTERS = "quarters";
     public static final String SCOPE_YEARS = "years";
-
-    private SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd");
 
     private String scope;
 
@@ -40,7 +42,7 @@ public class SingleGamePlaysGraph {
 
     private List<String> labels;
 
-    private List<Play> plays;
+    private List<UserPlay> plays;
 
     private int playTime = 3;
     private DateTime startPlayDate;
@@ -48,7 +50,15 @@ public class SingleGamePlaysGraph {
 
     private Game game;
 
-    public void loadChart(Game game) throws MalformedURLException, JAXBException, ParseException {
+    private boolean playsUpdated = false;
+
+    public void loadChart(Game game) throws MalformedURLException, JAXBException, ParseException
+    {
+        if (!playsUpdated) {
+            boardGameUtil.updateUserPlays(userSession.getUser());
+            playsUpdated = true;
+        }
+
         this.game = game;
         loadPlays();
         setScope();
@@ -57,18 +67,14 @@ public class SingleGamePlaysGraph {
     }
 
     private void loadPlays() throws JAXBException, MalformedURLException, ParseException {
-        plays = getPlaysForGame();
+        plays = getPlaysForGame(game.getId());
         if (!plays.isEmpty()) {
             Collections.reverse(plays);
         }
     }
 
-    private List<Play> getPlaysForGame() throws JAXBException, MalformedURLException {
-        JAXBContext jc = JAXBContext.newInstance("org.smartreaction.boardgamegeek.xml.plays");
-        Unmarshaller unmarshaller = jc.createUnmarshaller();
-        StringBuilder sb = new StringBuilder("http://boardgamegeek.com/xmlapi2/plays?username=");
-        sb.append(userSession.getUsername());
-        sb.append("&id=").append(game.getId());
+    private List<UserPlay> getPlaysForGame(long gameId) throws JAXBException, MalformedURLException
+    {
         if (playTime > 0) {
             if (playTime == 6) {
                 startPlayDate = new DateTime().minusMonths(6);
@@ -77,11 +83,9 @@ public class SingleGamePlaysGraph {
                 startPlayDate = new DateTime().minusYears(playTime);
             }
             endPlayDate = new DateTime();
-            sb.append("&mindate=").append(simpleDateFormat.format(startPlayDate.toDate()));
-            sb.append("&maxdate=").append(simpleDateFormat.format(endPlayDate.toDate()));
         }
-        URL url = new URL(sb.toString());
-        return ((Plays) unmarshaller.unmarshal(url)).getPlay();
+
+        return boardGameUtil.getUserPlaysForGameByDate(userSession.getUser(), gameId, startPlayDate.toDate(), endPlayDate.toDate());
     }
 
     private void setScope()
@@ -177,8 +181,8 @@ public class SingleGamePlaysGraph {
         String previousLabel = "";
         int labelIndex = 0;
 
-        for (Play play : plays) {
-            String label = getLabel(new DateTime(play.getDate()));
+        for (UserPlay play : plays) {
+            String label = getLabel(new DateTime(play.getPlayDate()));
             if (labelChanged(previousLabel, label)) {
                 addValues(gameSeries, playQuantity, previousLabel);
             }
@@ -191,9 +195,9 @@ public class SingleGamePlaysGraph {
             }
             if (!currentLabel.equals(previousLabel)) {
                 previousLabel = label;
-                playQuantity = NumberUtils.toInt(play.getQuantity());
+                playQuantity = play.getQuantity();
             } else {
-                playQuantity += NumberUtils.toInt(play.getQuantity());
+                playQuantity += play.getQuantity();
             }
         }
 

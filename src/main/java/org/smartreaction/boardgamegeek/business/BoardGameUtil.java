@@ -581,6 +581,11 @@ public class BoardGameUtil
         return gameDao.getUserPlaysForGame(user.getId(), gameId);
     }
 
+    public List<UserPlay> getUserPlaysForGameByDate(User user, long gameId, Date startDate, Date endDate)
+    {
+        return gameDao.getUserPlaysForGameByDate(user.getId(), gameId, startDate, endDate);
+    }
+
     public void updateUserPlays(User user)
     {
         try {

@@ -7,10 +7,7 @@ import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 import javax.persistence.TypedQuery;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Stateless
 public class GameDao
@@ -208,6 +205,17 @@ public class GameDao
         TypedQuery<UserPlay> query = em.createQuery("select up from UserPlay up where up.userId = :userId and up.gameId = :gameId order by up.playId desc", UserPlay.class);
         query.setParameter("userId", userId);
         query.setParameter("gameId", gameId);
+
+        return query.getResultList();
+    }
+
+    public List<UserPlay> getUserPlaysForGameByDate(long userId, long gameId, Date startDate, Date endDate)
+    {
+        TypedQuery<UserPlay> query = em.createQuery("select up from UserPlay up where up.userId = :userId and up.gameId = :gameId and up.playDate >= :startDate and up.playDate <= :endDate order by up.playId desc", UserPlay.class);
+        query.setParameter("userId", userId);
+        query.setParameter("gameId", gameId);
+        query.setParameter("startDate", startDate);
+        query.setParameter("endDate", endDate);
 
         return query.getResultList();
     }
