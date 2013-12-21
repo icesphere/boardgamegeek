@@ -41,6 +41,10 @@ public class User
     @Temporal(TemporalType.TIMESTAMP)
     private Date playsLastUpdated;
 
+    @Column(name = "collection_last_updated")
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date collectionLastUpdated;
+
     public long getId()
     {
         return id;
@@ -139,5 +143,15 @@ public class User
     public void setPlaysLastUpdated(Date playsLastUpdated)
     {
         this.playsLastUpdated = playsLastUpdated;
+    }
+
+    public Date getCollectionLastUpdated()
+    {
+        return collectionLastUpdated;
+    }
+
+    public void setCollectionLastUpdated(Date collectionLastUpdated)
+    {
+        this.collectionLastUpdated = collectionLastUpdated;
     }
 }

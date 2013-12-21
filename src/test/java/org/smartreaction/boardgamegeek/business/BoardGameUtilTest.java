@@ -5,6 +5,7 @@ import org.junit.Test;
 import org.smartreaction.boardgamegeek.BoardGameGeekConstants;
 import org.smartreaction.boardgamegeek.db.dao.GameDao;
 import org.smartreaction.boardgamegeek.db.entities.Game;
+import org.smartreaction.boardgamegeek.db.entities.User;
 import org.smartreaction.boardgamegeek.db.entities.UserGame;
 import org.smartreaction.boardgamegeek.services.BoardGameGeekService;
 import org.smartreaction.boardgamegeek.xml.game.*;
@@ -211,13 +212,6 @@ public class BoardGameUtilTest
         assertEquals(1, testGame.getExpansions().size());
     }
 
-    @Test
-    public void initUserGames() throws MalformedURLException, JAXBException
-    {
-        when(boardGameGeekService.getCollection(TEST_USERNAME)).thenReturn(getTestCollection());
-        boardGameUtil.initUserGames(TEST_USER_ID, TEST_USERNAME);
-    }
-
     public Items getTestCollection()
     {
         Items items = new Items();
@@ -290,21 +284,25 @@ public class BoardGameUtilTest
     }
 
     @Test
-    public void initUserGames_with_empty_collection() throws MalformedURLException, JAXBException
-    {
-        when(boardGameGeekService.getCollection(TEST_USERNAME)).thenReturn(new Items());
-        boardGameUtil.initUserGames(TEST_USER_ID, TEST_USERNAME);
-    }
-
-    @Test
     public void syncUserGames() throws MalformedURLException, JAXBException
     {
-        when(boardGameGeekService.getCollection(TEST_USERNAME)).thenReturn(getTestCollection());
+        User user = getTestUser();
 
-        Map<Long, UserGame> userGamesMap = new HashMap<Long, UserGame>();
+        when(boardGameGeekService.getCollection(user)).thenReturn(getTestCollection());
+
+        Map<Long, UserGame> userGamesMap = new HashMap<>();
         userGamesMap.put(TEST_GAME_ID, getTestUserGame());
 
-        boardGameUtil.syncUserGames(TEST_USER_ID, TEST_USERNAME, userGamesMap);
+        boardGameUtil.syncUserGames(user, userGamesMap, false);
+    }
+
+    private User getTestUser()
+    {
+        User user = new User();
+        user.setId(TEST_USER_ID);
+        user.setUsername(TEST_USERNAME);
+
+        return user;
     }
 
     private UserGame getTestUserGame()
@@ -329,7 +327,7 @@ public class BoardGameUtilTest
 
     public List<Game> getTestExpansions()
     {
-        List<Game> expansions = new ArrayList<Game>();
+        List<Game> expansions = new ArrayList<>();
 
         Game expansion = new Game();
         expansion.setId(TEST_EXPANSION_ID);

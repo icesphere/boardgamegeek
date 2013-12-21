@@ -17,12 +17,15 @@
 
             <p:remoteCommand name="refreshPage" actionListener="#{userSession.syncGames}" update="collectionPage :pageTitle" autoRun="true"/>
             <h:panelGroup layout="block" id="collectionPage">
+                <h:panelGroup layout="block" style="padding-bottom: 10px;" rendered="#{userSession.errorSyncingGames}">
+                    <h:outputText value="Error synching games" styleClass="errorText"/>
+                </h:panelGroup>
                 <h:panelGroup layout="block" rendered="#{userSession.collectionLoaded and !userSession.hasGames()}">
                     There are no games in this user's collection
                 </h:panelGroup>
                 <h:panelGroup layout="block" rendered="#{userSession.collectionLoaded and userSession.hasGames()}">
                     <div style="padding-bottom: 10px;">
-                        <p:commandLink actionListener="#{userSession.refreshCollection}" update="collectionPage" oncomplete="refreshPage()">Refresh Collection</p:commandLink>
+                        <p:commandLink actionListener="#{userSession.fullCollectionRefresh}" update="collectionPage" oncomplete="refreshPage()">Full collection refresh</p:commandLink>
                     </div>
                     <div style="padding-bottom: 10px;">
                         <h:selectBooleanCheckbox value="#{userSession.hideCollectionExpansions}">

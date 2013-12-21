@@ -3,6 +3,8 @@ package org.smartreaction.boardgamegeek.view;
 import com.sun.jersey.api.client.ClientResponse;
 import com.sun.jersey.api.client.WebResource;
 import com.sun.jersey.core.util.MultivaluedMapImpl;
+import org.apache.commons.lang.math.RandomUtils;
+import org.joda.time.DateTime;
 import org.omnifaces.util.Faces;
 import org.smartreaction.boardgamegeek.BoardGameGeekConstants;
 import org.smartreaction.boardgamegeek.business.BoardGameUtil;
@@ -55,7 +57,7 @@ public class UserSession implements Serializable
     private List<Game> filteredGames;
     private Map<Long, UserGame> userGamesMap;
     private boolean collectionLoaded;
-    private boolean forceSync;
+    private boolean fullCollectionRefresh;
 
     private String username;
     private String password;
@@ -65,6 +67,8 @@ public class UserSession implements Serializable
     private boolean hideCollectionExpansions;
     private boolean showLastPlayed;
     private boolean loadedLastPlayed;
+
+    private boolean errorSyncingGames;
 
     public String login() throws MalformedURLException, JAXBException
     {
@@ -89,33 +93,35 @@ public class UserSession implements Serializable
         return "login.xhtml?faces-redirect=true";
     }
 
-    public void refreshCollection()
+    public void fullCollectionRefresh()
     {
         collectionLoaded = false;
-        forceSync = true;
+        fullCollectionRefresh = true;
     }
 
     public void syncGames()
     {
         try {
-            if (userGamesMap == null || forceSync) {
+            if (userGamesMap == null || fullCollectionRefresh) {
                 if (!user.isCollectionLoaded()) {
                     if (user.isTopGamesLoaded()) {
                         gameDao.deleteUserGames(user.getId());
                         user.setTopGamesLoaded(false);
                     }
                     userGamesMap = new HashMap<>(0);
-                    boardGameUtil.syncUserGames(user.getId(), user.getUsername(), userGamesMap);
+                    boardGameUtil.syncUserGames(user, userGamesMap, fullCollectionRefresh);
                     userGamesMap = gameDao.getUserGamesMap(user.getId());
                 }
                 else {
                     userGamesMap = gameDao.getUserGamesMap(user.getId());
-                    if (forceSync) {
-                        forceSync = false;
-                        boardGameUtil.syncUserGames(user.getId(), user.getUsername(), userGamesMap);
+                    if (fullCollectionRefresh) {
+                        boardGameUtil.syncUserGames(user, userGamesMap, fullCollectionRefresh);
+                        fullCollectionRefresh = false;
                     }
                     else {
-                        boardGameUtil.syncUserGamesAsynchronous(user.getId(), user.getUsername(), userGamesMap);
+                        if (shouldRefreshCollection(user.getCollectionLastUpdated())) {
+                            boardGameUtil.syncUserGames(user, userGamesMap, false);
+                        }
                     }
                 }
             }
@@ -136,8 +142,20 @@ public class UserSession implements Serializable
             showLastPlayed = false;
         }
         catch (Exception e) {
-            throw new RuntimeException(e);
+            errorSyncingGames = true;
+            System.out.println("Error syncing user games");
         }
+    }
+
+    private boolean shouldRefreshCollection(Date collectionLastUpdated)
+    {
+        if (collectionLastUpdated == null) {
+            return true;
+        }
+
+        DateTime lastUpdated = new DateTime(collectionLastUpdated);
+        lastUpdated = lastUpdated.plusMinutes(10);
+        return DateTime.now().isAfter(lastUpdated);
     }
 
     private void loadUser() throws MalformedURLException, JAXBException
@@ -390,6 +408,11 @@ public class UserSession implements Serializable
     public void setShowLastPlayed(boolean showLastPlayed)
     {
         this.showLastPlayed = showLastPlayed;
+    }
+
+    public boolean isErrorSyncingGames()
+    {
+        return errorSyncingGames;
     }
 
     @SuppressWarnings("UnusedDeclaration")

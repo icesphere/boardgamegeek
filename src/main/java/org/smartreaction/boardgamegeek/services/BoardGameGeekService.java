@@ -5,6 +5,7 @@ import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 import org.smartreaction.boardgamegeek.BoardGameGeekConstants;
+import org.smartreaction.boardgamegeek.db.entities.User;
 import org.smartreaction.boardgamegeek.model.ForumThread;
 import org.smartreaction.boardgamegeek.model.ThreadArticle;
 import org.smartreaction.boardgamegeek.xml.collection.Items;
@@ -35,11 +36,16 @@ import java.util.List;
 @Stateless
 public class BoardGameGeekService
 {
-    public Items getCollection(String username) throws JAXBException, MalformedURLException
+    public Items getCollection(User user) throws JAXBException, MalformedURLException
     {
         JAXBContext jc = JAXBContext.newInstance("org.smartreaction.boardgamegeek.xml.collection");
         Unmarshaller unmarshaller = jc.createUnmarshaller();
-        URL url = new URL("http://boardgamegeek.com/xmlapi2/collection?username="+username+"&stats=1");
+        String urlString = "http://boardgamegeek.com/xmlapi2/collection?username=" + user.getUsername() + "&stats=1";
+        if (user.getCollectionLastUpdated() != null) {
+            SimpleDateFormat sdf = new SimpleDateFormat("yy-MM-dd%20HH:mm:ss");
+            urlString += "&modifiedsince=" + sdf.format(user.getCollectionLastUpdated());
+        }
+        URL url = new URL(urlString);
         return (Items) unmarshaller.unmarshal(url);
     }
 

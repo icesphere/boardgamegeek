@@ -75,12 +75,6 @@ public class BoardGameUtil
         }
     }
 
-    public void initUserGames(long userId, String username) throws MalformedURLException, JAXBException
-    {
-        Items collection = boardGameGeekService.getCollection(username);
-        syncUserGames(userId, collection, new HashMap<Long, UserGame>(0));
-    }
-
     public void loadUserTopGames(User user) throws MalformedURLException, JAXBException
     {
         Items collection = boardGameGeekService.getCollectionTopGames(user.getUsername());
@@ -97,22 +91,18 @@ public class BoardGameUtil
         userDao.saveUser(user);
     }
 
-    public void syncUserGames(long userId, String username, Map<Long, UserGame> userGamesMap) throws MalformedURLException, JAXBException
+    public void syncUserGames(User user, Map<Long, UserGame> userGamesMap, boolean fullCollectionRefresh) throws MalformedURLException, JAXBException
     {
-        Items collection = boardGameGeekService.getCollection(username);
-        syncUserGames(userId, collection, userGamesMap);
-    }
-
-    @Asynchronous
-    public void syncUserGamesAsynchronous(long userId, String username, Map<Long, UserGame> userGamesMap)
-    {
-        try {
-            syncUserGames(userId, username, userGamesMap);
+        if (fullCollectionRefresh) {
+            deleteUserGames(user.getId());
+            user.setCollectionLastUpdated(null);
+            userGamesMap = new HashMap<>(0);
+            gameDao.flush();
         }
-        catch (Exception e) {
-            System.out.println("Error syncing user games");
-            e.printStackTrace();
-        }
+        Items collection = boardGameGeekService.getCollection(user);
+        syncUserGames(user.getId(), collection, userGamesMap);
+        user.setCollectionLastUpdated(new Date());
+        userDao.saveUser(user);
     }
 
     private void syncUserGames(long userId, Items collection, Map<Long, UserGame> userGamesMap) throws MalformedURLException, JAXBException
@@ -614,6 +604,7 @@ public class BoardGameUtil
             }
 
             user.setPlaysLastUpdated(new Date());
+            userDao.saveUser(user);
         }
         catch (MalformedURLException | JAXBException | ParseException e) {
             e.printStackTrace();
