@@ -76,12 +76,17 @@ public class BoardGameCache
     private void loadHotGames()
     {
         hotGames = new ArrayList<>();
-        Items hotGameItems = boardGameGeekService.getHotGames();
-        for (Item hotGameItem : hotGameItems.getItem()) {
-            Game game = getGame(hotGameItem.getId().longValue());
-            if (game != null) {
-                hotGames.add(game);
+        try {
+            Items hotGameItems = boardGameGeekService.getHotGames();
+            for (Item hotGameItem : hotGameItems.getItem()) {
+                Game game = getGame(hotGameItem.getId().longValue());
+                if (game != null) {
+                    hotGames.add(game);
+                }
             }
+        } catch (Exception e) {
+            System.out.println("Error loading hot games");
+            e.printStackTrace();
         }
         hotGamesLastUpdated = DateTime.now();
     }
@@ -89,7 +94,7 @@ public class BoardGameCache
     public Game getGame(long gameId)
     {
         try {
-            Game game = games.getUnchecked(gameId);
+            Game game = games.get(gameId);
             if (shouldRefreshGame(game)) {
                 boardGameAsynchronous.refreshGame(game, this);
             }

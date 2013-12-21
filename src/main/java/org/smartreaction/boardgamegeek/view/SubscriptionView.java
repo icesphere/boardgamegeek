@@ -27,6 +27,8 @@ public class SubscriptionView
 
     private boolean loaded;
 
+    private boolean errorLoadingSubscriptions;
+
     @SuppressWarnings("UnusedDeclaration")
     public void setUserSession(UserSession userSession)
     {
@@ -41,7 +43,12 @@ public class SubscriptionView
 
     public void loadSubscriptions()
     {
-        subscriptions = subscriptionUtil.getSubscriptions(userSession.getCookies());
+        try {
+            subscriptions = subscriptionUtil.getSubscriptions(userSession.getCookies());
+            errorLoadingSubscriptions = false;
+        } catch (Exception e) {
+            errorLoadingSubscriptions = true;
+        }
         loaded = true;
     }
 
@@ -91,5 +98,9 @@ public class SubscriptionView
             boardGameGeek.markSubscriptionAsRead(geekListSubscription.getGeekListId(), false);
         }
         loadSubscriptions();
+    }
+
+    public boolean isErrorLoadingSubscriptions() {
+        return errorLoadingSubscriptions;
     }
 }

@@ -103,26 +103,34 @@ public class UserSession implements Serializable
     {
         try {
             if (userGamesMap == null || fullCollectionRefresh) {
-                if (!user.isCollectionLoaded()) {
-                    if (user.isTopGamesLoaded()) {
-                        gameDao.deleteUserGames(user.getId());
-                        user.setTopGamesLoaded(false);
-                    }
-                    userGamesMap = new HashMap<>(0);
-                    boardGameUtil.syncUserGames(user, userGamesMap, fullCollectionRefresh);
-                    userGamesMap = gameDao.getUserGamesMap(user.getId());
-                }
-                else {
-                    userGamesMap = gameDao.getUserGamesMap(user.getId());
-                    if (fullCollectionRefresh) {
+                try {
+                    if (!user.isCollectionLoaded()) {
+                        if (user.isTopGamesLoaded()) {
+                            gameDao.deleteUserGames(user.getId());
+                            user.setTopGamesLoaded(false);
+                        }
+                        userGamesMap = new HashMap<>(0);
                         boardGameUtil.syncUserGames(user, userGamesMap, fullCollectionRefresh);
-                        fullCollectionRefresh = false;
+                        userGamesMap = gameDao.getUserGamesMap(user.getId());
                     }
                     else {
-                        if (shouldRefreshCollection(user.getCollectionLastUpdated())) {
-                            boardGameUtil.syncUserGames(user, userGamesMap, false);
+                        userGamesMap = gameDao.getUserGamesMap(user.getId());
+                        if (fullCollectionRefresh) {
+                            boardGameUtil.syncUserGames(user, userGamesMap, fullCollectionRefresh);
+                            fullCollectionRefresh = false;
+                        }
+                        else {
+                            if (shouldRefreshCollection(user.getCollectionLastUpdated())) {
+                                boardGameUtil.syncUserGames(user, userGamesMap, false);
+                            }
                         }
                     }
+
+                    errorSyncingGames = false;
+                } catch (Exception e) {
+                    errorSyncingGames = true;
+                    System.out.println("Error syncing user games");
+                    e.printStackTrace();
                 }
             }
             games = gameDao.getGames(user.getId());
@@ -144,6 +152,7 @@ public class UserSession implements Serializable
         catch (Exception e) {
             errorSyncingGames = true;
             System.out.println("Error syncing user games");
+            e.printStackTrace();
         }
     }
 

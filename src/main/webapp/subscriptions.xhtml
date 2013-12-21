@@ -13,6 +13,9 @@
         <h:form id="subscriptionsForm">
             <p:remoteCommand name="loadSubscriptions" actionListener="#{subscriptionView.loadSubscriptions}" update="subscriptionsPage" autoRun="true"/>
             <h:panelGroup layout="block" id="subscriptionsPage">
+                <h:panelGroup layout="block" rendered="#{subscriptionView.errorLoadingSubscriptions}" styleClass="centerDiv" style="text-align: center;">
+                    <h:outputText value="Error loading subscriptions" styleClass="errorText"/>
+                </h:panelGroup>
                 <h:panelGroup layout="block" rendered="#{!subscriptionView.loaded}" styleClass="centerDiv" style="text-align: center;">
                     <h:graphicImage library="images" name="loading.gif"/>
                 </h:panelGroup>
