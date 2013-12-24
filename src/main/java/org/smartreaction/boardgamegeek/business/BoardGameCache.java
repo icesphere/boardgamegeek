@@ -43,6 +43,9 @@ public class BoardGameCache
 
     LoadingCache<Long, List<GameComment>> gameComments;
 
+    private boolean errorLoadingHotGames;
+    private boolean errorLoadingTopGames;
+
     @PostConstruct
     public void  setup()
     {
@@ -60,6 +63,8 @@ public class BoardGameCache
 
         loadHotGames();
 
+        loadTopGames();
+
         gameComments = CacheBuilder.newBuilder()
             .maximumSize(20)
             .build(
@@ -76,18 +81,22 @@ public class BoardGameCache
     private void loadHotGames()
     {
         hotGames = new ArrayList<>();
-        try {
-            Items hotGameItems = boardGameGeekService.getHotGames();
+
+        Items hotGameItems = boardGameGeekService.getHotGames();
+        if (hotGameItems != null) {
             for (Item hotGameItem : hotGameItems.getItem()) {
                 Game game = getGame(hotGameItem.getId().longValue());
                 if (game != null) {
                     hotGames.add(game);
                 }
             }
-        } catch (Exception e) {
-            System.out.println("Error loading hot games");
-            e.printStackTrace();
+
+            errorLoadingHotGames = false;
         }
+        else {
+            errorLoadingHotGames = true;
+        }
+
         hotGamesLastUpdated = DateTime.now();
     }
 
@@ -144,14 +153,25 @@ public class BoardGameCache
 
     private void loadTopGames()
     {
-        topGames = new ArrayList<>(100);
-        for (Long gameId : boardGameGeekService.getTopGameIds()) {
-            Game game = getGame(gameId);
-            if (game != null) {
-                topGames.add(game);
+        List<Long> topGameIds = boardGameGeekService.getTopGameIds();
+
+        if (topGameIds != null) {
+            topGames = new ArrayList<>(100);
+
+            for (Long gameId : topGameIds) {
+                Game game = getGame(gameId);
+                if (game != null) {
+                    topGames.add(game);
+                }
             }
+            topGamesLastUpdated = DateTime.now();
+
+            errorLoadingTopGames = false;
         }
-        topGamesLastUpdated = DateTime.now();
+        else {
+            errorLoadingTopGames = true;
+            topGames = boardGameUtil.getTopGames();
+        }
     }
 
     public boolean shouldRefreshTopGames()
@@ -197,5 +217,21 @@ public class BoardGameCache
         } catch (JAXBException | IOException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    public boolean isErrorLoadingHotGames() {
+        return errorLoadingHotGames;
+    }
+
+    public void setErrorLoadingHotGames(boolean errorLoadingHotGames) {
+        this.errorLoadingHotGames = errorLoadingHotGames;
+    }
+
+    public boolean isErrorLoadingTopGames() {
+        return errorLoadingTopGames;
+    }
+
+    public void setErrorLoadingTopGames(boolean errorLoadingTopGames) {
+        this.errorLoadingTopGames = errorLoadingTopGames;
     }
 }

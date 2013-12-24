@@ -18,7 +18,12 @@
             <p:remoteCommand name="refreshHotGames" actionListener="#{hotGames.loadHotGames}" update="hotGamesPage :pageTitle" autoRun="true"/>
             <h:panelGroup layout="block" id="hotGamesPage">
                 <h:panelGroup layout="block" rendered="#{hotGames.loaded}">
-                    <h:panelGroup layout="block">
+
+                    <h:panelGroup layout="block" rendered="#{hotGames.errorLoadingHotGames}" styleClass="centerDiv" style="text-align: center;">
+                        <h:outputText value="Error loading hot games" styleClass="errorText"/>
+                    </h:panelGroup>
+
+                    <h:panelGroup layout="block" rendered="#{!hotGames.errorLoadingHotGames}">
                         <p:dataTable value="#{hotGames.hotGames}" var="game">
                             <p:column headerText="Name" styleClass="alignLeft" sortBy="#{game.name}">
                                 <h:link outcome="game.xhtml?id=#{game.id}&amp;faces-redirect=true"><img src="#{game.smallThumbnailImage}" alt="#{game.name} image" style="margin-right:10px"/></h:link>

@@ -15,6 +15,7 @@ import javax.ejb.LockType;
 import javax.ejb.Singleton;
 import javax.xml.bind.JAXBException;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
@@ -26,8 +27,8 @@ public class GeekListsCache
     @EJB
     GeekListUtil geekListUtil;
 
-    private List<GeekList> hotGeekLists;
-    private List<GeekList> recentGeekLists;
+    private List<GeekList> hotGeekLists = new ArrayList<>();
+    private List<GeekList> recentGeekLists = new ArrayList<>();
 
     private DateTime lastUpdated;
 

@@ -32,11 +32,6 @@ public class TopGames
         loaded = true;
     }
 
-    public void refreshHotGames()
-    {
-        loaded = false;
-    }
-
     public boolean isLoaded()
     {
         return loaded;
@@ -50,5 +45,10 @@ public class TopGames
     public void setFilteredTopGames(List<Game> filteredTopGames)
     {
         this.filteredTopGames = filteredTopGames;
+    }
+
+    public boolean isErrorLoadingTopGames()
+    {
+        return boardGameCache.isErrorLoadingTopGames();
     }
 }

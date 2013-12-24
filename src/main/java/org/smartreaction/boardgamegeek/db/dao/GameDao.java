@@ -224,4 +224,11 @@ public class GameDao
     {
         em.persist(userPlay);
     }
+
+    public List<Game> getTopGames() {
+        TypedQuery<Game> query = em.createQuery("select g from Game g where g.rank > 0 order by g.rank", Game.class);
+        query.setMaxResults(100);
+
+        return query.getResultList();
+    }
 }

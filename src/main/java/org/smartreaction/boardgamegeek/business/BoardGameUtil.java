@@ -610,4 +610,8 @@ public class BoardGameUtil
             e.printStackTrace();
         }
     }
+
+    public List<Game> getTopGames() {
+        return gameDao.getTopGames();
+    }
 }

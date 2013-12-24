@@ -117,26 +117,27 @@ public class BoardGameGeekService
             URL url = new URL("http://boardgamegeek.com/xmlapi2/hot?type=boardgame");
             return (org.smartreaction.boardgamegeek.xml.hotgames.Items) unmarshaller.unmarshal(url);
         }
-        catch (Exception e) {
-            throw new RuntimeException(e);
+        catch (Throwable t) {
+            System.out.println("Error loading hot games");
+            t.printStackTrace();
+            return null;
         }
     }
 
-    public List<Long> getTopGameIds()
-    {
-        List<Long> gameIds = new ArrayList<Long>();
+    public List<Long> getTopGameIds() {
         try {
+            List<Long> gameIds = new ArrayList<>();
             Document doc = Jsoup.connect(BoardGameGeekConstants.BBG_WEBSITE + "/browse/boardgame").get();
             Elements gameElements = doc.select("td.collection_thumbnail");
             for (Element element : gameElements) {
                 Element link = element.getElementsByTag("a").first();
                 gameIds.add(getGameIdFromLink(link.attr("href")));
             }
+            return gameIds;
+        } catch (Throwable t) {
+            t.printStackTrace();
+            return null;
         }
-        catch (Exception e) {
-            throw new RuntimeException(e);
-        }
-        return gameIds;
     }
 
     private Long getGameIdFromLink(String href)

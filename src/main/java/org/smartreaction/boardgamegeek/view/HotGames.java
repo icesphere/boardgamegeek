@@ -30,13 +30,13 @@ public class HotGames
         loaded = true;
     }
 
-    public void refreshHotGames()
-    {
-        loaded = false;
-    }
-
     public boolean isLoaded()
     {
         return loaded;
+    }
+
+    public boolean isErrorLoadingHotGames()
+    {
+        return boardGameCache.isErrorLoadingHotGames();
     }
 }
