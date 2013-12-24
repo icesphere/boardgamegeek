@@ -168,8 +168,10 @@ public class BoardGameGeekService
             }
             return gameIds;
         }
-        catch (Exception e) {
-            throw new RuntimeException(e);
+        catch (Throwable t) {
+            System.out.println("Error searching games");
+            t.printStackTrace();
+            return null;
         }
     }
 

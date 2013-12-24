@@ -39,12 +39,17 @@ public class SearchGames
     public void searchGames()
     {
         List<Long> gameIds = boardGameGeekService.searchGames(searchString);
-        games = new ArrayList<Game>(gameIds.size());
-        for (Long gameId : gameIds) {
-            Game game = boardGameCache.getGame(gameId);
-            if (game != null) {
-                games.add(game);
+        if (gameIds != null) {
+            games = new ArrayList<>(gameIds.size());
+            for (Long gameId : gameIds) {
+                Game game = boardGameCache.getGame(gameId);
+                if (game != null) {
+                    games.add(game);
+                }
             }
+        }
+        else {
+            games = boardGameCache.getBoardGameUtil().searchGames(searchString);
         }
         searched = true;
     }

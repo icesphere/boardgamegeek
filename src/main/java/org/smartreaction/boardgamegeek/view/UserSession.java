@@ -3,7 +3,6 @@ package org.smartreaction.boardgamegeek.view;
 import com.sun.jersey.api.client.ClientResponse;
 import com.sun.jersey.api.client.WebResource;
 import com.sun.jersey.core.util.MultivaluedMapImpl;
-import org.apache.commons.lang.math.RandomUtils;
 import org.joda.time.DateTime;
 import org.omnifaces.util.Faces;
 import org.smartreaction.boardgamegeek.BoardGameGeekConstants;
@@ -70,10 +69,16 @@ public class UserSession implements Serializable
 
     private boolean errorSyncingGames;
 
+    private boolean loginError;
+
     public String login() throws MalformedURLException, JAXBException
     {
         loadUser();
         usernameSet = true;
+        return getPageAfterLogin();
+    }
+
+    private String getPageAfterLogin() {
         if (Faces.getSession().getAttribute("redirectPage") != null) {
             return Faces.getSession().getAttribute("redirectPage") + "?faces-redirect=true";
         }
@@ -83,14 +88,19 @@ public class UserSession implements Serializable
     public String loginWithPassword() throws MalformedURLException, JAXBException
     {
         loadUser();
-        loginToBoardGameGeek();
-        if (loggedIn) {
-            if (Faces.getSession().getAttribute("redirectPage") != null) {
-                return Faces.getSession().getAttribute("redirectPage") + "?faces-redirect=true";
+        try {
+            loginToBoardGameGeek();
+            if (loggedIn) {
+                return getPageAfterLogin();
             }
-            return "index.xhtml?faces-redirect=true";
+            return "login.xhtml?faces-redirect=true";
+        } catch (Exception e) {
+            loginError = true;
+            System.out.println("Error logging in to BGG");
+            e.printStackTrace();
+            usernameSet = true;
+            return getPageAfterLogin();
         }
-        return "login.xhtml?faces-redirect=true";
     }
 
     public void fullCollectionRefresh()
@@ -422,6 +432,10 @@ public class UserSession implements Serializable
     public boolean isErrorSyncingGames()
     {
         return errorSyncingGames;
+    }
+
+    public boolean isLoginError() {
+        return loginError;
     }
 
     @SuppressWarnings("UnusedDeclaration")

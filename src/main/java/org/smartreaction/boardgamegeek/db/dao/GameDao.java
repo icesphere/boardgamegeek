@@ -231,4 +231,11 @@ public class GameDao
 
         return query.getResultList();
     }
+
+    public List<Game> searchGames(String searchString) {
+        TypedQuery<Game> query = em.createQuery("select g from Game g where g.name like :searchString", Game.class);
+        query.setParameter("searchString", "%" + searchString + "%");
+
+        return query.getResultList();
+    }
 }

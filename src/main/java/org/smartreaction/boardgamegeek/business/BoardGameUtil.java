@@ -614,4 +614,8 @@ public class BoardGameUtil
     public List<Game> getTopGames() {
         return gameDao.getTopGames();
     }
+
+    public List<Game> searchGames(String searchString) {
+        return gameDao.searchGames(searchString);
+    }
 }
