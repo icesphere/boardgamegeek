@@ -2,6 +2,7 @@ package org.smartreaction.boardgamegeek.view;
 
 import org.omnifaces.util.Faces;
 import org.smartreaction.boardgamegeek.business.BoardGameCache;
+import org.smartreaction.boardgamegeek.db.dao.GameDao;
 import org.smartreaction.boardgamegeek.db.entities.Game;
 import org.smartreaction.boardgamegeek.db.entities.GameComment;
 import org.smartreaction.boardgamegeek.xml.forumlist.Forum;
@@ -25,8 +26,14 @@ public class BoardGame {
     @ManagedProperty(value = "#{singleGamePlaysGraph}")
     SingleGamePlaysGraph singleGamePlaysGraph;
 
+    @ManagedProperty(value="#{boardGameGeek}")
+    BoardGameGeek boardGameGeek;
+
     @EJB
     BoardGameCache boardGameCache;
+
+    @EJB
+    GameDao gameDao;
 
     private Game game;
 
@@ -110,6 +117,13 @@ public class BoardGame {
         showGamePlays = false;
     }
 
+    public void addGameToCollection() throws MalformedURLException, JAXBException
+    {
+        if (boardGameGeek.addGameToCollection(game)) {
+            userSession.forceIncrementalSync();
+        }
+    }
+
     public Game getGame() {
         return game;
     }
@@ -174,5 +188,11 @@ public class BoardGame {
     @SuppressWarnings("UnusedDeclaration")
     public void setSingleGamePlaysGraph(SingleGamePlaysGraph singleGamePlaysGraph) {
         this.singleGamePlaysGraph = singleGamePlaysGraph;
+    }
+
+    @SuppressWarnings("UnusedDeclaration")
+    public void setBoardGameGeek(BoardGameGeek boardGameGeek)
+    {
+        this.boardGameGeek = boardGameGeek;
     }
 }

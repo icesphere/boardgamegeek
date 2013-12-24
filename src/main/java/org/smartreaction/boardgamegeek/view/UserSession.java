@@ -443,4 +443,9 @@ public class UserSession implements Serializable
     {
         this.boardGameGeekClient = boardGameGeekClient;
     }
+
+    public void forceIncrementalSync() throws MalformedURLException, JAXBException
+    {
+        boardGameUtil.syncUserGames(user, userGamesMap, false);
+    }
 }

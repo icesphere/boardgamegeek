@@ -5,6 +5,7 @@ import com.sun.jersey.api.client.WebResource;
 import com.sun.jersey.core.util.MultivaluedMapImpl;
 import org.smartreaction.boardgamegeek.BoardGameGeekConstants;
 import org.smartreaction.boardgamegeek.business.BoardGameAsynchronous;
+import org.smartreaction.boardgamegeek.db.entities.Game;
 import org.smartreaction.boardgamegeek.db.entities.UserGame;
 import org.smartreaction.boardgamegeek.model.Play;
 import org.smartreaction.boardgamegeek.util.BoardGameGeekUtil;
@@ -166,6 +167,27 @@ public class BoardGameGeek {
         else {
             return "failed";
         }
+    }
+
+    public boolean addGameToCollection(Game game)
+    {
+        MultivaluedMap<String, String> formParams = new MultivaluedMapImpl();
+        formParams.add("ajax", "1");
+        formParams.add("action", "additem");
+        formParams.add("addowned", "true");
+        formParams.add("instanceid", "22");
+        formParams.add("objecttype", "thing");
+        formParams.add("objectid", String.valueOf(game.getId()));
+
+        WebResource.Builder builder = boardGameGeekClient.getClient().resource(BoardGameGeekConstants.BBG_WEBSITE + "/geekcollection.php").type("application/x-www-form-urlencoded");
+
+        builder = getBuilderWithCookies(builder);
+
+        ClientResponse response = builder.post(ClientResponse.class, formParams);
+
+        int status = response.getStatus();
+
+        return status == 200;
     }
 
     private WebResource.Builder getBuilderWithCookies(WebResource.Builder builder)

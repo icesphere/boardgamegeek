@@ -2,7 +2,8 @@
       xmlns:h="http://java.sun.com/jsf/html"
       xmlns:p="http://primefaces.org/ui"
       xmlns:ui="http://java.sun.com/jsf/facelets"
-      xmlns:sr="http://java.sun.com/jsf/composite/components" xmlns:f="http://java.sun.com/jsf/core">
+      xmlns:sr="http://java.sun.com/jsf/composite/components"
+      xmlns:f="http://java.sun.com/jsf/core">
 
 <ui:composition template="/templates/commonLayout.xhtml">
 
@@ -50,6 +51,9 @@
                             </h:link>
                             <p:commandLink value="Log Play" process="@this" actionListener="#{logPlay.loadPlay}"
                                            update="gamePage" rendered="#{userSession.loggedIn}"/>
+                        </h:panelGroup>
+                        <h:panelGroup layout="block" style="padding-bottom: 10px;" rendered="#{userSession.loggedIn}">
+                            <sr:linkWithSpinner linkText="Add game to collection" actionMethod="#{boardGame.addGameToCollection}" process="@this" update="gamePage"/>
                         </h:panelGroup>
                         <h:panelGroup id="playMessageDiv">
                             <h:panelGroup layout="block" rendered="#{logPlay.showPlayMessage or logPlay.showPlayError}" style="padding-bottom: 10px;">

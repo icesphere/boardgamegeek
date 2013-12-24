@@ -117,13 +117,13 @@ public class BoardGameUtil
             }
             else {
                 if (createGameIfNotExists(gameId)) {
-                    createUserGame(userId, item, gameId);
+                    userGamesMap.put(gameId, createUserGame(userId, item, gameId));
                 }
             }
         }
     }
 
-    private void createUserGame(long userId, Item item, long gameId)
+    private UserGame createUserGame(long userId, Item item, long gameId)
     {
         UserGame userGame;
         userGame = new UserGame();
@@ -131,6 +131,8 @@ public class BoardGameUtil
         userGame.setGameId(gameId);
         syncUserGame(item, userGame);
         gameDao.createUserGame(userGame);
+
+        return userGame;
     }
 
     //returns false if game does not exist and could not be created
