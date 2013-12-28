@@ -1,5 +1,7 @@
 package org.smartreaction.boardgamegeek.view;
 
+import org.apache.commons.lang.math.RandomUtils;
+import org.joda.time.DateTime;
 import org.primefaces.context.RequestContext;
 import org.smartreaction.boardgamegeek.business.BoardGameCache;
 import org.smartreaction.boardgamegeek.comparators.RecommendedGameComparator;
@@ -36,21 +38,21 @@ public class RecommendedGames implements Serializable
 
     private List<UserGame> topUserGames;
 
-    private Map<Long, Boolean> selectedGames = new HashMap<Long, Boolean>();
+    private Map<Long, Boolean> selectedGames = new HashMap<>();
 
-    private List<Game> topGames = new ArrayList<Game>();
+    private List<Game> topGames = new ArrayList<>();
 
-    private List<Long> topUserGameIds = new ArrayList<Long>();
+    private List<Long> topUserGameIds = new ArrayList<>();
 
-    private Set<Long> processedUsers = new HashSet<Long>();
+    private Set<Long> processedUsers = new HashSet<>();
 
-    private List<GameRecommendations> gameRecommendationList = new ArrayList<GameRecommendations>();
+    private List<GameRecommendations> gameRecommendationList = new ArrayList<>();
 
     private boolean allRecommendationsLoaded;
 
-    private Map<Long, RecommendedGame> recommendedGameMap = new HashMap<Long, RecommendedGame>();
+    private Map<Long, RecommendedGame> recommendedGameMap = new HashMap<>();
 
-    private List<GameRating> gameRatings = new ArrayList<GameRating>();
+    private List<GameRating> gameRatings = new ArrayList<>();
 
     private long currentGameId;
 
@@ -182,7 +184,7 @@ public class RecommendedGames implements Serializable
                 try {
                     numRatingsProcessed = 0;
                     currentGameId = gameRecommendations.getGame().getId();
-                    gameRatings = boardGameCache.getBoardGameUtil().getGameRatings(currentGameId);
+                    gameRatings = boardGameCache.getBoardGameUtil().getGameRatings(gameRecommendations.getGame(), shouldRefreshRecommendations(gameRecommendations.getGame()));
                     gameRatings.get(0).setLoading(true);
                 }
                 catch (Throwable t) {
@@ -211,9 +213,9 @@ public class RecommendedGames implements Serializable
             }
         }
         else {
-            List<RecommendedGame> allGamesRecommended = new ArrayList<RecommendedGame>(recommendedGameMap.values());
+            List<RecommendedGame> allGamesRecommended = new ArrayList<>(recommendedGameMap.values());
             Collections.sort(allGamesRecommended, new RecommendedGameComparator());
-            allRecommendedGames = new ArrayList<Game>();
+            allRecommendedGames = new ArrayList<>();
             for (RecommendedGame recommendedGame : allGamesRecommended) {
                 if (allRecommendedGames.size() >= MAX_GAMES_TO_RECOMMEND) {
                     break;
@@ -238,6 +240,18 @@ public class RecommendedGames implements Serializable
 
         RequestContext context = RequestContext.getCurrentInstance();
         context.addCallbackParam("allRecommendationsLoaded", allRecommendationsLoaded);
+    }
+
+    private boolean shouldRefreshRecommendations(Game game)
+    {
+        if (game.getRecommendationsLastUpdated() == null) {
+            return true;
+        }
+
+        DateTime lastUpdated = new DateTime(game.getRecommendationsLastUpdated());
+        lastUpdated = lastUpdated.plusDays(10);
+        lastUpdated = lastUpdated.plusDays(RandomUtils.nextInt(10));
+        return DateTime.now().isAfter(lastUpdated);
     }
 
     private void setMostGamesInCommonUser()

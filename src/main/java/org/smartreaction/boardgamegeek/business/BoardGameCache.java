@@ -119,7 +119,7 @@ public class BoardGameCache
     {
         DateTime expiredTime = new DateTime(game.getLastUpdated());
         expiredTime = expiredTime.plusHours(48);
-        expiredTime.plusHours(RandomUtils.nextInt(48));
+        expiredTime = expiredTime.plusHours(RandomUtils.nextInt(48));
         return DateTime.now().isAfter(expiredTime);
     }
 
@@ -206,9 +206,9 @@ public class BoardGameCache
         if (game.getCommentsLastUpdated() == null) {
             return true;
         }
-        DateTime expiredTime = new DateTime(game.getCommentsLastUpdated());
-        expiredTime = expiredTime.plusDays(3);
-        return DateTime.now().isAfter(expiredTime);
+        DateTime lastUpdated = new DateTime(game.getCommentsLastUpdated());
+        lastUpdated = lastUpdated.plusDays(3);
+        return DateTime.now().isAfter(lastUpdated);
     }
 
     public List<Forum> getForums(long gameId) {

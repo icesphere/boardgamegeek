@@ -8,13 +8,12 @@ import org.smartreaction.boardgamegeek.db.dao.UserDao;
 import org.smartreaction.boardgamegeek.db.entities.*;
 import org.smartreaction.boardgamegeek.model.RecommendedGame;
 import org.smartreaction.boardgamegeek.services.BoardGameGeekService;
-import org.smartreaction.boardgamegeek.xml.game.*;
-import org.smartreaction.boardgamegeek.xml.gamewithrating.Comment;
 import org.smartreaction.boardgamegeek.xml.collection.Item;
 import org.smartreaction.boardgamegeek.xml.collection.Items;
+import org.smartreaction.boardgamegeek.xml.game.*;
+import org.smartreaction.boardgamegeek.xml.gamewithrating.Comment;
 import org.smartreaction.boardgamegeek.xml.plays.Play;
 
-import javax.ejb.Asynchronous;
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import javax.xml.bind.JAXBException;
@@ -75,10 +74,10 @@ public class BoardGameUtil
         }
     }
 
-    public void loadUserTopGames(User user) throws MalformedURLException, JAXBException
+    public void loadUserTopGames(User user, Map<Long, UserGame> userGamesMap) throws MalformedURLException, JAXBException
     {
         Items collection = boardGameGeekService.getCollectionTopGames(user.getUsername());
-        syncUserGames(user.getId(), collection, new HashMap<Long, UserGame>(0));
+        syncUserGames(user.getId(), collection, userGamesMap);
         user.setTopGamesLoaded(true);
         userDao.saveUser(user);
     }
@@ -364,12 +363,26 @@ public class BoardGameUtil
         return "1".equals(status);
     }
 
-    public List<GameRating> getGameRatings(long gameId) throws MalformedURLException, JAXBException
+    public List<GameRating> getGameRatings(Game game, boolean refreshRatings) throws MalformedURLException, JAXBException
     {
-        List<GameRating> gameRatings = gameDao.getGameRatings(gameId);
-        if (gameRatings.isEmpty()) {
-            gameRatings = loadGameRatings(gameId);
+        List<GameRating> gameRatings;
+
+        if (refreshRatings) {
+            gameDao.deleteGameRatings(game.getId());
+            gameDao.flush();
+            gameRatings = loadGameRatings(game.getId());
+            game.setRecommendationsLastUpdated(new Date());
+            gameDao.updateGame(game);
         }
+        else {
+            gameRatings = gameDao.getGameRatings(game.getId());
+            if (gameRatings.isEmpty()) {
+                gameRatings = loadGameRatings(game.getId());
+                game.setRecommendationsLastUpdated(new Date());
+                gameDao.updateGame(game);
+            }
+        }
+
         return gameRatings;
     }
 
@@ -400,7 +413,17 @@ public class BoardGameUtil
         }
         else if (!processedUsers.contains(user.getId())) {
             if (!user.isCollectionLoaded() && !user.isTopGamesLoaded()) {
-                loadUserTopGames(user);
+                loadUserTopGames(user, new HashMap<Long, UserGame>(0));
+            }
+            else {
+                Map<Long, UserGame> ratingsUserGamesMap = gameDao.getUserGamesMap(user.getId());
+
+                if (user.isCollectionLoaded()) {
+                    syncUserGames(user, ratingsUserGamesMap, false);
+                }
+                else {
+                    loadUserTopGames(user, ratingsUserGamesMap);
+                }
             }
             List<UserGame> topUserGamesForRatingUser = getTopUserGames(user.getId());
             int numGamesInCommon = getNumGamesInCommon(topUserGameIds, topUserGamesForRatingUser);

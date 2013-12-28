@@ -44,7 +44,7 @@
                         <h:outputLink value="#{boardGame.game.gameLink}" target="_blank">BGG Game Page</h:outputLink>
                     </div>
                     <h:panelGroup layout="block">
-                        <h:panelGroup layout="block" style="padding-bottom: 10px;" rendered="#{userSession.usernameSet}">
+                        <h:panelGroup layout="block" style="padding-bottom: 20px;" rendered="#{userSession.usernameSet}">
                             <h:link outcome="/plays.xhtml?gameId=#{boardGame.game.id}&amp;faces-redirect=true" style="margin-right: 20px;"
                                     rendered="#{userSession.userGamesMap.get(boardGame.game.id).numPlays gt 0}">
                                 <h:outputText value="Your Plays (#{userSession.userGamesMap.get(boardGame.game.id).numPlays})"/>
@@ -52,8 +52,8 @@
                             <p:commandLink value="Log Play" process="@this" actionListener="#{logPlay.loadPlay}"
                                            update="gamePage" rendered="#{userSession.loggedIn}"/>
                         </h:panelGroup>
-                        <h:panelGroup layout="block" style="padding-bottom: 10px;" rendered="#{userSession.loggedIn}">
-                            <sr:linkWithSpinner linkText="Add game to collection" actionMethod="#{boardGame.addGameToCollection}" process="@this" update="gamePage"/>
+                        <h:panelGroup layout="block" style="padding-bottom: 20px;" rendered="#{userSession.loggedIn}">
+                            <sr:linkWithSpinner linkText="Add game to collection" actionMethod="#{boardGame.addGameToCollection}" process="@this" update=":gameForm:gamePage"/>
                         </h:panelGroup>
                         <h:panelGroup id="playMessageDiv">
                             <h:panelGroup layout="block" rendered="#{logPlay.showPlayMessage or logPlay.showPlayError}" style="padding-bottom: 10px;">
@@ -226,6 +226,7 @@
                             <h:outputText value="Plays Graph: " styleClass="boldText"/>
 
                             <h:selectOneRadio value="#{singleGamePlaysGraph.playTime}" styleClass="radioSpacing">
+                                <f:selectItem itemValue="5" itemLabel="5 years"/>
                                 <f:selectItem itemValue="3" itemLabel="3 years"/>
                                 <f:selectItem itemValue="2" itemLabel="2 years"/>
                                 <f:selectItem itemValue="1" itemLabel="1 year"/>

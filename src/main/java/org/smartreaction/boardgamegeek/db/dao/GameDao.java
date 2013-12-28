@@ -238,4 +238,12 @@ public class GameDao
 
         return query.getResultList();
     }
+
+    public void deleteGameRatings(long gameId)
+    {
+        TypedQuery<GameRating> query = em.createQuery("delete from GameRating gr where gr.gameId = :gameId", GameRating.class);
+        query.setParameter("gameId", gameId);
+
+        query.executeUpdate();
+    }
 }
