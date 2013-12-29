@@ -212,6 +212,40 @@
                         </h:panelGroup>
                     </h:panelGroup>
 
+                    <h:panelGroup layout="block" id="recommendedGamesSection" style="padding-top: 10px;">
+                        <h:panelGroup rendered="#{!boardGame.showRecommendedGames}">
+                            <sr:linkWithSpinner linkText="Show recommended games" actionMethod="#{boardGame.loadRecommendedGames}"
+                                                process="@this" update=":gameForm:recommendedGamesSection"/>
+                        </h:panelGroup>
+
+                        <p:commandLink value="Hide recommended games" action="#{boardGame.hideRecommendedGames}"
+                                       process="@this" update="recommendedGamesSection" rendered="#{boardGame.showRecommendedGames}"/>
+
+                        <h:panelGroup layout="block" style="padding-top: 10px;" rendered="#{boardGame.showRecommendedGames}">
+                            <h:outputText value="Recommended Games: " styleClass="boldText"/>
+
+                            <p:dataTable value="#{boardGame.recommendedGames}" var="game">
+                                <p:column headerText="Game">
+                                    <h:link outcome="/game.xhtml?id=#{game.id}&amp;faces-redirect=true">#{game.name}</h:link>
+                                </p:column>
+
+                                <p:column headerText="Year" styleClass="alignCenter" sortBy="#{game.yearPublished}">
+                                    <h:outputText value="#{game.yearPublished}"/>
+                                </p:column>
+
+                                <p:column headerText="Rank" styleClass="alignCenter" sortBy="#{game.sortRank}">
+                                    <h:outputText value="#{game.rank}" rendered="#{game.rank gt 0}"/>
+                                    <h:outputText value="N/A" rendered="#{game.rank eq 0}"/>
+                                </p:column>
+
+                                <p:column headerText="User Avg Rating" styleClass="alignCenter" sortBy="#{game.averageRating}">
+                                    <h:outputText value="#{game.averageRating}"/>
+                                    <h:outputText value=" (#{game.ratings} ratings)"/>
+                                </p:column>
+                            </p:dataTable>
+                        </h:panelGroup>
+                    </h:panelGroup>
+
                     <h:panelGroup layout="block" id="gamePlaysSection" style="padding-top: 10px;"
                                   rendered="#{userSession.usernameSet and userSession.userGamesMap.get(boardGame.game.id).numPlays gt 0}">
                         <h:panelGroup rendered="#{!boardGame.showGamePlays}">

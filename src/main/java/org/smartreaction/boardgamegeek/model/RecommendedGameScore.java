@@ -1,6 +1,6 @@
 package org.smartreaction.boardgamegeek.model;
 
-public class RecommendedGame
+public class RecommendedGameScore
 {
     private long gameId;
 

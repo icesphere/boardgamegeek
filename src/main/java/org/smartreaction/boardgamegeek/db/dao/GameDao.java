@@ -241,7 +241,28 @@ public class GameDao
 
     public void deleteGameRatings(long gameId)
     {
-        TypedQuery<GameRating> query = em.createQuery("delete from GameRating gr where gr.gameId = :gameId", GameRating.class);
+        Query query = em.createQuery("delete from GameRating gr where gr.gameId = :gameId");
+        query.setParameter("gameId", gameId);
+
+        query.executeUpdate();
+    }
+
+    public List<Game> getRecommendedGames(long gameId)
+    {
+        TypedQuery<Game> query = em.createQuery("select g from Game g, RecommendedGame rg where g.id = rg.recommendedGameId and rg.gameId = :gameId order by rg.score desc", Game.class);
+        query.setParameter("gameId", gameId);
+
+        return query.getResultList();
+    }
+
+    public void createRecommendedGame(RecommendedGame recommendedGame)
+    {
+        em.persist(recommendedGame);
+    }
+
+    public void deleteRecommendedGames(long gameId)
+    {
+        Query query = em.createQuery("delete from RecommendedGame rg where rg.gameId = :gameId");
         query.setParameter("gameId", gameId);
 
         query.executeUpdate();

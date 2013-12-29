@@ -60,9 +60,13 @@ public class Game
     @Temporal(TemporalType.TIMESTAMP)
     private Date commentsLastUpdated;
 
-    @Column(name = "recommendations_last_updated")
+    @Column(name = "game_ratings_last_updated")
     @Temporal(TemporalType.TIMESTAMP)
-    private Date recommendationsLastUpdated;
+    private Date gameRatingsLastUpdated;
+
+    @Column(name = "game_recommendations_last_updated")
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date gameRecommendationsLastUpdated;
 
     @Column
     private int rank;
@@ -460,13 +464,23 @@ public class Game
         this.commentsLastUpdated = commentsLastUpdated;
     }
 
-    public Date getRecommendationsLastUpdated()
+    public Date getGameRatingsLastUpdated()
     {
-        return recommendationsLastUpdated;
+        return gameRatingsLastUpdated;
     }
 
-    public void setRecommendationsLastUpdated(Date recommendationsLastUpdated)
+    public void setGameRatingsLastUpdated(Date recommendationsLastUpdated)
     {
-        this.recommendationsLastUpdated = recommendationsLastUpdated;
+        this.gameRatingsLastUpdated = recommendationsLastUpdated;
+    }
+
+    public Date getGameRecommendationsLastUpdated()
+    {
+        return gameRecommendationsLastUpdated;
+    }
+
+    public void setGameRecommendationsLastUpdated(Date gameRecommendationsLastUpdated)
+    {
+        this.gameRecommendationsLastUpdated = gameRecommendationsLastUpdated;
     }
 }

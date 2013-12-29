@@ -2,11 +2,14 @@ package org.smartreaction.boardgamegeek.business;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.math.NumberUtils;
+import org.apache.commons.lang.math.RandomUtils;
+import org.joda.time.DateTime;
 import org.smartreaction.boardgamegeek.BoardGameGeekConstants;
+import org.smartreaction.boardgamegeek.comparators.RecommendedGameComparator;
 import org.smartreaction.boardgamegeek.db.dao.GameDao;
 import org.smartreaction.boardgamegeek.db.dao.UserDao;
 import org.smartreaction.boardgamegeek.db.entities.*;
-import org.smartreaction.boardgamegeek.model.RecommendedGame;
+import org.smartreaction.boardgamegeek.model.RecommendedGameScore;
 import org.smartreaction.boardgamegeek.services.BoardGameGeekService;
 import org.smartreaction.boardgamegeek.xml.collection.Item;
 import org.smartreaction.boardgamegeek.xml.collection.Items;
@@ -363,22 +366,22 @@ public class BoardGameUtil
         return "1".equals(status);
     }
 
-    public List<GameRating> getGameRatings(Game game, boolean refreshRatings) throws MalformedURLException, JAXBException
+    public List<GameRating> getGameRatings(Game game) throws MalformedURLException, JAXBException
     {
         List<GameRating> gameRatings;
 
-        if (refreshRatings) {
+        if (shouldRefreshGameRatings(game)) {
             gameDao.deleteGameRatings(game.getId());
             gameDao.flush();
             gameRatings = loadGameRatings(game.getId());
-            game.setRecommendationsLastUpdated(new Date());
+            game.setGameRatingsLastUpdated(new Date());
             gameDao.updateGame(game);
         }
         else {
             gameRatings = gameDao.getGameRatings(game.getId());
             if (gameRatings.isEmpty()) {
                 gameRatings = loadGameRatings(game.getId());
-                game.setRecommendationsLastUpdated(new Date());
+                game.setGameRatingsLastUpdated(new Date());
                 gameDao.updateGame(game);
             }
         }
@@ -397,7 +400,7 @@ public class BoardGameUtil
 
     public void addGameRecommendationsForUser(List<Long> topUserGameIds, Set<Long> processedUsers, double userGameRating,
                                               GameRating gameRating, Map<Long, UserGame> userGamesMap,
-                                              Map<Long, RecommendedGame> recommendedGameMap, UserGameRecommendationsInfo recommendationsInfo) throws MalformedURLException, JAXBException
+                                              Map<Long, RecommendedGameScore> recommendedGameMap, UserGameRecommendationsInfo recommendationsInfo) throws MalformedURLException, JAXBException
     {
         User user = userDao.getUser(gameRating.getUsername());
         if (user == null) {
@@ -438,9 +441,9 @@ public class BoardGameUtil
                         double commonGamesScore = (recommendationsInfo.getGamesInCommonMultiplier()*Math.pow(numGamesInCommon, recommendationsInfo.getGamesInCommonExponent()))/commonDivider;
                         double totalScore = yourRatingScore + otherRatingScore + commonGamesScore;
 
-                        RecommendedGame recommendedGame = recommendedGameMap.get(userGame.getGameId());
+                        RecommendedGameScore recommendedGame = recommendedGameMap.get(userGame.getGameId());
                         if (recommendedGame == null) {
-                            recommendedGame = new RecommendedGame();
+                            recommendedGame = new RecommendedGameScore();
                             recommendedGame.setGameId(userGame.getGameId());
                         }
                         recommendedGame.setScore(recommendedGame.getScore() + totalScore);
@@ -642,5 +645,95 @@ public class BoardGameUtil
 
     public List<Game> searchGames(String searchString) {
         return gameDao.searchGames(searchString);
+    }
+
+    public List<Game> getRecommendedGames(Game game) throws MalformedURLException, JAXBException
+    {
+        if (shouldRefreshGameRecommendations(game)) {
+            gameDao.deleteRecommendedGames(game.getId());
+            gameDao.flush();
+            createRecommendedGames(game);
+            game.setGameRecommendationsLastUpdated(new Date());
+            gameDao.updateGame(game);
+        }
+
+        return gameDao.getRecommendedGames(game.getId());
+    }
+
+    private void createRecommendedGames(Game game) throws MalformedURLException, JAXBException
+    {
+        List<GameRating> gameRatings = getGameRatings(game);
+
+        Map<Long, RecommendedGameScore> gameScores = new HashMap<>();
+
+        for (GameRating gameRating : gameRatings) {
+            User user = userDao.getUser(gameRating.getUsername());
+
+            if (user != null && (user.isCollectionLoaded() || user.isTopGamesLoaded())) {
+                List<UserGame> topUserGames = gameDao.getTopUserGames(user.getId());
+
+                for (UserGame userGame : topUserGames) {
+                    if (userGame.getGameId() != game.getId()) {
+                        RecommendedGameScore recommendedGameScore = gameScores.get(userGame.getGameId());
+                        if (recommendedGameScore == null) {
+                            recommendedGameScore = new RecommendedGameScore();
+                            recommendedGameScore.setGameId(userGame.getGameId());
+                            recommendedGameScore.setScore(0);
+                        }
+
+                        recommendedGameScore.setScore(recommendedGameScore.getScore() + Math.pow(userGame.getRating(), 2));
+
+                        gameScores.put(userGame.getGameId(), recommendedGameScore);
+                    }
+                }
+            }
+        }
+
+        ArrayList<RecommendedGameScore> recommendedGameScores = new ArrayList<>(gameScores.values());
+
+        Collections.sort(recommendedGameScores, new RecommendedGameComparator());
+
+        int maxGamesToRecommend = 10;
+
+        int gamesRecommended = 0;
+
+        for (RecommendedGameScore recommendedGameScore : recommendedGameScores) {
+            RecommendedGame recommendedGame = new RecommendedGame();
+            recommendedGame.setGameId(game.getId());
+            recommendedGame.setRecommendedGameId(recommendedGameScore.getGameId());
+            recommendedGame.setScore(recommendedGameScore.getScore());
+
+            gameDao.createRecommendedGame(recommendedGame);
+
+            gamesRecommended++;
+
+            if (gamesRecommended == maxGamesToRecommend) {
+                break;
+            }
+        }
+    }
+
+    private boolean shouldRefreshGameRatings(Game game)
+    {
+        if (game.getGameRatingsLastUpdated() == null) {
+            return true;
+        }
+
+        DateTime lastUpdated = new DateTime(game.getGameRatingsLastUpdated());
+        lastUpdated = lastUpdated.plusDays(10);
+        lastUpdated = lastUpdated.plusDays(RandomUtils.nextInt(10));
+        return DateTime.now().isAfter(lastUpdated);
+    }
+
+    private boolean shouldRefreshGameRecommendations(Game game)
+    {
+        if (game.getGameRecommendationsLastUpdated() == null) {
+            return true;
+        }
+
+        DateTime lastUpdated = new DateTime(game.getGameRecommendationsLastUpdated());
+        lastUpdated = lastUpdated.plusDays(10);
+        lastUpdated = lastUpdated.plusDays(RandomUtils.nextInt(10));
+        return DateTime.now().isAfter(lastUpdated);
     }
 }

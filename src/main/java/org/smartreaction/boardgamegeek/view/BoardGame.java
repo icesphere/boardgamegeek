@@ -55,6 +55,10 @@ public class BoardGame {
 
     private boolean gamePlaysLoaded;
 
+    private List<Game> recommendedGames;
+
+    private boolean showRecommendedGames;
+
     @PostConstruct
     public void setup() {
         long gameId = Long.parseLong(Faces.getRequestParameter("id"));
@@ -124,6 +128,18 @@ public class BoardGame {
         }
     }
 
+    public void loadRecommendedGames() throws MalformedURLException, JAXBException
+    {
+        if (recommendedGames == null) {
+            recommendedGames = boardGameCache.getBoardGameUtil().getRecommendedGames(game);
+        }
+        showRecommendedGames = true;
+    }
+
+    public void hideRecommendedGames() {
+        showRecommendedGames = false;
+    }
+
     public Game getGame() {
         return game;
     }
@@ -183,6 +199,16 @@ public class BoardGame {
 
     public void setShowGamePlays(boolean showGamePlays) {
         this.showGamePlays = showGamePlays;
+    }
+
+    public List<Game> getRecommendedGames()
+    {
+        return recommendedGames;
+    }
+
+    public boolean isShowRecommendedGames()
+    {
+        return showRecommendedGames;
     }
 
     @SuppressWarnings("UnusedDeclaration")
