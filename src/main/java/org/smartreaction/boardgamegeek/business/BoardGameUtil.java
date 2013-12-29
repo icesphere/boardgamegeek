@@ -98,7 +98,7 @@ public class BoardGameUtil
         if (fullCollectionRefresh) {
             deleteUserGames(user.getId());
             user.setCollectionLastUpdated(null);
-            userGamesMap = new HashMap<>(0);
+            userGamesMap.clear();
             gameDao.flush();
         }
         Items collection = boardGameGeekService.getCollection(user);
