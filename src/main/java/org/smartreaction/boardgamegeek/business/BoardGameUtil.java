@@ -79,9 +79,10 @@ public class BoardGameUtil
 
     public void loadUserTopGames(User user, Map<Long, UserGame> userGamesMap) throws MalformedURLException, JAXBException
     {
-        Items collection = boardGameGeekService.getCollectionTopGames(user.getUsername());
+        Items collection = boardGameGeekService.getCollectionTopGames(user);
         syncUserGames(user.getId(), collection, userGamesMap);
         user.setTopGamesLoaded(true);
+        user.setTopGamesLastUpdated(new Date());
         userDao.saveUser(user);
     }
 

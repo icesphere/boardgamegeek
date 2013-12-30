@@ -45,6 +45,10 @@ public class User
     @Temporal(TemporalType.TIMESTAMP)
     private Date collectionLastUpdated;
 
+    @Column(name = "top_games_last_updated")
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date topGamesLastUpdated;
+
     public long getId()
     {
         return id;
@@ -153,5 +157,13 @@ public class User
     public void setCollectionLastUpdated(Date collectionLastUpdated)
     {
         this.collectionLastUpdated = collectionLastUpdated;
+    }
+
+    public Date getTopGamesLastUpdated() {
+        return topGamesLastUpdated;
+    }
+
+    public void setTopGamesLastUpdated(Date topGamesLastUpdated) {
+        this.topGamesLastUpdated = topGamesLastUpdated;
     }
 }
