@@ -410,11 +410,7 @@ public class BoardGameUtil
     {
         User user = userDao.getUser(gameRating.getUsername());
         if (user == null) {
-            user = new User();
-            user.setUsername(gameRating.getUsername());
-            user.setCreatedDate(new Date());
-            userDao.createUser(user);
-            userDao.flush();
+            user = createNewUser(gameRating.getUsername());
         }
 
         if (user.isCollectionError()) {
@@ -464,6 +460,16 @@ public class BoardGameUtil
 
             processedUsers.add(user.getId());
         }
+    }
+
+    private User createNewUser(String username) {
+        User user;
+        user = new User();
+        user.setUsername(username);
+        user.setCreatedDate(new Date());
+        userDao.createUser(user);
+        userDao.flush();
+        return user;
     }
 
     private int getNumGamesInCommon(List<Long> topUserGameIds, List<UserGame> topUserGamesForRatingUser)
@@ -672,27 +678,35 @@ public class BoardGameUtil
 
         Map<Long, RecommendedGameScore> gameScores = new HashMap<>();
 
+        int ratingsLoaded = 0;
+
+        List<User> usersNeedingCollectionLoaded = new ArrayList<>();
+
         for (GameRating gameRating : gameRatings) {
             User user = userDao.getUser(gameRating.getUsername());
-
-            if (user != null && (user.isCollectionLoaded() || user.isTopGamesLoaded())) {
-                List<UserGame> topUserGames = gameDao.getTopUserGames(user.getId());
-
-                for (UserGame userGame : topUserGames) {
-                    if (userGame.getGameId() != game.getId()) {
-                        RecommendedGameScore recommendedGameScore = gameScores.get(userGame.getGameId());
-                        if (recommendedGameScore == null) {
-                            recommendedGameScore = new RecommendedGameScore();
-                            recommendedGameScore.setGameId(userGame.getGameId());
-                            recommendedGameScore.setScore(0);
-                        }
-
-                        recommendedGameScore.setScore(recommendedGameScore.getScore() + Math.pow(userGame.getRating(), 2));
-
-                        gameScores.put(userGame.getGameId(), recommendedGameScore);
-                    }
+            if (user == null || (!user.isTopGamesLoaded() && !user.isCollectionLoaded())) {
+                if (user == null) {
+                    user = createNewUser(gameRating.getUsername());
                 }
+                usersNeedingCollectionLoaded.add(user);
             }
+            else {
+                addGameRatingForUser(game, gameScores, user);
+                ratingsLoaded++;
+            }
+        }
+
+        for (User user : usersNeedingCollectionLoaded) {
+            if (ratingsLoaded >= 10) {
+                break;
+            }
+
+            loadUserTopGames(user, new HashMap<Long, UserGame>(0));
+            userDao.flush();
+
+            addGameRatingForUser(game, gameScores, user);
+
+            ratingsLoaded++;
         }
 
         ArrayList<RecommendedGameScore> recommendedGameScores = new ArrayList<>(gameScores.values());
@@ -715,6 +729,26 @@ public class BoardGameUtil
 
             if (gamesRecommended == maxGamesToRecommend) {
                 break;
+            }
+        }
+    }
+
+    private void addGameRatingForUser(Game game, Map<Long, RecommendedGameScore> gameScores, User user) {
+
+        List<UserGame> topUserGames = gameDao.getTopUserGames(user.getId());
+
+        for (UserGame userGame : topUserGames) {
+            if (userGame.getGameId() != game.getId()) {
+                RecommendedGameScore recommendedGameScore = gameScores.get(userGame.getGameId());
+                if (recommendedGameScore == null) {
+                    recommendedGameScore = new RecommendedGameScore();
+                    recommendedGameScore.setGameId(userGame.getGameId());
+                    recommendedGameScore.setScore(0);
+                }
+
+                recommendedGameScore.setScore(recommendedGameScore.getScore() + Math.pow(userGame.getRating(), 2));
+
+                gameScores.put(userGame.getGameId(), recommendedGameScore);
             }
         }
     }
