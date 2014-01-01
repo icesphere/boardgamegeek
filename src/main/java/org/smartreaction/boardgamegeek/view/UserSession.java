@@ -2,7 +2,7 @@ package org.smartreaction.boardgamegeek.view;
 
 import com.sun.jersey.api.client.ClientResponse;
 import com.sun.jersey.api.client.WebResource;
-import com.sun.jersey.core.util.MultivaluedMapImpl;
+import org.apache.commons.lang.StringUtils;
 import org.joda.time.DateTime;
 import org.omnifaces.util.Faces;
 import org.smartreaction.boardgamegeek.BoardGameGeekConstants;
@@ -16,17 +16,18 @@ import org.smartreaction.boardgamegeek.db.entities.UserPlay;
 import org.smartreaction.boardgamegeek.util.UAgentInfo;
 
 import javax.ejb.EJB;
+import javax.faces.application.FacesMessage;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.ManagedProperty;
 import javax.faces.bean.SessionScoped;
+import javax.faces.context.FacesContext;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.core.Cookie;
-import javax.ws.rs.core.MultivaluedMap;
-import javax.ws.rs.core.NewCookie;
 import javax.xml.bind.JAXBException;
 import java.io.Serializable;
 import java.net.MalformedURLException;
+import java.security.Principal;
 import java.util.*;
 
 @ManagedBean
@@ -69,13 +70,52 @@ public class UserSession implements Serializable
 
     private boolean errorSyncingGames;
 
-    private boolean loginError;
-
-    public String login() throws MalformedURLException, JAXBException
+    public String login()
     {
-        loadUser();
-        usernameSet = true;
-        return getPageAfterLogin();
+        FacesContext context = FacesContext.getCurrentInstance();
+
+        HttpServletRequest request = (HttpServletRequest) context.getExternalContext().getRequest();
+        try
+        {
+            Principal principal = request.getUserPrincipal();
+
+            if (principal == null || !principal.getName().equals(username)) {
+                request.login(username, password);
+                loadUser();
+                usernameSet = true;
+                if (!StringUtils.isEmpty(password)) {
+                    cookies = new ArrayList<>(2);
+
+                    String bggPasswordCookie = (String) request.getSession().getAttribute("bggPasswordCookie");
+
+                    Cookie usernameCookie = new Cookie("bggusername", username, "/", "boardgamegeek.com");
+                    cookies.add(usernameCookie);
+
+                    Cookie passwordCookie = new Cookie("bggpassword", bggPasswordCookie, "/", "boardgamegeek.com");
+                    cookies.add(passwordCookie);
+
+                    int maxAge = 2592000; //30 days
+                    for (Cookie cookie : cookies) {
+                        javax.servlet.http.Cookie responseCookie = new javax.servlet.http.Cookie(cookie.getName(), cookie.getValue());
+                        responseCookie.setMaxAge(maxAge);
+                        Faces.getResponse().addCookie(responseCookie);
+                    }
+
+                    loggedIn = true;
+                    password = null;
+                }
+
+                return getPageAfterLogin();
+            }
+        }
+        catch (Exception e)
+        {
+            password = null;
+
+            context.addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, e.getMessage(), null));
+        }
+
+        return null;
     }
 
     private String getPageAfterLogin() {
@@ -83,24 +123,6 @@ public class UserSession implements Serializable
             return Faces.getSession().getAttribute("redirectPage") + "?faces-redirect=true";
         }
         return "index.xhtml?faces-redirect=true";
-    }
-
-    public String loginWithPassword() throws MalformedURLException, JAXBException
-    {
-        loadUser();
-        try {
-            loginToBoardGameGeek();
-            if (loggedIn) {
-                return getPageAfterLogin();
-            }
-            return "login.xhtml?faces-redirect=true";
-        } catch (Exception e) {
-            loginError = true;
-            System.out.println("Error logging in to BGG");
-            e.printStackTrace();
-            usernameSet = true;
-            return getPageAfterLogin();
-        }
     }
 
     public void fullCollectionRefresh()
@@ -207,8 +229,12 @@ public class UserSession implements Serializable
                 loggedIn = false;
             }
         }
+
         usernameSet = false;
+
+        Faces.logout();
         Faces.invalidateSession();
+
         return "login.xhtml?faces-redirect=true";
     }
 
@@ -226,36 +252,7 @@ public class UserSession implements Serializable
         }
     }
 
-    private void loginToBoardGameGeek()
-    {
-        if (!loggedIn) {
-            WebResource webResource = boardGameGeekClient.getClient().resource(BoardGameGeekConstants.BBG_WEBSITE + "/login");
-
-            MultivaluedMap<String, String> queryParams = new MultivaluedMapImpl();
-            queryParams.add("username", username);
-            queryParams.add("password", password);
-
-            ClientResponse response = webResource.queryParams(queryParams).post(ClientResponse.class);
-
-            int status = response.getStatus();
-            if (status == 200) {
-                cookies = new ArrayList<>();
-                int maxAge = 2592000; //30 days
-                for (NewCookie newCookie : response.getCookies()) {
-                    Cookie cookie = new Cookie(newCookie.getName(), newCookie.getValue(), "/", "boardgamegeek.com");
-                    cookies.add(cookie);
-
-                    javax.servlet.http.Cookie responseCookie = new javax.servlet.http.Cookie(newCookie.getName(), newCookie.getValue());
-                    responseCookie.setMaxAge(maxAge);
-                    Faces.getResponse().addCookie(responseCookie);
-                }
-                usernameSet = true;
-                loggedIn = true;
-            }
-        }
-    }
-
-    public synchronized void loginFromCookies(javax.servlet.http.Cookie[] httpCookies)
+   /* public synchronized void loginFromCookies(javax.servlet.http.Cookie[] httpCookies)
     {
         try {
             if (!usernameSet) {
@@ -277,7 +274,7 @@ public class UserSession implements Serializable
         catch (MalformedURLException | JAXBException e) {
             e.printStackTrace();
         }
-    }
+    }*/
 
     public void loadLastPlayed()
     {
@@ -414,11 +411,6 @@ public class UserSession implements Serializable
         this.hideCollectionExpansions = hideCollectionExpansions;
     }
 
-    public List<Game> getGamesWithoutExpansions()
-    {
-        return gamesWithoutExpansions;
-    }
-
     public boolean isShowLastPlayed()
     {
         return showLastPlayed;
@@ -432,10 +424,6 @@ public class UserSession implements Serializable
     public boolean isErrorSyncingGames()
     {
         return errorSyncingGames;
-    }
-
-    public boolean isLoginError() {
-        return loginError;
     }
 
     @SuppressWarnings("UnusedDeclaration")

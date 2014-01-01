@@ -48,6 +48,10 @@
         <welcome-file>index.xhtml</welcome-file>
     </welcome-file-list>
 
+    <security-role>
+        <role-name>USER</role-name>
+    </security-role>
+
     <security-constraint>
         <web-resource-collection>
             <web-resource-name>loginWithPassword</web-resource-name>
@@ -57,5 +61,29 @@
             <transport-guarantee>CONFIDENTIAL</transport-guarantee>
         </user-data-constraint>
     </security-constraint>
+
+    <security-constraint>
+        <display-name>Require login for certain pages</display-name>
+        <web-resource-collection>
+            <web-resource-name>Restricted pages</web-resource-name>
+            <url-pattern>/collection.xhtml</url-pattern>
+            <url-pattern>/plays.xhtml</url-pattern>
+            <url-pattern>/playsGraph.xhtml</url-pattern>
+            <url-pattern>/recommended.xhtml</url-pattern>
+            <url-pattern>/subscriptions.xhtml</url-pattern>
+        </web-resource-collection>
+        <auth-constraint>
+            <role-name>USER</role-name>
+        </auth-constraint>
+    </security-constraint>
+
+    <login-config>
+        <auth-method>FORM</auth-method>
+        <realm-name>CustomRealm</realm-name>
+        <form-login-config>
+            <form-login-page>/login.xhtml</form-login-page>
+            <form-error-page>/login.xhtml</form-error-page>
+        </form-login-config>
+    </login-config>
 
 </web-app>
