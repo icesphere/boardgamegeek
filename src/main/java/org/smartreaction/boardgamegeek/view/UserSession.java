@@ -15,6 +15,7 @@ import org.smartreaction.boardgamegeek.db.entities.UserGame;
 import org.smartreaction.boardgamegeek.db.entities.UserPlay;
 import org.smartreaction.boardgamegeek.util.UAgentInfo;
 
+import javax.annotation.PostConstruct;
 import javax.ejb.EJB;
 import javax.faces.application.FacesMessage;
 import javax.faces.bean.ManagedBean;
@@ -70,6 +71,15 @@ public class UserSession implements Serializable
 
     private boolean errorSyncingGames;
 
+    @PostConstruct
+    public void setup()
+    {
+        HttpServletRequest request = Faces.getRequest();
+        if (request.getSession().getAttribute("loggedInFromCookies") != null) {
+            loggedInFromCookies(request);
+        }
+    }
+
     public String login()
     {
         FacesContext context = FacesContext.getCurrentInstance();
@@ -84,22 +94,8 @@ public class UserSession implements Serializable
                 loadUser();
                 usernameSet = true;
                 if (!StringUtils.isEmpty(password)) {
-                    cookies = new ArrayList<>(2);
-
-                    String bggPasswordCookie = (String) request.getSession().getAttribute("bggPasswordCookie");
-
-                    Cookie usernameCookie = new Cookie("bggusername", username, "/", "boardgamegeek.com");
-                    cookies.add(usernameCookie);
-
-                    Cookie passwordCookie = new Cookie("bggpassword", bggPasswordCookie, "/", "boardgamegeek.com");
-                    cookies.add(passwordCookie);
-
-                    int maxAge = 2592000; //30 days
-                    for (Cookie cookie : cookies) {
-                        javax.servlet.http.Cookie responseCookie = new javax.servlet.http.Cookie(cookie.getName(), cookie.getValue());
-                        responseCookie.setMaxAge(maxAge);
-                        Faces.getResponse().addCookie(responseCookie);
-                    }
+                    addBggCookies(request);
+                    addCookiesToResponse();
 
                     loggedIn = true;
                     password = null;
@@ -116,6 +112,29 @@ public class UserSession implements Serializable
         }
 
         return null;
+    }
+
+    private void addBggCookies(HttpServletRequest request)
+    {
+        cookies = new ArrayList<>(2);
+
+        String bggPasswordCookie = (String) request.getSession().getAttribute("bggPasswordCookie");
+
+        Cookie usernameCookie = new Cookie("bggusername", username, "/", "boardgamegeek.com");
+        cookies.add(usernameCookie);
+
+        Cookie passwordCookie = new Cookie("bggpassword", bggPasswordCookie, "/", "boardgamegeek.com");
+        cookies.add(passwordCookie);
+    }
+
+    private void addCookiesToResponse()
+    {
+        int maxAge = 2592000; //30 days
+        for (Cookie cookie : cookies) {
+            javax.servlet.http.Cookie responseCookie = new javax.servlet.http.Cookie(cookie.getName(), cookie.getValue());
+            responseCookie.setMaxAge(maxAge);
+            Faces.getResponse().addCookie(responseCookie);
+        }
     }
 
     private String getPageAfterLogin() {
@@ -199,7 +218,7 @@ public class UserSession implements Serializable
         return DateTime.now().isAfter(lastUpdated);
     }
 
-    private void loadUser() throws MalformedURLException, JAXBException
+    private void loadUser()
     {
         user = userDao.getUser(username);
         if (user == null) {
@@ -252,29 +271,19 @@ public class UserSession implements Serializable
         }
     }
 
-   /* public synchronized void loginFromCookies(javax.servlet.http.Cookie[] httpCookies)
+    public void loggedInFromCookies(HttpServletRequest request)
     {
-        try {
-            if (!usernameSet) {
-                cookies = new ArrayList<>();
-                for (javax.servlet.http.Cookie httpCookie : httpCookies) {
-                    if (httpCookie.getName().equalsIgnoreCase("bggusername")) {
-                        username = httpCookie.getValue();
-                    }
-                    Cookie cookie = new Cookie(httpCookie.getName(), httpCookie.getValue(), "/", "boardgamegeek.com");
-                    cookies.add(cookie);
-                }
+        username = (String) request.getSession().getAttribute("bggUsername");
 
-                loadUser();
+        addBggCookies(request);
 
-                usernameSet = true;
-                loggedIn = true;
-            }
-        }
-        catch (MalformedURLException | JAXBException e) {
-            e.printStackTrace();
-        }
-    }*/
+        loadUser();
+
+        usernameSet = true;
+        loggedIn = true;
+
+        request.getSession().removeAttribute("loggedInFromCookies");
+    }
 
     public void loadLastPlayed()
     {
