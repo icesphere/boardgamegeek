@@ -238,21 +238,23 @@ public class UserSession implements Serializable
 
     public String logout() throws ServletException
     {
-        if (loggedIn) {
-            removeCookies();
+        if (usernameSet) {
+            if (loggedIn) {
+                removeCookies();
 
-            WebResource webResource = boardGameGeekClient.getClient().resource(BoardGameGeekConstants.BBG_WEBSITE + "/logout");
+                WebResource webResource = boardGameGeekClient.getClient().resource(BoardGameGeekConstants.BBG_WEBSITE + "/logout");
 
-            ClientResponse clientResponse = webResource.get(ClientResponse.class);
-            if (clientResponse.getStatus() == 200) {
-                loggedIn = false;
+                ClientResponse clientResponse = webResource.get(ClientResponse.class);
+                if (clientResponse.getStatus() == 200) {
+                    loggedIn = false;
+                }
             }
+
+            usernameSet = false;
+
+            Faces.logout();
+            Faces.invalidateSession();
         }
-
-        usernameSet = false;
-
-        Faces.logout();
-        Faces.invalidateSession();
 
         return "login.xhtml?faces-redirect=true";
     }
