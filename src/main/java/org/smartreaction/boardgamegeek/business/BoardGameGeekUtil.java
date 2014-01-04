@@ -41,6 +41,31 @@ public class BoardGameGeekUtil
         }
     }
 
+    public String includeBoardGameGeekDomainInAbsoluteLinks(String text)
+    {
+        String urlStartPattern = "href=\"/boardgame/(\\d+).*?\"";
+        Pattern pattern = Pattern.compile(urlStartPattern, Pattern.CASE_INSENSITIVE);
+        Matcher matcher = pattern.matcher(text);
+        StringBuffer result = new StringBuffer();
+        while (matcher.find()) {
+            matcher.appendReplacement(result, "href=\"game.xhtml?id=" + matcher.group(1) + "\"");
+        }
+        matcher.appendTail(result);
+        text = result.toString();
+
+        urlStartPattern = "href=\"/(.*?)\"";
+        pattern = Pattern.compile(urlStartPattern, Pattern.CASE_INSENSITIVE);
+        matcher = pattern.matcher(text);
+        result = new StringBuffer();
+        while (matcher.find()) {
+            matcher.appendReplacement(result, "href=\"" + BoardGameGeekConstants.BBG_WEBSITE + "/" + matcher.group(1) + "\" target=\"_blank\"");
+        }
+        matcher.appendTail(result);
+        text = result.toString();
+
+        return text;
+    }
+
     public String convertBoardGameGeekXmlText(String text)
     {
         text = StringEscapeUtils.unescapeHtml(text);

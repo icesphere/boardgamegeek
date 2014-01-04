@@ -3,7 +3,7 @@ package org.smartreaction.boardgamegeek.business;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
-import org.jsoup.nodes.TextNode;
+import org.jsoup.nodes.Node;
 import org.jsoup.select.Elements;
 import org.smartreaction.boardgamegeek.BoardGameGeekConstants;
 import org.smartreaction.boardgamegeek.model.GeekList;
@@ -22,7 +22,6 @@ import javax.json.Json;
 import javax.json.JsonArray;
 import javax.json.JsonObject;
 import javax.json.JsonReader;
-import javax.ws.rs.core.Cookie;
 import javax.xml.bind.JAXBException;
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -169,14 +168,14 @@ public class GeekListUtil
         return entries;
     }
 
-    public GeekListDetail getGeekListDetailNew(long geekListId, List<Cookie> cookies) throws IOException
+    public GeekListDetail getGeekListDetailNew(long geekListId) throws IOException
     {
         GeekListDetail geekListDetail = new GeekListDetail();
         geekListDetail.setGeekListId(geekListId);
 
         String url = BoardGameGeekConstants.BBG_WEBSITE + "/geeklist/" + geekListId;
 
-        Document document = Jsoup.connect(url).get();
+        Document document = Jsoup.connect(url).timeout(10000).get();
 
         Element titleElement = document.getElementsByClass("geeklist_title").first();
         geekListDetail.setTitle(titleElement.text());
@@ -203,18 +202,13 @@ public class GeekListUtil
     {
         StringBuilder sb = new StringBuilder();
 
-        for (int i = 0; i < summaryContent.textNodes().size(); i++) {
-            if (i != 0 && i != summaryContent.textNodes().size() - 1) {
-                TextNode textNode = summaryContent.textNodes().get(i);
-                if (!textNode.isBlank()) {
-                    if (sb.length() > 0) {
-                        sb.append("<br/><br/>");
-                    }
-                    sb.append(textNode.text());
-                }
+        for (Node node : summaryContent.childNodes()) {
+            if(!node.outerHtml().contains("\"recommend_block\"") && !node.outerHtml().contains("\"geeklist_tags\"")) {
+                sb.append(node.outerHtml());
             }
         }
-        return sb.toString();
+
+        return boardGameGeekUtil.includeBoardGameGeekDomainInAbsoluteLinks(sb.toString());
     }
 
     private GeekListEntry getGeekListEntry(Element item)
@@ -240,7 +234,31 @@ public class GeekListUtil
         }
 
         Element itemDescriptionElement = item.getElementsByClass("doubleright").first();
-        entry.setDescription(itemDescriptionElement.html());
+        entry.setDescription(boardGameGeekUtil.includeBoardGameGeekDomainInAbsoluteLinks(itemDescriptionElement.html()));
+
+        Element commentsElement = item.parent().getElementById("comments_" + entry.getEntryId());
+
+        if (commentsElement != null) {
+            Elements commentElements = commentsElement.getElementsByAttributeValueStarting("id", "body_comment");
+
+            List<GeekListComment> comments = new ArrayList<>(commentElements.size());
+
+            for (Element commentElement : commentElements) {
+                GeekListComment comment = new GeekListComment();
+
+                Elements children = commentElement.children();
+
+                Element commentUser = children.get(0);
+                String username = commentUser.getElementsByAttribute("data-username").first().attr("data-username");
+                comment.setUsername(username);
+
+                comment.setComment(boardGameGeekUtil.includeBoardGameGeekDomainInAbsoluteLinks(children.get(1).html()));
+
+                comments.add(comment);
+            }
+
+            entry.setComments(comments);
+        }
 
         return entry;
     }
