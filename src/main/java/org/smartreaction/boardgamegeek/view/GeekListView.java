@@ -3,6 +3,7 @@ package org.smartreaction.boardgamegeek.view;
 import org.omnifaces.util.Faces;
 import org.primefaces.context.RequestContext;
 import org.smartreaction.boardgamegeek.BoardGameGeekConstants;
+import org.smartreaction.boardgamegeek.business.GeekListUtil;
 import org.smartreaction.boardgamegeek.business.GeekListsCache;
 import org.smartreaction.boardgamegeek.model.GeekListDetail;
 import org.smartreaction.boardgamegeek.model.GeekListEntry;
@@ -18,11 +19,17 @@ import java.util.Date;
 @ViewScoped
 public class GeekListView
 {
+    @ManagedProperty(value="#{userSession}")
+    UserSession userSession;
+
     @ManagedProperty(value="#{boardGameGeek}")
     BoardGameGeek boardGameGeek;
 
     @EJB
     GeekListsCache geekListsCache;
+
+    @EJB
+    GeekListUtil geekListUtil;
 
     private GeekListDetail geekListDetail;
 
@@ -68,6 +75,18 @@ public class GeekListView
             }
             RequestContext context = RequestContext.getCurrentInstance();
             context.addCallbackParam("firstSubscriptionEntryId", firstSubscriptionEntryId);
+            loaded = true;
+        }
+        catch (Exception e) {
+            e.printStackTrace();
+            errorLoadingGeekListDetail = true;
+        }
+    }
+
+    public void loadGeekListNew()
+    {
+        try {
+            geekListDetail = geekListUtil.getGeekListDetailNew(geekListId, userSession.getCookies());
             loaded = true;
         }
         catch (Exception e) {
@@ -124,6 +143,11 @@ public class GeekListView
     public boolean isShowUndoRecommend()
     {
         return showUndoRecommend;
+    }
+
+    @SuppressWarnings("UnusedDeclaration")
+    public void setUserSession(UserSession userSession) {
+        this.userSession = userSession;
     }
 
     @SuppressWarnings("UnusedDeclaration")

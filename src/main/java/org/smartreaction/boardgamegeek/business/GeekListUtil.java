@@ -1,5 +1,10 @@
 package org.smartreaction.boardgamegeek.business;
 
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
+import org.jsoup.nodes.TextNode;
+import org.jsoup.select.Elements;
 import org.smartreaction.boardgamegeek.BoardGameGeekConstants;
 import org.smartreaction.boardgamegeek.model.GeekList;
 import org.smartreaction.boardgamegeek.model.GeekListComment;
@@ -17,6 +22,7 @@ import javax.json.Json;
 import javax.json.JsonArray;
 import javax.json.JsonObject;
 import javax.json.JsonReader;
+import javax.ws.rs.core.Cookie;
 import javax.xml.bind.JAXBException;
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -161,5 +167,81 @@ public class GeekListUtil
             entries.add(entry);
         }
         return entries;
+    }
+
+    public GeekListDetail getGeekListDetailNew(long geekListId, List<Cookie> cookies) throws IOException
+    {
+        GeekListDetail geekListDetail = new GeekListDetail();
+        geekListDetail.setGeekListId(geekListId);
+
+        String url = BoardGameGeekConstants.BBG_WEBSITE + "/geeklist/" + geekListId;
+
+        Document document = Jsoup.connect(url).get();
+
+        Element titleElement = document.getElementsByClass("geeklist_title").first();
+        geekListDetail.setTitle(titleElement.text());
+
+        Element geekListSummary = document.getElementsByAttributeValue("data-objecttype", "geeklist").first();
+        Element summaryContent = geekListSummary.getElementsByTag("dd").get(1);
+
+        geekListDetail.setDescription(getGeekListDescription(summaryContent));
+
+        Elements items = document.getElementsByAttributeValue("data-objecttype", "listitem");
+
+        List<GeekListEntry> entries = new ArrayList<>(items.size());
+
+        for (Element item : items) {
+            entries.add(getGeekListEntry(item));
+        }
+
+        geekListDetail.setEntries(entries);
+
+        return geekListDetail;
+    }
+
+    private String getGeekListDescription(Element summaryContent)
+    {
+        StringBuilder sb = new StringBuilder();
+
+        for (int i = 0; i < summaryContent.textNodes().size(); i++) {
+            if (i != 0 && i != summaryContent.textNodes().size() - 1) {
+                TextNode textNode = summaryContent.textNodes().get(i);
+                if (!textNode.isBlank()) {
+                    if (sb.length() > 0) {
+                        sb.append("<br/><br/>");
+                    }
+                    sb.append(textNode.text());
+                }
+            }
+        }
+        return sb.toString();
+    }
+
+    private GeekListEntry getGeekListEntry(Element item)
+    {
+        GeekListEntry entry = new GeekListEntry();
+
+        entry.setEntryId(Long.parseLong(item.attr("data-objectid")));
+
+        Element itemTitleElement = item.getElementsByClass("geeklist_item_title").first();
+
+        Elements gameLinks = itemTitleElement.getElementsByAttributeValueStarting("href", "/boardgame/");
+
+        if (gameLinks.size() > 0) {
+            String firstGameLink = gameLinks.first().attr("href");
+            String linkMinusBoardGameText = firstGameLink.substring(11);
+            String gameIdString = linkMinusBoardGameText.substring(0, linkMinusBoardGameText.indexOf("/"));
+            try {
+                entry.setGame(boardGameCache.getGame(Long.parseLong(gameIdString)));
+            }
+            catch (NumberFormatException e) {
+                e.printStackTrace();
+            }
+        }
+
+        Element itemDescriptionElement = item.getElementsByClass("doubleright").first();
+        entry.setDescription(itemDescriptionElement.html());
+
+        return entry;
     }
 }

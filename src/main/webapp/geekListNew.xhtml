@@ -1,0 +1,107 @@
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:f="http://java.sun.com/jsf/core"
+        >
+<ui:composition template="/templates/commonLayout.xhtml">
+    <ui:define name="title">
+        <h:outputText value="Loading geeklist..." rendered="#{!geekListView.loaded and !geekListView.errorLoadingGeekListDetail}"/>
+        <h:outputText value="Error loading geeklist" rendered="#{geekListView.errorLoadingGeekListDetail}"/>
+        <h:outputText value="#{geekListView.geekListDetail.title}" rendered="#{geekListView.loaded and !geekListView.errorLoadingGeekListDetail}"/>
+    </ui:define>
+
+    <ui:define name="content">
+        <h:form id="geekListForm">
+            <p:remoteCommand name="loadGeekList" actionListener="#{geekListView.loadGeekListNew}" update="geekListPage :pageTitle" autoRun="true"/>
+            <h:panelGroup layout="block" id="geekListPage">
+                <h:panelGroup layout="block" style="padding-bottom: 20px; text-align: center;" rendered="#{!geekListView.loaded or geekListView.errorLoadingGeekListDetail}">
+                     <a href="#{geekListView.boardGameGeekLink}" target="_blank">View this geeklist on BGG</a>
+                 </h:panelGroup>
+                <h:panelGroup layout="block" rendered="#{!geekListView.loaded and !geekListView.errorLoadingGeekListDetail}" styleClass="centerDiv" style="text-align: center;">
+                    <h:graphicImage library="images" name="loading.gif"/>
+                </h:panelGroup>
+                <h:panelGroup layout="block" styleClass="errorText" rendered="#{geekListView.errorLoadingGeekListDetail}" style="text-align: center;">
+                    Error loading geek list
+                </h:panelGroup>
+                <h:panelGroup layout="block" id="geekListContent" rendered="#{geekListView.loaded and !geekListView.errorLoadingGeekListDetail}">
+                    
+                    <h:panelGroup layout="block">
+                        <div style="padding-bottom: 20px;">
+                            <a id="bggLink" href="#{geekListView.boardGameGeekLink}" target="_blank" class="smallRightPadding">View this geeklist on BGG</a>
+                        </div>
+                        <h:panelGroup layout="block" style="padding-bottom: 15px; font-size: 150%;" id="geekListHeader">
+                            <h:outputText value="#{geekListView.geekListDetail.title}" styleClass="boldText"/>
+                        </h:panelGroup>
+                        <div style="padding-bottom:10px;">
+                            <h:outputLink value="http://boardgamegeek.com/user/#{geekListView.geekListDetail.username}" target="_blank">#{geekListView.geekListDetail.username}</h:outputLink>
+                        </div>
+                        <div>
+                            <h:outputText value="#{geekListView.geekListDetail.description}" escape="false"/>
+                        </div>
+                        <div style="padding-top:10px;">
+                            <ui:repeat value="#{geekListView.geekListDetail.entries}" var="entry" varStatus="varStatus">
+                                <div class="#{geekListView.highlight(entry.postDate)?'geeklistEntryHighlighted':'geeklistEntry'}" style="position: relative;">
+                                    <div style="position: absolute; top: 5px; right: 5px;">
+                                        <h:outputText value="Posted " styleClass="smallText"/>
+                                        <h:outputText value="#{entry.postDate}" styleClass="smallText">
+                                            <f:convertDateTime pattern="EEE MMM dd yyyy hh:mm a" />
+                                        </h:outputText>
+                                    </div>
+                                    <div style="padding-top:5px;">
+                                        <a href="http://boardgamegeek.com/user/#{entry.username}" target="_blank" id="#{entry.entryId}">#{entry.username}</a>
+                                    </div>
+                                    <div style="padding-top:10px;">
+                                        <h:outputText value="#{varStatus.index + 1}." style="padding-right: 10px; font-size: 22px;"/>
+                                        <h:link outcome="game.xhtml?id=#{entry.game.id}&amp;faces-redirect=true"><img src="#{entry.game.smallThumbnailImage}" alt="#{entry.game.name} image" style="margin-right:10px"/></h:link>
+                                        <h:link outcome="game.xhtml?id=#{entry.game.id}&amp;faces-redirect=true" style="font-weight: bold; font-size: 120%;">#{entry.game.name}</h:link>
+                                        <h:outputText value=" (#{entry.game.yearPublished}, avg rating: #{entry.game.averageRating} (#{entry.game.ratings} ratings), rank: #{entry.game.rank})"/>
+                                        <h:outputText value=" (#{entry.thumbs} "/>
+                                        <h:graphicImage library="images" name="arrowup.png" alt="thumbs"/>
+                                        <h:outputText value=")"/>
+                                    </div>
+                                    <div style="padding-top:10px;">
+                                        <h:outputText value="#{entry.description}" escape="false"/>
+                                    </div>
+                                    <h:panelGroup layout="block" style="padding-top:10px;" rendered="#{!empty entry.comments}">
+                                        <div style="font-weight:bold;">Comments:</div>
+                                        <p:dataTable value="#{entry.comments}" var="comment">
+                                            <p:column styleClass="alignCenter">
+                                                <f:facet name="header">
+                                                    <h:graphicImage library="images" name="arrowup.png" alt="thumbs"/>
+                                                </f:facet>
+                                                <h:outputText value="#{comment.thumbs}"/>
+                                            </p:column>
+                                            <p:column headerText="Comment">
+                                                <h:outputText style="color:red" value="(new) " rendered="#{!geekListView.highlight(entry.postDate) and geekListView.highlight(comment.postDate)}"/>
+                                                <a href="http://boardgamegeek.com/user/#{comment.username}" target="_blank" style="color: blue; font-size: 14px;">#{comment.username}</a>
+                                                <h:outputText value="#{comment.comment}" escape="false" style="padding-left: 7px;"/>
+                                            </p:column>
+                                        </p:dataTable>
+                                    </h:panelGroup>
+                                </div>
+                            </ui:repeat>
+                        </div>
+                        <hr/>
+                        <h:panelGroup layout="block" rendered="#{!empty geekListView.geekListDetail.comments}">
+                            <div style="font-weight:bold;">Geeklist Comments:</div>
+                            <p:dataTable value="#{geekListView.geekListDetail.comments}" var="comment">
+                                <p:column styleClass="alignCenter">
+                                    <f:facet name="header">
+                                        <h:graphicImage library="images" name="arrowup.png" alt="thumbs"/>
+                                    </f:facet>
+                                    <h:outputText value="#{comment.thumbs}"/>
+                                </p:column>
+                                <p:column headerText="Comment">
+                                    <h:outputText style="color:red" value="(new) " rendered="#{geekListView.highlight(comment.postDate)}"/>
+                                    <a href="http://boardgamegeek.com/user/#{comment.username}" target="_blank" style="color: blue; font-size: 14px;">#{comment.username}</a>
+                                    <h:outputText value="#{comment.comment}" escape="false" style="padding-left: 7px;"/>
+                                </p:column>
+                            </p:dataTable>
+                        </h:panelGroup>
+                    </h:panelGroup>
+                </h:panelGroup>
+            </h:panelGroup>
+        </h:form>
+    </ui:define>
+</ui:composition>
+</html>
