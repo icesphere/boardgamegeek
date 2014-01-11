@@ -1,7 +1,6 @@
 package org.smartreaction.boardgamegeek.business;
 
 import org.apache.commons.lang.StringUtils;
-import org.joda.time.DateTime;
 import org.jsoup.Connection;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -16,7 +15,6 @@ import org.smartreaction.boardgamegeek.util.DateUtil;
 import javax.ejb.Stateless;
 import javax.ws.rs.core.Cookie;
 import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 
@@ -113,31 +111,12 @@ public class SubscriptionUtil
         }
         if (lastUpdatedDiv != null) {
             String lastUpdatedString = lastUpdatedDiv.text();
-            lastUpdatedString = DateUtil.fixDateString(lastUpdatedString);
             lastUpdatedString = lastUpdatedString.substring(5);
-            SimpleDateFormat sdf;
-            Date lastUpdated;
-            if (lastUpdatedString.startsWith("Today")) {
-                lastUpdated = getTodayDate(lastUpdatedString);
-            }
-            else {
-                sdf = new SimpleDateFormat("EEE MMM d, yyyy h:mm a");
-                lastUpdated = sdf.parse(lastUpdatedString);
-            }
+            Date lastUpdated = DateUtil.getDateFromBggString(lastUpdatedString);
             forumSubscription.setLastUpdated(lastUpdated);
         }
 
         return forumSubscription;
-    }
-
-    private Date getTodayDate(String dateString) throws ParseException
-    {
-        dateString = dateString.substring(6);
-        SimpleDateFormat sdf = new SimpleDateFormat("h:mm a");
-        DateTime parsedDate = new DateTime(sdf.parse(dateString));
-        DateTime now = DateTime.now();
-        DateTime todayWithParsedTime = new DateTime(now.getYear(), now.getMonthOfYear(), now.getDayOfMonth(), parsedDate.getHourOfDay(), parsedDate.getMinuteOfHour());
-        return todayWithParsedTime.toDate();
     }
 
     private GeekListSubscription getGeekListSubscription(Element geekListRow) throws ParseException
@@ -170,17 +149,8 @@ public class SubscriptionUtil
         }
         if (lastUpdatedDiv != null) {
             String lastUpdatedString = lastUpdatedDiv.text();
-            lastUpdatedString = DateUtil.fixDateString(lastUpdatedString);
             lastUpdatedString = lastUpdatedString.substring(5);
-            SimpleDateFormat sdf;
-            Date lastUpdated;
-            if (lastUpdatedString.startsWith("Today")) {
-                lastUpdated = getTodayDate(lastUpdatedString);
-            }
-            else {
-                sdf = new SimpleDateFormat("EEE MMM d, yyyy h:mm a");
-                lastUpdated = sdf.parse(lastUpdatedString);
-            }
+            Date lastUpdated = DateUtil.getDateFromBggString(lastUpdatedString);
             geekListSubscription.setLastUpdated(lastUpdated);
         }
 

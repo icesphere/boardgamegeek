@@ -4,6 +4,7 @@ import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.nodes.Node;
+import org.jsoup.nodes.TextNode;
 import org.jsoup.select.Elements;
 import org.smartreaction.boardgamegeek.BoardGameGeekConstants;
 import org.smartreaction.boardgamegeek.model.GeekList;
@@ -11,6 +12,7 @@ import org.smartreaction.boardgamegeek.model.GeekListComment;
 import org.smartreaction.boardgamegeek.model.GeekListDetail;
 import org.smartreaction.boardgamegeek.model.GeekListEntry;
 import org.smartreaction.boardgamegeek.services.BoardGameGeekService;
+import org.smartreaction.boardgamegeek.util.DateUtil;
 import org.smartreaction.boardgamegeek.xml.geeklist.Comment;
 import org.smartreaction.boardgamegeek.xml.geeklist.Geeklist;
 import org.smartreaction.boardgamegeek.xml.geeklist.Item;
@@ -33,6 +35,7 @@ import java.nio.charset.Charset;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.zip.GZIPInputStream;
 
@@ -195,6 +198,12 @@ public class GeekListUtil
 
         geekListDetail.setEntries(entries);
 
+        Element commentsElement = document.getElementById("morecomments_geeklist_" + geekListDetail.getGeekListId());
+
+        if (commentsElement != null) {
+            geekListDetail.setComments(getGeekListComments(commentsElement));
+        }
+
         return geekListDetail;
     }
 
@@ -239,27 +248,79 @@ public class GeekListUtil
         Element commentsElement = item.parent().getElementById("comments_" + entry.getEntryId());
 
         if (commentsElement != null) {
-            Elements commentElements = commentsElement.getElementsByAttributeValueStarting("id", "body_comment");
-
-            List<GeekListComment> comments = new ArrayList<>(commentElements.size());
-
-            for (Element commentElement : commentElements) {
-                GeekListComment comment = new GeekListComment();
-
-                Elements children = commentElement.children();
-
-                Element commentUser = children.get(0);
-                String username = commentUser.getElementsByAttribute("data-username").first().attr("data-username");
-                comment.setUsername(username);
-
-                comment.setComment(boardGameGeekUtil.includeBoardGameGeekDomainInAbsoluteLinks(children.get(1).html()));
-
-                comments.add(comment);
-            }
-
-            entry.setComments(comments);
+            entry.setComments(getGeekListComments(commentsElement));
         }
 
+        Element thumbSection = item.children().get(1);
+        entry.setThumbs(getThumbs(thumbSection));
+
+        Element informationElement = item.children().get(1).getElementsByClass("information").get(0);
+        Date postedDate = getPostedDate(informationElement);
+        entry.setPostDate(postedDate);
+
         return entry;
+    }
+
+    private Date getPostedDate(Element informationElement)
+    {
+        Date postedDate = null;
+        Element postingDateElement = informationElement.children().get(0).children().get(0);
+        TextNode postedDateNode = (TextNode) postingDateElement.childNodes().get(1);
+        String postedDateString = postedDateNode.text().substring(8);
+        try {
+            postedDate = DateUtil.getDateFromBggString(postedDateString);
+        }
+        catch (ParseException e) {
+            e.printStackTrace();
+        }
+        return postedDate;
+    }
+
+    private List<GeekListComment> getGeekListComments(Element commentsElement)
+    {
+        Elements commentElements = commentsElement.getElementsByAttributeValueStarting("id", "comment_");
+
+        List<GeekListComment> comments = new ArrayList<>(commentElements.size());
+
+        for (Element commentElement : commentElements) {
+            GeekListComment comment = getGeekListComment(commentElement);
+
+            comments.add(comment);
+        }
+        return comments;
+    }
+
+    private GeekListComment getGeekListComment(Element commentElement)
+    {
+        GeekListComment comment = new GeekListComment();
+
+        Elements children = commentElement.children();
+
+        Element usernameAndComment = children.get(0);
+
+        Element commentUser = usernameAndComment.children().get(0);
+        String username = commentUser.getElementsByAttribute("data-username").first().attr("data-username");
+        comment.setUsername(username);
+
+        comment.setComment(boardGameGeekUtil.includeBoardGameGeekDomainInAbsoluteLinks(usernameAndComment.children().get(1).html()));
+
+        Element thumbSection = children.get(1);
+        comment.setThumbs(getThumbs(thumbSection));
+
+        return comment;
+    }
+
+    private int getThumbs(Element thumbSection)
+    {
+        Element recs = thumbSection.getElementsByClass("recs").get(0);
+
+        int thumbs;
+        try {
+            thumbs = Integer.parseInt(recs.children().get(0).text());
+        }
+        catch (NumberFormatException e) {
+            thumbs = 0;
+        }
+        return thumbs;
     }
 }
