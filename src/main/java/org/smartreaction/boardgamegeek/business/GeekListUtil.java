@@ -178,7 +178,7 @@ public class GeekListUtil
 
         String url = BoardGameGeekConstants.BBG_WEBSITE + "/geeklist/" + geekListId;
 
-        Document document = Jsoup.connect(url).timeout(10000).get();
+        Document document = Jsoup.connect(url).timeout(30000).get();
 
         Element titleElement = document.getElementsByClass("geeklist_title").first();
         geekListDetail.setTitle(titleElement.text());
@@ -188,13 +188,7 @@ public class GeekListUtil
 
         geekListDetail.setDescription(getGeekListDescription(summaryContent));
 
-        Elements items = document.getElementsByAttributeValue("data-objecttype", "listitem");
-
-        List<GeekListEntry> entries = new ArrayList<>(items.size());
-
-        for (Element item : items) {
-            entries.add(getGeekListEntry(item));
-        }
+        List<GeekListEntry> entries = getGeekListEntries(document);
 
         geekListDetail.setEntries(entries);
 
@@ -204,7 +198,39 @@ public class GeekListUtil
             geekListDetail.setComments(getGeekListComments(commentsElement));
         }
 
+        String nextPageLink = getNextPageLink(document);
+        while (nextPageLink != null) {
+            document = Jsoup.connect(BoardGameGeekConstants.BBG_WEBSITE + nextPageLink).timeout(30000).get();
+
+            geekListDetail.getEntries().addAll(getGeekListEntries(document));
+
+            nextPageLink = getNextPageLink(document);
+        }
+
         return geekListDetail;
+    }
+
+    private String getNextPageLink(Document document)
+    {
+        String nextPageLink = null;
+        Elements nextPageElements = document.getElementsByAttributeValue("title", "next page");
+        if (!nextPageElements.isEmpty()) {
+            Element nextPageElement = nextPageElements.get(0);
+            nextPageLink = nextPageElement.attr("href");
+        }
+        return nextPageLink;
+    }
+
+    private List<GeekListEntry> getGeekListEntries(Document document)
+    {
+        Elements items = document.getElementsByAttributeValue("data-objecttype", "listitem");
+
+        List<GeekListEntry> entries = new ArrayList<>(items.size());
+
+        for (Element item : items) {
+            entries.add(getGeekListEntry(item));
+        }
+        return entries;
     }
 
     private String getGeekListDescription(Element summaryContent)
