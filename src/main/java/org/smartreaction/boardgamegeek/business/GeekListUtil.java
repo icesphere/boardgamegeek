@@ -188,6 +188,8 @@ public class GeekListUtil
 
         geekListDetail.setDescription(getGeekListDescription(summaryContent));
 
+        geekListDetail.setThumbs(getThumbs(summaryContent, "recsbig"));
+
         List<GeekListEntry> entries = getGeekListEntries(document);
 
         geekListDetail.setEntries(entries);
@@ -338,7 +340,12 @@ public class GeekListUtil
 
     private int getThumbs(Element thumbSection)
     {
-        Element recs = thumbSection.getElementsByClass("recs").get(0);
+        return getThumbs(thumbSection, "recs");
+    }
+
+    private int getThumbs(Element thumbSection, String recommendSection)
+    {
+        Element recs = thumbSection.getElementsByClass(recommendSection).get(0);
 
         int thumbs;
         try {
