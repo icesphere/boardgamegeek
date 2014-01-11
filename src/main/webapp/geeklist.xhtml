@@ -17,8 +17,8 @@
                 <h:panelGroup layout="block" style="padding-bottom: 20px; text-align: center;" rendered="#{!geekListView.loaded or geekListView.errorLoadingGeekListDetail}">
                      <a href="#{geekListView.boardGameGeekLink}" target="_blank">View this geeklist on BGG</a>
                  </h:panelGroup>
-                <h:panelGroup layout="block" style="padding-bottom: 20px;" rendered="#{userSession.user.admin}">
-                    <h:link outcome="geeklistOld.xhtml?id=#{geekListView.geekListId}&amp;faces-redirect=true" value="Old geek list page"/>
+                <h:panelGroup layout="block" style="padding-bottom: 20px; text-align: center;" rendered="#{userSession.user.admin}">
+                    <h:link outcome="geeklistOld.xhtml?id=#{geekListView.geekListId}&amp;faces-redirect=true" value="Old geek list page (uses xml api)"/>
                 </h:panelGroup>
                 <h:panelGroup layout="block" rendered="#{!geekListView.loaded and !geekListView.errorLoadingGeekListDetail}" styleClass="centerDiv" style="text-align: center;">
                     <h:graphicImage library="images" name="loading.gif"/>

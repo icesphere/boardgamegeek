@@ -14,7 +14,7 @@
         <div style="padding-bottom: 20px;">
             <a id="bggLink" href="#{geekListView.boardGameGeekLink}" target="_blank" class="smallRightPadding">View this geeklist on BGG</a>
         </div>
-        <h:panelGroup layout="block" style="padding-bottom: 20px;" rendered="#{userSession.user.admin}">
+        <h:panelGroup layout="block" style="padding-bottom: 20px; text-align: center;" rendered="#{userSession.user.admin}">
             <h:link outcome="geeklist.xhtml?id=#{geekListView.geekListId}&amp;faces-redirect=true" value="New geek list page"/>
         </h:panelGroup>
         <h:panelGroup layout="block" style="padding-bottom: 15px; font-size: 150%;" id="geekListHeader">

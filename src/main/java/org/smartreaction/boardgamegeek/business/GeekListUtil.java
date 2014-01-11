@@ -292,13 +292,13 @@ public class GeekListUtil
     private Date getPostedDate(Element informationElement)
     {
         Date postedDate = null;
-        Element postingDateElement = informationElement.children().get(0).children().get(0);
-        TextNode postedDateNode = (TextNode) postingDateElement.childNodes().get(1);
-        String postedDateString = postedDateNode.text().substring(8);
         try {
+            Element postingDateElement = informationElement.children().get(0).children().get(0);
+            TextNode postedDateNode = (TextNode) postingDateElement.childNodes().get(1);
+            String postedDateString = postedDateNode.text().substring(8);
             postedDate = DateUtil.getDateFromBggString(postedDateString);
         }
-        catch (ParseException e) {
+        catch (Exception e) {
             e.printStackTrace();
         }
         return postedDate;
