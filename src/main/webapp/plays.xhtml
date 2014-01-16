@@ -50,7 +50,9 @@
                                 </h:panelGroup>
                             </p:column>
                             <p:column headerText="Date played" sortBy="#{play.playDate}">
-                                <h:outputText value="#{play.playDate}"/>
+                                <h:outputText value="#{play.playDate}">
+                                    <f:convertDateTime pattern="MMM dd, yyyy" />
+                                </h:outputText>
                             </p:column>
                         </p:dataTable>
                     </h:panelGroup>

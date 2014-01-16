@@ -184,7 +184,14 @@ public class GeekListUtil
         geekListDetail.setTitle(titleElement.text());
 
         Element geekListSummary = document.getElementsByAttributeValue("data-objecttype", "geeklist").first();
-        Element summaryContent = geekListSummary.getElementsByTag("dd").get(1);
+
+        Elements ddElements = geekListSummary.getElementsByTag("dd");
+
+        Element userContentElement = ddElements.get(0);
+
+        geekListDetail.setUsername(getUsername(userContentElement));
+
+        Element summaryContent = ddElements.get(1);
 
         geekListDetail.setDescription(getGeekListDescription(summaryContent));
 
@@ -210,6 +217,13 @@ public class GeekListUtil
         }
 
         return geekListDetail;
+    }
+
+    private String getUsername(Element userContentElement)
+    {
+        Element usernameElement = userContentElement.getElementsByClass("username").get(0);
+
+        return usernameElement.getElementsByTag("a").get(0).text();
     }
 
     private String getNextPageLink(Document document)
@@ -269,6 +283,8 @@ public class GeekListUtil
                 e.printStackTrace();
             }
         }
+
+        entry.setUsername(getUsername(item.getElementsByClass("avatarblock").get(0)));
 
         Element itemDescriptionElement = item.getElementsByClass("doubleright").first();
         entry.setDescription(boardGameGeekUtil.includeBoardGameGeekDomainInAbsoluteLinks(itemDescriptionElement.html()));
