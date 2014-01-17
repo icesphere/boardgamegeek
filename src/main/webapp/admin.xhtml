@@ -1,0 +1,54 @@
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui" xmlns:f="http://java.sun.com/jsf/core">
+<ui:composition template="/templates/commonLayout.xhtml">
+    <ui:define name="content">
+        <h:form>
+            <h:panelGroup layout="block" rendered="#{!userSession.user.admin}" style="padding: 20px; text-align: center">
+                <h:outputText value="Access denied" style="color: red;"/>
+            </h:panelGroup>
+
+            <h:panelGroup layout="block" rendered="#{userSession.user.admin}" style="padding: 20px;">
+
+                <div>
+                    <h:outputText value="Recently logged in users"/>
+                </div>
+
+                <div style="padding-top: 10px">
+
+                    <p:dataTable value="#{adminView.recentlyLoggedInUsers}" var="user">
+
+                        <p:column headerText="Username">
+                            <h:outputText value="#{user.username}"/>
+                        </p:column>
+
+                        <p:column headerText="Logins">
+                            <h:outputText value="#{user.logins}"/>
+                        </p:column>
+
+                        <p:column headerText="Last Login">
+                            <h:outputText value="#{user.lastLogin}">
+                                <f:convertDateTime pattern="EEE MMM dd yyyy hh:mm a"/>
+                            </h:outputText>
+                        </p:column>
+
+                        <p:column headerText="Collection Loaded">
+                            <h:outputText value="#{user.collectionLoaded}"/>
+                        </p:column>
+
+                        <p:column headerText="Collection Last Updated">
+                            <h:outputText value="#{user.collectionLastUpdated}">
+                                <f:convertDateTime pattern="EEE MMM dd yyyy hh:mm a"/>
+                            </h:outputText>
+                        </p:column>
+
+                    </p:dataTable>
+
+                </div>
+
+            </h:panelGroup>
+        </h:form>
+    </ui:define>
+</ui:composition>
+</html>

@@ -33,6 +33,9 @@
                 <h:panelGroup layout="block" styleClass="mediumRightPadding navigationLink" rendered="#{userSession.usernameSet}">
                     <h:link outcome="/plays.xhtml?faces-redirect=true">Plays</h:link>
                 </h:panelGroup>
+                <h:panelGroup layout="block" styleClass="mediumRightPadding navigationLink" rendered="#{userSession.loggedIn and userSession.user.admin}">
+                    <h:link outcome="/admin.xhtml?faces-redirect=true">Admin</h:link>
+                </h:panelGroup>
                 <h:panelGroup layout="block" class="navigationLink" rendered="#{userSession.usernameSet}">
                     <p:commandLink action="#{userSession.logout}" ajax="false">Logout</p:commandLink>
                 </h:panelGroup>

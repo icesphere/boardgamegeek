@@ -44,4 +44,12 @@ public class UserDao
     {
         em.flush();
     }
+
+    public List<User> getRecentlyLoggedInUsers()
+    {
+        TypedQuery<User> query = em.createQuery("select u from User u order by u.lastLogin desc", User.class);
+        query.setMaxResults(20);
+
+        return query.getResultList();
+    }
 }

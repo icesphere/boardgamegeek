@@ -71,6 +71,7 @@
             <url-pattern>/playsGraph.xhtml</url-pattern>
             <url-pattern>/recommended.xhtml</url-pattern>
             <url-pattern>/subscriptions.xhtml</url-pattern>
+            <url-pattern>/admin.xhtml</url-pattern>
         </web-resource-collection>
         <auth-constraint>
             <role-name>USER</role-name>
