@@ -145,7 +145,7 @@ public class BoardGameGeek {
         }
     }
 
-    public String recommendGeeklist(long id, boolean recommend)
+    public String recommendGeekList(long id, boolean recommend)
     {
         MultivaluedMap<String, String> formParams = new MultivaluedMapImpl();
         formParams.add("action", recommend?"recommend":"unrecommend");
@@ -155,6 +155,31 @@ public class BoardGameGeek {
         formParams.add("value", "1");
 
         WebResource.Builder builder = boardGameGeekClient.getClient().resource(BoardGameGeekConstants.BBG_WEBSITE + "/geekrecommend.php").type("application/x-www-form-urlencoded");
+
+        builder = getBuilderWithCookies(builder);
+
+        ClientResponse response = builder.post(ClientResponse.class, formParams);
+
+        int status = response.getStatus();
+        if (status == 200) {
+            return "success";
+        }
+        else {
+            return "failed";
+        }
+    }
+
+    public String subscribeToGeekList(long id, boolean subscribe)
+    {
+        MultivaluedMap<String, String> formParams = new MultivaluedMapImpl();
+        formParams.add("action", "subscribe");
+        formParams.add("subaction", subscribe?"subscribe":"unsubscribe");
+        formParams.add("dummy", "1");
+        formParams.add("ajax", "1");
+        formParams.add("objectid", String.valueOf(id));
+        formParams.add("objecttype", "geeklist");
+
+        WebResource.Builder builder = boardGameGeekClient.getClient().resource(BoardGameGeekConstants.BBG_WEBSITE + "/geeksubscription.php").type("application/x-www-form-urlencoded");
 
         builder = getBuilderWithCookies(builder);
 

@@ -47,6 +47,8 @@ public class GeekListView
 
     private boolean showUndoRecommend = false;
 
+    private boolean showSubscribe = true;
+
     @PostConstruct
     public void load()
     {
@@ -95,9 +97,9 @@ public class GeekListView
         }
     }
 
-    public void recommendGeeklist(boolean recommend)
+    public void recommendGeekList(boolean recommend)
     {
-        boardGameGeek.recommendGeeklist(geekListId, recommend);
+        boardGameGeek.recommendGeekList(geekListId, recommend);
         if (recommend) {
             geekListDetail.setThumbs(getGeekListDetail().getThumbs()+1);
             showRecommend = false;
@@ -108,6 +110,12 @@ public class GeekListView
             showRecommend = true;
             showUndoRecommend = false;
         }
+    }
+
+    public void subscribeToGeekList(boolean subscribe)
+    {
+        boardGameGeek.subscribeToGeekList(geekListId, subscribe);
+        showSubscribe = !subscribe;
     }
 
     public GeekListDetail getGeekListDetail()
@@ -148,6 +156,11 @@ public class GeekListView
     public boolean isShowUndoRecommend()
     {
         return showUndoRecommend;
+    }
+
+    public boolean isShowSubscribe()
+    {
+        return showSubscribe;
     }
 
     @SuppressWarnings("UnusedDeclaration")
