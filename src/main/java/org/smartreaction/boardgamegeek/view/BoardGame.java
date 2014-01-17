@@ -109,6 +109,12 @@ public class BoardGame {
         showForums = false;
     }
 
+    public void toggleForumSubscription(Forum forum)
+    {
+        boardGameGeek.subscribeToForum(forum.getId().longValue(), !forum.isSubscribed());
+        forum.setSubscribed(!forum.isSubscribed());
+    }
+
     public void loadGamePlays() throws ParseException, JAXBException, MalformedURLException {
         if (!gamePlaysLoaded) {
             singleGamePlaysGraph.loadChart(game);

@@ -208,6 +208,12 @@
                                 <p:column headerText="Last Post">
                                     <h:outputText value="#{forum.lastPostDate}"/>
                                 </p:column>
+
+                                <p:column headerText="Subscribe/Unsubscribe">
+                                    <p:commandLink process="@this" update=":gameForm:gameForumsSection"
+                                                   value="#{forum.subscribed ? 'Unsubscribe' : 'Subscribe'}"
+                                                   action="#{boardGame.toggleForumSubscription(forum)}"/>
+                                </p:column>
                             </p:dataTable>
                         </h:panelGroup>
                     </h:panelGroup>

@@ -71,6 +71,8 @@ public class Forum {
     @XmlSchemaType(name = "anySimpleType")
     protected String title;
 
+    private boolean subscribed;
+
     /**
      * Gets the value of the description property.
      * 
@@ -277,4 +279,13 @@ public class Forum {
         this.title = value;
     }
 
+    public boolean isSubscribed()
+    {
+        return subscribed;
+    }
+
+    public void setSubscribed(boolean subscribed)
+    {
+        this.subscribed = subscribed;
+    }
 }

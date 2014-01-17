@@ -169,7 +169,17 @@ public class BoardGameGeek {
         }
     }
 
-    public String subscribeToGeekList(long id, boolean subscribe)
+    public boolean subscribeToGeekList(long id, boolean subscribe)
+    {
+        return subscribeToObject(id, "geeklist", subscribe);
+    }
+
+    public boolean subscribeToForum(long id, boolean subscribe)
+    {
+        return subscribeToObject(id, "uforum", subscribe);
+    }
+
+    private boolean subscribeToObject(long id, String objectType, boolean subscribe)
     {
         MultivaluedMap<String, String> formParams = new MultivaluedMapImpl();
         formParams.add("action", "subscribe");
@@ -177,7 +187,7 @@ public class BoardGameGeek {
         formParams.add("dummy", "1");
         formParams.add("ajax", "1");
         formParams.add("objectid", String.valueOf(id));
-        formParams.add("objecttype", "geeklist");
+        formParams.add("objecttype", objectType);
 
         WebResource.Builder builder = boardGameGeekClient.getClient().resource(BoardGameGeekConstants.BBG_WEBSITE + "/geeksubscription.php").type("application/x-www-form-urlencoded");
 
@@ -187,10 +197,10 @@ public class BoardGameGeek {
 
         int status = response.getStatus();
         if (status == 200) {
-            return "success";
+            return true;
         }
         else {
-            return "failed";
+            return false;
         }
     }
 
