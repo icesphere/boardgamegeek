@@ -69,20 +69,22 @@
                                         <h:outputText value="Rating"/>
                                     </h:panelGroup>
                                 </f:facet>
-                                <h:panelGroup rendered="#{ratingView.gameId eq game.id}">
-                                    <h:inputText value="#{ratingView.rating}" required="true" requiredMessage="Rating required" size="3"/>
-                                    <br/>
-                                    <p:commandLink process=":collectionForm:collectionPage" value="Save" action="#{ratingView.saveRating}"
-                                                                   update=":collectionForm:collectionPage" style="margin-right: 10px;"/>
-                                    <p:commandLink process="@this" value="Cancel" action="#{ratingView.cancelChangeRating}" update=":collectionForm:collectionPage"/>
-                                </h:panelGroup>
-                                <h:panelGroup rendered="#{ratingView.gameId ne game.id}">
-                                    <h:outputText value="#{userSession.userGamesMap.get(game.id).rating}" rendered="#{userSession.userGamesMap.get(game.id).rating gt 0}"/>
-                                    <h:outputText value="N/A" rendered="#{userSession.userGamesMap.get(game.id).rating eq 0}"/>
-                                    <br/>
-                                    <p:commandLink value="Change" action="#{ratingView.showGameRating(game.id, userSession.userGamesMap.get(game.id).rating)}"
-                                                   update=":collectionForm:collectionPage" styleClass="smallText"
-                                                   rendered="#{userSession.loggedIn and userSession.userGamesMap.get(game.id).collectionId gt 0}" />
+                                <h:panelGroup id="ratingSection">
+                                    <h:panelGroup rendered="#{ratingView.gameId eq game.id}">
+                                        <h:inputText value="#{ratingView.rating}" required="true" requiredMessage="Rating required" size="3"/>
+                                        <br/>
+                                        <p:commandLink process="ratingSection" value="Save" action="#{ratingView.saveRating}"
+                                                       update="ratingSection" style="margin-right: 10px;"/>
+                                        <p:commandLink process="@this" value="Cancel" action="#{ratingView.cancelChangeRating}" update=":collectionForm:collectionPage"/>
+                                    </h:panelGroup>
+                                    <h:panelGroup rendered="#{ratingView.gameId ne game.id}">
+                                        <h:outputText value="#{userSession.userGamesMap.get(game.id).rating}" rendered="#{userSession.userGamesMap.get(game.id).rating gt 0}"/>
+                                        <h:outputText value="N/A" rendered="#{userSession.userGamesMap.get(game.id).rating eq 0}"/>
+                                        <br/>
+                                        <p:commandLink value="Change" action="#{ratingView.showGameRating(game.id, userSession.userGamesMap.get(game.id).rating)}"
+                                                       update="ratingSection" styleClass="smallText" process="@this"
+                                                       rendered="#{userSession.loggedIn and userSession.userGamesMap.get(game.id).collectionId gt 0}" />
+                                    </h:panelGroup>
                                 </h:panelGroup>
                             </p:column>
                             <p:column headerText="User Avg Rating" styleClass="alignCenter" sortBy="#{game.averageRating}" rendered="#{!userSession.mobile}">
