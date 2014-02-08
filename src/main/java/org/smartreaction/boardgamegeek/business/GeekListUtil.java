@@ -299,8 +299,8 @@ public class GeekListUtil
         entry.setThumbs(getThumbs(thumbSection));
 
         Element informationElement = item.children().get(1).getElementsByClass("information").get(0);
-        Date postedDate = getPostedDate(informationElement);
-        entry.setPostDate(postedDate);
+        entry.setPostDate(getPostedDate(informationElement));
+        entry.setEditDate(getEditedDate(informationElement));
 
         return entry;
     }
@@ -309,15 +309,38 @@ public class GeekListUtil
     {
         Date postedDate = null;
         try {
-            Element postingDateElement = informationElement.children().get(0).children().get(0);
-            TextNode postedDateNode = (TextNode) postingDateElement.childNodes().get(1);
-            String postedDateString = postedDateNode.text().substring(8);
-            postedDate = DateUtil.getDateFromBggString(postedDateString);
+            Element postingDateElement;
+            if (informationElement.children().size() == 2) {
+                postingDateElement = informationElement.children().get(0).children().get(0);
+            }
+            else {
+                postingDateElement = informationElement.children().get(1).children().get(0);
+            }
+            TextNode dateNode = (TextNode) postingDateElement.childNodes().get(1);
+            String dateString = dateNode.text().substring(8);
+            postedDate = DateUtil.getDateFromBggString(dateString);
         }
         catch (Exception e) {
             e.printStackTrace();
         }
         return postedDate;
+    }
+
+    private Date getEditedDate(Element informationElement)
+    {
+        Date editedDate = null;
+        try {
+            if (informationElement.children().size() == 3) {
+                Element editedDateElement = informationElement.children().get(0);
+                TextNode dateNode = (TextNode) editedDateElement.childNodes().get(0);
+                String dateString = dateNode.text().substring(7);
+                editedDate = DateUtil.getDateFromBggString(dateString);
+            }
+        }
+        catch (Exception e) {
+            e.printStackTrace();
+        }
+        return editedDate;
     }
 
     private List<GeekListComment> getGeekListComments(Element commentsElement)

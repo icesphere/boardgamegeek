@@ -59,6 +59,12 @@
                             <ui:repeat value="#{geekListView.geekListDetail.entries}" var="entry" varStatus="varStatus">
                                 <div class="#{geekListView.highlight(entry.postDate)?'geeklistEntryHighlighted':'geeklistEntry'}" style="position: relative;">
                                     <div style="position: absolute; top: 5px; right: 5px;">
+                                        <h:panelGroup layout="block" rendered="#{!empty entry.editDate}" styleClass="smallText">
+                                            <h:outputText value="Edited " styleClass="smallText"/>
+                                            <h:outputText value="#{entry.editDate}" styleClass="smallText">
+                                                <f:convertDateTime pattern="EEE MMM dd yyyy hh:mm a" />
+                                            </h:outputText>
+                                        </h:panelGroup>
                                         <h:outputText value="Posted " styleClass="smallText"/>
                                         <h:outputText value="#{entry.postDate}" styleClass="smallText">
                                             <f:convertDateTime pattern="EEE MMM dd yyyy hh:mm a" />

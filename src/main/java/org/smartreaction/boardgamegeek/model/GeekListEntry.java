@@ -14,6 +14,7 @@ public class GeekListEntry
     private String username;
     private long entryId;
     private Date postDate;
+    private Date editDate;
 
     public Game getGame()
     {
@@ -83,5 +84,15 @@ public class GeekListEntry
     public void setPostDate(Date postDate)
     {
         this.postDate = postDate;
+    }
+
+    public Date getEditDate()
+    {
+        return editDate;
+    }
+
+    public void setEditDate(Date editDate)
+    {
+        this.editDate = editDate;
     }
 }
