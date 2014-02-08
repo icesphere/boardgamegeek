@@ -29,7 +29,7 @@
                     </div>
                     <div style="padding-bottom: 10px;">
                         <h:selectBooleanCheckbox value="#{userSession.hideCollectionExpansions}">
-                            <p:ajax process="@this" update="collectionPage"/>
+                            <p:ajax listener="#{userSession.hideCollectionExpansionsChanged}" process="@this" update="collectionPage"/>
                         </h:selectBooleanCheckbox>
                         <h:outputText value="Hide expansions" style="padding-left: 5px;"/>
                     </div>

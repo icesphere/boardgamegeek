@@ -78,6 +78,9 @@ public class UserSession implements Serializable
         if (request.getSession().getAttribute("loggedInFromCookies") != null) {
             loggedInFromCookies(request);
         }
+        if (loggedIn) {
+            hideCollectionExpansions = user.isHideCollectionExpansions();
+        }
     }
 
     public String login()
@@ -189,6 +192,18 @@ public class UserSession implements Serializable
             for (Game game : games) {
                 if (!game.isExpansion()) {
                     gamesWithoutExpansions.add(game);
+                }
+                else if (game.hasExpansions()) {
+                    boolean addGame = true;
+                    for (Game parentGame : game.getParentGames()) {
+                        if (userGamesMap.containsKey(parentGame.getId())) {
+                            addGame = false;
+                            break;
+                        }
+                    }
+                    if (addGame) {
+                        gamesWithoutExpansions.add(game);
+                    }
                 }
             }
 
@@ -314,6 +329,14 @@ public class UserSession implements Serializable
     public void switchSite()
     {
         mobile = !mobile;
+    }
+
+    public void hideCollectionExpansionsChanged()
+    {
+        if (loggedIn) {
+            user.setHideCollectionExpansions(hideCollectionExpansions);
+            userDao.saveUser(user);
+        }
     }
 
     public boolean isUsernameSet()

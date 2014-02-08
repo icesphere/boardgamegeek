@@ -49,6 +49,9 @@ public class User
     @Temporal(TemporalType.TIMESTAMP)
     private Date topGamesLastUpdated;
 
+    @Column(name = "hide_collection_expansions")
+    private boolean hideCollectionExpansions;
+
     public long getId()
     {
         return id;
@@ -165,5 +168,15 @@ public class User
 
     public void setTopGamesLastUpdated(Date topGamesLastUpdated) {
         this.topGamesLastUpdated = topGamesLastUpdated;
+    }
+
+    public boolean isHideCollectionExpansions()
+    {
+        return hideCollectionExpansions;
+    }
+
+    public void setHideCollectionExpansions(boolean hideCollectionExpansions)
+    {
+        this.hideCollectionExpansions = hideCollectionExpansions;
     }
 }

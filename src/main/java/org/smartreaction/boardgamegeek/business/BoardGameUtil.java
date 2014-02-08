@@ -103,14 +103,11 @@ public class BoardGameUtil
         }
 
         Items collection = boardGameGeekService.getCollection(user);
-        syncUserGames(user.getId(), collection, new HashMap<Long, UserGame>(0));
+        syncUserGames(user.getId(), collection, userGamesMap);
         user.setCollectionLastUpdated(new Date());
         userDao.saveUser(user);
 
         gameDao.flush();
-
-        userGamesMap.clear();
-        userGamesMap.putAll(gameDao.getUserGamesMap(user.getId()));
     }
 
     private void syncUserGames(long userId, Items collection, Map<Long, UserGame> userGamesMap) throws MalformedURLException, JAXBException
