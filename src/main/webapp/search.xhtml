@@ -16,6 +16,9 @@
                 <div>
                     <h:outputText value="Search for game: "/>
                     <h:inputText value="#{searchGames.searchString}"/>
+                    <div style="padding-top: 10px;">
+                        <h:selectBooleanCheckbox value="#{searchGames.exactSearch}"/> Exact Search
+                    </div>
                 </div>
                 <div style="padding-top:15px;">
                     <p:commandButton actionListener="#{searchGames.searchGames}" value="Search" update="searchResults"/>

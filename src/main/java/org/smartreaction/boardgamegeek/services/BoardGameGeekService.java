@@ -147,11 +147,15 @@ public class BoardGameGeekService {
         return Long.parseLong(afterBoardGameString.substring(0, slashIndex));
     }
 
-    public List<Long> searchGames(String searchString) {
+    public List<Long> searchGames(String searchString, boolean exactSearch) {
         try {
             JAXBContext jc = JAXBContext.newInstance("org.smartreaction.boardgamegeek.xml.gamesearch");
             Unmarshaller unmarshaller = jc.createUnmarshaller();
-            URL url = new URL("http://boardgamegeek.com/xmlapi2/search?type=boardgame&query=" + searchString);
+            String queryString = "http://boardgamegeek.com/xmlapi2/search?type=boardgame&query=" + searchString;
+            if (exactSearch) {
+                queryString += "&exact=1";
+            }
+            URL url = new URL(queryString);
             org.smartreaction.boardgamegeek.xml.gamesearch.Items items = (org.smartreaction.boardgamegeek.xml.gamesearch.Items) unmarshaller.unmarshal(url);
             List<Long> gameIds = new ArrayList<Long>(items.getItem().size());
             for (org.smartreaction.boardgamegeek.xml.gamesearch.Item item : items.getItem()) {

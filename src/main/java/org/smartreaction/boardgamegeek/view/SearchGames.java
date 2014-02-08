@@ -26,6 +26,8 @@ public class SearchGames
 
     private boolean searched;
 
+    private boolean exactSearch;
+
     public String getSearchString()
     {
         return searchString;
@@ -38,7 +40,7 @@ public class SearchGames
 
     public void searchGames()
     {
-        List<Long> gameIds = boardGameGeekService.searchGames(searchString);
+        List<Long> gameIds = boardGameGeekService.searchGames(searchString, exactSearch);
         if (gameIds != null) {
             games = new ArrayList<>(gameIds.size());
             for (Long gameId : gameIds) {
@@ -62,5 +64,15 @@ public class SearchGames
     public boolean isSearched()
     {
         return searched;
+    }
+
+    public boolean isExactSearch()
+    {
+        return exactSearch;
+    }
+
+    public void setExactSearch(boolean exactSearch)
+    {
+        this.exactSearch = exactSearch;
     }
 }
