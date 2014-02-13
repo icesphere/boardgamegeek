@@ -61,11 +61,11 @@ public class Forum {
     @XmlSchemaType(name = "anySimpleType")
     protected String lastpostdate;
     @XmlAttribute(name = "noposting", required = true)
-    protected BigInteger noposting;
+    protected String noposting;
     @XmlAttribute(name = "numposts", required = true)
-    protected BigInteger numposts;
+    protected String numposts;
     @XmlAttribute(name = "numthreads", required = true)
-    protected BigInteger numthreads;
+    protected String numthreads;
     @XmlAttribute(name = "termsofuse", required = true)
     @XmlSchemaType(name = "anyURI")
     protected String termsofuse;
@@ -151,10 +151,10 @@ public class Forum {
      * 
      * @return
      *     possible object is
-     *     {@link BigInteger }
+     *     {@link String }
      *     
      */
-    public BigInteger getNoposting() {
+    public String getNoposting() {
         return noposting;
     }
 
@@ -163,10 +163,10 @@ public class Forum {
      * 
      * @param value
      *     allowed object is
-     *     {@link BigInteger }
+     *     {@link String }
      *     
      */
-    public void setNoposting(BigInteger value) {
+    public void setNoposting(String value) {
         this.noposting = value;
     }
 
@@ -175,10 +175,10 @@ public class Forum {
      * 
      * @return
      *     possible object is
-     *     {@link BigInteger }
+     *     {@link String }
      *     
      */
-    public BigInteger getNumposts() {
+    public String getNumposts() {
         return numposts;
     }
 
@@ -187,10 +187,10 @@ public class Forum {
      * 
      * @param value
      *     allowed object is
-     *     {@link BigInteger }
+     *     {@link String }
      *     
      */
-    public void setNumposts(BigInteger value) {
+    public void setNumposts(String value) {
         this.numposts = value;
     }
 
@@ -199,10 +199,10 @@ public class Forum {
      * 
      * @return
      *     possible object is
-     *     {@link BigInteger }
+     *     {@link String }
      *     
      */
-    public BigInteger getNumthreads() {
+    public String getNumthreads() {
         return numthreads;
     }
 
@@ -211,10 +211,10 @@ public class Forum {
      * 
      * @param value
      *     allowed object is
-     *     {@link BigInteger }
+     *     {@link String }
      *     
      */
-    public void setNumthreads(BigInteger value) {
+    public void setNumthreads(String value) {
         this.numthreads = value;
     }
 

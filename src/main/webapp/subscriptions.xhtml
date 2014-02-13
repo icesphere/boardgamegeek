@@ -29,8 +29,14 @@
                         </h:panelGroup>
                     </div>
                     <p:dataTable value="#{subscriptionView.subscriptions.forumSubscriptions}" var="forumSubscription">
-                        <p:column headerText="Forum" sortBy="#{forumSubscription.forum}">
-                            <h:outputText value="#{forumSubscription.forum}"/>
+                        <p:column headerText="Forum" sortBy="#{forumSubscription.game}">
+                            <h:link value="#{forumSubscription.game}" rendered="#{forumSubscription.gameId gt 0}"
+                                    outcome="game.xhtml?id=#{forumSubscription.gameId}"/>
+                            <h:outputText value="#{forumSubscription.game}" rendered="#{forumSubscription.gameId eq 0}"/>
+                            <h:panelGroup rendered="#{!empty forumSubscription.forumName}">
+                                <h:outputText value=" >> "/>
+                                <h:link value="#{forumSubscription.forumName}" outcome="forum.xhtml?id=#{forumSubscription.forumId}&amp;gameId=#{forumSubscription.gameId}"/>
+                            </h:panelGroup>
                         </p:column>
                         <p:column headerText="Title" sortBy="#{forumSubscription.subject}">
                             <h:link value="#{forumSubscription.subject}" outcome="#{subscriptionView.showForumSubscription(forumSubscription)}"/>

@@ -78,8 +78,8 @@ public class SubscriptionUtil
             return null;
         }
         String prefix = "GSUB_itemline_thread_";
-        long forumId = Long.parseLong(idString.substring(prefix.length()));
-        forumSubscription.setForumId(forumId);
+        long threadId = Long.parseLong(idString.substring(prefix.length()));
+        forumSubscription.setThreadId(threadId);
 
         Elements columns = forumRow.getElementsByTag("td");
 
@@ -87,12 +87,28 @@ public class SubscriptionUtil
         Element forumSpan = forumColumn.getElementsByTag("span").first();
         Elements forumLinks = forumSpan.getElementsByTag("a");
         Element forumLink = forumLinks.get(0);
-        String forum = forumLink.text();
+
+        String gameUrl = forumLink.attr("href");
+        String gameIdSubString = gameUrl.substring(gameUrl.indexOf("/boardgame/") + 11);
+        try {
+            long gameId = Long.parseLong(gameIdSubString.substring(0, gameIdSubString.indexOf("/")));
+            forumSubscription.setGameId(gameId);
+        } catch (NumberFormatException ignored) {}
+
+        String game = forumLink.text();
+        forumSubscription.setGame(game);
+
         if (forumLinks.size() > 1) {
             Element forumParentLink = forumLinks.get(1);
-            forum += " >> " + forumParentLink.text();
+            forumSubscription.setForumName(forumParentLink.text());
+
+            String forumUrl = forumParentLink.attr("href");
+            String forumIdSubString = forumUrl.substring(forumUrl.indexOf("/forum/") + 7);
+            try {
+                long forumId = Long.parseLong(forumIdSubString.substring(0, forumIdSubString.indexOf("/")));
+                forumSubscription.setForumId(forumId);
+            } catch (NumberFormatException ignored) {}
         }
-        forumSubscription.setForum(forum);
 
         Element subjectColumn = columns.get(1);
         Element subjectSpan = subjectColumn.getElementsByTag("span").last();

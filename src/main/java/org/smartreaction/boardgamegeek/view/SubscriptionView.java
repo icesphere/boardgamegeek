@@ -64,7 +64,7 @@ public class SubscriptionView
 
     public String showForumSubscription(ForumSubscription subscription)
     {
-        String threadLink = "thread.xhtml?id=" + subscription.getForumId() + "&markSubscriptionRead=true&faces-redirect=true";
+        String threadLink = "thread.xhtml?id=" + subscription.getThreadId() + "&markSubscriptionRead=true&faces-redirect=true";
 
         if (subscription.getLastUpdated() != null) {
             threadLink += "&lastUpdated=" + subscription.getLastUpdated().getTime();
@@ -87,7 +87,7 @@ public class SubscriptionView
     public void markAllForumSubscriptionsAsRead()
     {
         for (ForumSubscription forumSubscription : subscriptions.getForumSubscriptions()) {
-            boardGameGeek.markSubscriptionAsRead(forumSubscription.getForumId(), true);
+            boardGameGeek.markSubscriptionAsRead(forumSubscription.getThreadId(), true);
         }
         loadSubscriptions();
     }

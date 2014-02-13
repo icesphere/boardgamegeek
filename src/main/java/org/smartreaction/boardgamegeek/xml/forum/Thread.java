@@ -61,7 +61,7 @@ public class Thread {
     @XmlSchemaType(name = "anySimpleType")
     protected String lastpostdate;
     @XmlAttribute(name = "numarticles", required = true)
-    protected BigInteger numarticles;
+    protected String numarticles;
     @XmlAttribute(name = "postdate", required = true)
     @XmlSchemaType(name = "anySimpleType")
     protected String postdate;
@@ -160,10 +160,10 @@ public class Thread {
      * 
      * @return
      *     possible object is
-     *     {@link BigInteger }
+     *     {@link String }
      *     
      */
-    public BigInteger getNumarticles() {
+    public String getNumarticles() {
         return numarticles;
     }
 
@@ -172,10 +172,10 @@ public class Thread {
      * 
      * @param value
      *     allowed object is
-     *     {@link BigInteger }
+     *     {@link String }
      *     
      */
-    public void setNumarticles(BigInteger value) {
+    public void setNumarticles(String value) {
         this.numarticles = value;
     }
 

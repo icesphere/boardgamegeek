@@ -4,19 +4,22 @@ import java.util.Date;
 
 public class ForumSubscription
 {
-    private String forum;
+    private String game;
     private String subject;
     private long forumId;
     private Date lastUpdated;
+    private long gameId;
+    private String forumName;
+    private long threadId;
 
-    public String getForum()
+    public String getGame()
     {
-        return forum;
+        return game;
     }
 
-    public void setForum(String forum)
+    public void setGame(String game)
     {
-        this.forum = forum;
+        this.game = game;
     }
 
     public String getSubject()
@@ -47,5 +50,35 @@ public class ForumSubscription
     public void setLastUpdated(Date lastUpdated)
     {
         this.lastUpdated = lastUpdated;
+    }
+
+    public long getGameId()
+    {
+        return gameId;
+    }
+
+    public void setGameId(long gameId)
+    {
+        this.gameId = gameId;
+    }
+
+    public String getForumName()
+    {
+        return forumName;
+    }
+
+    public void setForumName(String forumName)
+    {
+        this.forumName = forumName;
+    }
+
+    public long getThreadId()
+    {
+        return threadId;
+    }
+
+    public void setThreadId(long threadId)
+    {
+        this.threadId = threadId;
     }
 }
