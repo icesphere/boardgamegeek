@@ -5,6 +5,7 @@
 
 <composite:interface>
     <composite:attribute name="linkText" required="true"/>
+    <composite:attribute name="linkStyle"/>
     <composite:attribute name="process"/>
     <composite:attribute name="update"/>
     <composite:attribute name="actionMethod" method-signature="java.lang.String action()" required="true"/>
@@ -26,7 +27,7 @@
     </script>
 
     <h:graphicImage id="loadingImage" library="images" name="loadingSmall.gif" style="display:none;" styleClass="#{cc.id}_loading"/>
-    <p:commandLink id="link" value="#{cc.attrs.linkText}" action="#{cc.attrs.actionMethod}"
+    <p:commandLink id="link" value="#{cc.attrs.linkText}" action="#{cc.attrs.actionMethod}" style="#{cc.attrs.linkStyle}"
                    process="#{cc.attrs.process}" update="#{cc.attrs.update}" styleClass="#{cc.id}_link"
                    onstart="linkWithSpinnerStart_#{cc.id}()" oncomplete="linkWithSpinnerEnd_#{cc.id}()"/>
 </composite:implementation>

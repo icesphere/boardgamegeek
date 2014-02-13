@@ -97,6 +97,16 @@ public class GeekListView
         }
     }
 
+    public void recommendGeekList()
+    {
+        recommendGeekList(true);
+    }
+
+    public void unRecommendGeekList()
+    {
+        recommendGeekList(false);
+    }
+
     public void recommendGeekList(boolean recommend)
     {
         boardGameGeek.recommendGeekList(geekListId, recommend);
@@ -110,6 +120,16 @@ public class GeekListView
             showRecommend = true;
             showUndoRecommend = false;
         }
+    }
+
+    public void subscribeToGeekList()
+    {
+        subscribeToGeekList(true);
+    }
+
+    public void unSubscribeFromGeekList()
+    {
+        subscribeToGeekList(false);
     }
 
     public void subscribeToGeekList(boolean subscribe)

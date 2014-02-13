@@ -2,7 +2,8 @@
       xmlns:h="http://java.sun.com/jsf/html"
       xmlns:p="http://primefaces.org/ui"
       xmlns:ui="http://java.sun.com/jsf/facelets"
-      xmlns:f="http://java.sun.com/jsf/core">
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:sr="http://java.sun.com/jsf/composite/components">
 
 <ui:composition template="/templates/commonLayout.xhtml">
     <ui:define name="title">
@@ -35,18 +36,30 @@
                         </div>
                         <h:panelGroup layout="block" style="padding-bottom: 15px; font-size: 150%;" id="geekListHeader">
                             <h:outputText value="#{geekListView.geekListDetail.title}" styleClass="boldText"/>
+
                             <h:outputText value=" (#{geekListView.geekListDetail.thumbs} "/>
                             <h:graphicImage library="images" name="arrowup.png" alt="thumbs"/>
 
-                            <p:commandLink value="Recommend" style="margin-left: 8px; font-size: 12px;" action="#{geekListView.recommendGeekList(true)}"
-                                           process="geekListHeader" update="geekListHeader" rendered="#{userSession.loggedIn and geekListView.showRecommend}"/>
-                            <p:commandLink value="Undo recommend" style="margin-left: 8px; font-size: 12px;" action="#{geekListView.recommendGeekList(false)}"
-                                           process="geekListHeader" update="geekListHeader" rendered="#{userSession.loggedIn and geekListView.showUndoRecommend}"/>
+                            <h:panelGroup rendered="#{userSession.loggedIn and geekListView.showRecommend}">
+                                <sr:linkWithSpinner linkText="Recommend" actionMethod="#{geekListView.recommendGeekList}"
+                                                    process="@this" update=":geekListForm:geekListHeader" linkStyle="margin-left: 8px; font-size: 12px;"/>
+                            </h:panelGroup>
 
-                            <p:commandLink value="Subscribe" style="margin-left: 15px; font-size: 12px;" action="#{geekListView.subscribeToGeekList(true)}"
-                                           process="@this" update="geekListHeader" rendered="#{userSession.loggedIn and geekListView.showSubscribe}"/>
-                            <p:commandLink value="Unsubscribe" style="margin-left: 15px; font-size: 12px;" action="#{geekListView.subscribeToGeekList(false)}"
-                                           process="@this" update="geekListHeader" rendered="#{userSession.loggedIn and !geekListView.showSubscribe}"/>
+                            <h:panelGroup rendered="#{userSession.loggedIn and geekListView.showUndoRecommend}">
+                                <sr:linkWithSpinner linkText="Undo recommend" actionMethod="#{geekListView.unRecommendGeekList}"
+                                                    process="@this" update=":geekListForm:geekListHeader" linkStyle="margin-left: 8px; font-size: 12px;"/>
+                            </h:panelGroup>
+
+                            <h:panelGroup rendered="#{userSession.loggedIn and geekListView.showSubscribe}">
+                                <sr:linkWithSpinner linkText="Subscribe" actionMethod="#{geekListView.subscribeToGeekList}"
+                                                    process="@this" update=":geekListForm:geekListHeader" linkStyle="margin-left: 15px; font-size: 12px;"/>
+                            </h:panelGroup>
+
+                            <h:panelGroup rendered="#{userSession.loggedIn and !geekListView.showSubscribe}">
+                                <sr:linkWithSpinner linkText="Unsubscribe" actionMethod="#{geekListView.unSubscribeFromGeekList}"
+                                                    process="@this" update=":geekListForm:geekListHeader" linkStyle="margin-left: 15px; font-size: 12px;"/>
+                            </h:panelGroup>
+
                             <h:outputText value=")"/>
                         </h:panelGroup>
                         <div style="padding-bottom:10px;">
