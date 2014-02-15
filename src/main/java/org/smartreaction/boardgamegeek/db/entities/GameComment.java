@@ -1,6 +1,7 @@
 package org.smartreaction.boardgamegeek.db.entities;
 
 import javax.persistence.*;
+import java.util.Date;
 
 @Entity
 @Table(name = "game_comments")
@@ -21,6 +22,10 @@ public class GameComment
 
     @Column
     private String comment;
+
+    @Column(name = "comment_date")
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date commentDate;
 
     public long getId()
     {
@@ -70,5 +75,15 @@ public class GameComment
     public void setComment(String comment)
     {
         this.comment = comment;
+    }
+
+    public Date getCommentDate()
+    {
+        return commentDate;
+    }
+
+    public void setCommentDate(Date commentDate)
+    {
+        this.commentDate = commentDate;
     }
 }

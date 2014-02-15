@@ -508,8 +508,8 @@ public class BoardGameUtil
 
         int page = 1;
 
-        while (page <= 10) {
-            List<GameComment> gameCommentsForPage = getGameCommentsForPage(game, page);
+        while (page <= 5) {
+            List<GameComment> gameCommentsForPage = getRecentGameCommentsForPage(game, page);
             if (!gameCommentsForPage.isEmpty()) {
                 comments.addAll(gameCommentsForPage);
                 page++;
@@ -523,6 +523,16 @@ public class BoardGameUtil
         gameDao.updateGame(game);
 
         return comments;
+    }
+
+    private List<GameComment> getRecentGameCommentsForPage(Game game, int page)
+    {
+        try {
+            return boardGameGeekService.getRecentGameComments(game.getId(), page);
+        }
+        catch (Exception e) {
+            return getGameCommentsForPage(game, page);
+        }
     }
 
     private List<GameComment> getGameCommentsForPage(Game game, int page)

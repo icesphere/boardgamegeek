@@ -184,6 +184,12 @@
                                 <p:column headerText="Comment">
                                     <h:outputText value="#{comment.comment}"/>
                                 </p:column>
+
+                                <p:column headerText="Date">
+                                    <h:outputText value="#{comment.commentDate}">
+                                        <f:convertDateTime pattern="MMM dd, yyyy" />
+                                    </h:outputText>
+                                </p:column>
                             </p:dataTable>
                         </h:panelGroup>
                     </h:panelGroup>
