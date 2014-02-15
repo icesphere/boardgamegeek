@@ -207,7 +207,7 @@ public class BoardGameCache
             return true;
         }
         DateTime lastUpdated = new DateTime(game.getCommentsLastUpdated());
-        lastUpdated = lastUpdated.plusDays(3);
+        lastUpdated = lastUpdated.plusDays(1);
         return DateTime.now().isAfter(lastUpdated);
     }
 

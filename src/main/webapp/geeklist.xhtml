@@ -12,9 +12,21 @@
         <h:outputText value="#{geekListView.geekListDetail.title}" rendered="#{geekListView.loaded and !geekListView.errorLoadingGeekListDetail}"/>
     </ui:define>
 
+    <ui:define name="head">
+        <script type="text/javascript">
+            function scrollToFirstSubscriptionEntry(args)
+            {
+                if(args.firstSubscriptionEntryId != "0")
+                {
+                    window.location.hash = '#'+args.firstSubscriptionEntryId;
+                }
+            }
+        </script>
+    </ui:define>
+
     <ui:define name="content">
         <h:form id="geekListForm">
-            <p:remoteCommand name="loadGeekList" actionListener="#{geekListView.loadGeekListNew}" update="geekListPage :pageTitle" autoRun="true"/>
+            <p:remoteCommand name="loadGeekList" actionListener="#{geekListView.loadGeekListNew}" update="geekListPage :pageTitle" autoRun="true" oncomplete="scrollToFirstSubscriptionEntry(args)"/>
             <h:panelGroup layout="block" id="geekListPage">
                 <h:panelGroup layout="block" style="padding-bottom: 20px; text-align: center;" rendered="#{!geekListView.loaded or geekListView.errorLoadingGeekListDetail}">
                      <a href="#{geekListView.boardGameGeekLink}" target="_blank">View this geeklist on BGG</a>

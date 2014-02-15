@@ -67,16 +67,7 @@ public class GeekListView
     {
         try {
             geekListDetail = geekListsCache.getGeekListDetail(geekListId);
-            if (lastUpdated != null) {
-                for (GeekListEntry entry : geekListDetail.getEntries()) {
-                    if (entry.getPostDate().after(lastUpdated)) {
-                        firstSubscriptionEntryId = entry.getEntryId();
-                        break;
-                    }
-                }
-            }
-            RequestContext context = RequestContext.getCurrentInstance();
-            context.addCallbackParam("firstSubscriptionEntryId", firstSubscriptionEntryId);
+            addFirstSubscriptionId();
             loaded = true;
         }
         catch (Exception e) {
@@ -85,10 +76,25 @@ public class GeekListView
         }
     }
 
+    private void addFirstSubscriptionId()
+    {
+        if (lastUpdated != null) {
+            for (GeekListEntry entry : geekListDetail.getEntries()) {
+                if (entry.getPostDate() != null && entry.getPostDate().after(lastUpdated)) {
+                    firstSubscriptionEntryId = entry.getEntryId();
+                    break;
+                }
+            }
+        }
+        RequestContext context = RequestContext.getCurrentInstance();
+        context.addCallbackParam("firstSubscriptionEntryId", firstSubscriptionEntryId);
+    }
+
     public void loadGeekListNew()
     {
         try {
             geekListDetail = geekListUtil.getGeekListDetailNew(geekListId);
+            addFirstSubscriptionId();
             loaded = true;
         }
         catch (Exception e) {
