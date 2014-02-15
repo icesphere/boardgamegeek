@@ -185,7 +185,7 @@
                                     <h:outputText value="#{comment.comment}"/>
                                 </p:column>
 
-                                <p:column headerText="Date">
+                                <p:column headerText="Date" sortBy="#{comment.commentDate}">
                                     <h:outputText value="#{comment.commentDate}">
                                         <f:convertDateTime pattern="MMM dd, yyyy" />
                                     </h:outputText>

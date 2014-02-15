@@ -176,21 +176,33 @@ public class BoardGameGeekService
 
         Element commentTable = doc.getElementsByClass("forum_table").first();
 
-        Elements commentRows = commentTable.getElementsByTag("tr");
+        Elements commentRows = commentTable.children().first().children();
+
+        boolean first = true;
 
         for (Element commentRow : commentRows) {
-            Elements commentColumns = commentRow.getElementsByTag("td");
+            try {
+                if (!first) {
+                    Elements commentColumns = commentRow.children();
 
-            GameComment comment = new GameComment();
-            comment.setGameId(gameId);
-            comment.setUsername(getUsername(commentColumns.get(0)));
-            comment.setRating(getRating(commentColumns.get(1)));
-            comment.setComment(getComment(commentColumns.get(2)));
-            comment.setCommentDate(getCommentDate(commentColumns.get(2)));
+                    GameComment comment = new GameComment();
+                    comment.setGameId(gameId);
+                    comment.setUsername(getUsername(commentColumns.get(0)));
+                    comment.setRating(getRating(commentColumns.get(1)));
+                    comment.setComment(getComment(commentColumns.get(2)));
+                    comment.setCommentDate(getCommentDate(commentColumns.get(2)));
 
-            gameDao.createGameComment(comment);
+                    gameDao.createGameComment(comment);
 
-            comments.add(comment);
+                    comments.add(comment);
+                }
+                else {
+                    first = false;
+                }
+            }
+            catch (Exception e) {
+                e.printStackTrace();
+            }
         }
 
         return comments;
