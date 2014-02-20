@@ -5,6 +5,7 @@ import org.smartreaction.boardgamegeek.business.BoardGameCache;
 import org.smartreaction.boardgamegeek.db.dao.GameDao;
 import org.smartreaction.boardgamegeek.db.entities.Game;
 import org.smartreaction.boardgamegeek.db.entities.GameComment;
+import org.smartreaction.boardgamegeek.db.entities.RecentlyViewedGame;
 import org.smartreaction.boardgamegeek.xml.forumlist.Forum;
 
 import javax.annotation.PostConstruct;
@@ -15,6 +16,7 @@ import javax.faces.bean.ViewScoped;
 import javax.xml.bind.JAXBException;
 import java.net.MalformedURLException;
 import java.text.ParseException;
+import java.util.Date;
 import java.util.List;
 
 @ManagedBean
@@ -66,6 +68,22 @@ public class BoardGame {
         if (userSession.isUsernameSet() && userSession.getGames() == null) {
             userSession.syncGames();
         }
+
+        if (userSession.isLoggedIn()) {
+            RecentlyViewedGame recentlyViewedGame = gameDao.getRecentlyViewedGame(userSession.getUser().getId(), gameId);
+            if (recentlyViewedGame == null) {
+                recentlyViewedGame = new RecentlyViewedGame();
+                recentlyViewedGame.setGameId(gameId);
+                recentlyViewedGame.setUserId(userSession.getUser().getId());
+                recentlyViewedGame.setViewDate(new Date());
+                gameDao.createRecentlyViewedGame(recentlyViewedGame);
+            }
+            else {
+                recentlyViewedGame.setViewDate(new Date());
+                gameDao.updateRecentlyViewedGame(recentlyViewedGame);
+            }
+        }
+
         gameLoaded = true;
     }
 

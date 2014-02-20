@@ -3,10 +3,7 @@ package org.smartreaction.boardgamegeek.db.dao;
 import org.smartreaction.boardgamegeek.db.entities.*;
 
 import javax.ejb.Stateless;
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
-import javax.persistence.Query;
-import javax.persistence.TypedQuery;
+import javax.persistence.*;
 import java.util.*;
 
 @Stateless
@@ -266,5 +263,38 @@ public class GameDao
         query.setParameter("gameId", gameId);
 
         query.executeUpdate();
+    }
+
+    public List<RecentlyViewedGame> getRecentlyViewedGamesForUser(long userId)
+    {
+        TypedQuery<RecentlyViewedGame> query = em.createQuery("select rvg from RecentlyViewedGame rvg where rvg.userId = :userId order by rvg.viewDate desc", RecentlyViewedGame.class);
+        query.setParameter("userId", userId);
+        query.setMaxResults(20);
+
+        return query.getResultList();
+    }
+
+    public RecentlyViewedGame getRecentlyViewedGame(long userId, long gameId)
+    {
+        try {
+            TypedQuery<RecentlyViewedGame> query = em.createQuery("select rvg from RecentlyViewedGame rvg where rvg.userId = :userId and rvg.gameId = :gameId", RecentlyViewedGame.class);
+            query.setParameter("userId", userId);
+            query.setParameter("gameId", gameId);
+
+            return query.getSingleResult();
+        }
+        catch (NoResultException e) {
+            return null;
+        }
+    }
+
+    public void createRecentlyViewedGame(RecentlyViewedGame recentlyViewedGame)
+    {
+        em.persist(recentlyViewedGame);
+    }
+
+    public void updateRecentlyViewedGame(RecentlyViewedGame recentlyViewedGame)
+    {
+        em.merge(recentlyViewedGame);
     }
 }
