@@ -43,7 +43,7 @@
 
                     <h:panelGroup layout="block" id="recommendationSettings" style="padding-bottom: 10px;">
 
-                        <h:messages styleClass="errorText"/>
+                        <h:messages styleClass="errorText" style="margin-bottom: 15px;"/>
 
                         <p:commandLink value="Change recommendation settings" process="@this" update="recommendationSettings"
                                        actionListener="#{whatToPlayView.setShowRecommendationSettings(true)}"
@@ -61,32 +61,48 @@
                                 <h:panelGrid columns="2" columnClasses="boldText smallRightPadding alignRight tinyPaddingBottom, tinyPaddingBottom" style="margin-top: 10px;">
 
                                     <h:outputText value="Rating multiplier:"/>
-                                    <h:inputText value="#{whatToPlayView.ratingMultiplier}">
+                                    <h:inputText value="#{whatToPlayView.ratingMultiplier}" label="Rating multiplier">
                                         <f:validateDoubleRange minimum="0" maximum="1000"/>
                                     </h:inputText>
 
                                     <h:outputText value="Rating exponent:"/>
-                                    <h:inputText value="#{whatToPlayView.ratingExponent}">
+                                    <h:inputText value="#{whatToPlayView.ratingExponent}" label="Rating exponent">
                                         <f:validateDoubleRange minimum="-5" maximum="5"/>
                                     </h:inputText>
 
+                                    <h:outputText value="Rating modifier:"/>
+                                    <h:inputText value="#{whatToPlayView.ratingModifier}" label="Rating modifier">
+                                        <f:validateDoubleRange minimum="-100" maximum="100"/>
+                                    </h:inputText>
+
                                     <h:outputText value="Days since last played multiplier:"/>
-                                    <h:inputText value="#{whatToPlayView.lastPlayedMultiplier}">
+                                    <h:inputText value="#{whatToPlayView.lastPlayedMultiplier}" label="Days since last played multiplier">
                                         <f:validateDoubleRange minimum="-1000" maximum="1000"/>
                                     </h:inputText>
 
                                     <h:outputText value="Days since last played exponent:"/>
-                                    <h:inputText value="#{whatToPlayView.lastPlayedExponent}">
-                                        <f:validateDoubleRange minimum="-5" maximum="5"/>
+                                    <h:inputText value="#{whatToPlayView.lastPlayedExponent}" label="Days since last played exponent">
+                                        <f:validateDoubleRange minimum="-3" maximum="3"/>
                                     </h:inputText>
 
-                                    <h:outputText value="Last played score if no plays recorded for game:"/>
+                                    <h:outputText value="Days since last played modifier:"/>
+                                    <h:inputText value="#{whatToPlayView.lastPlayedModifier}" label="Days since last played modifier">
+                                        <f:validateDoubleRange minimum="-10000" maximum="10000"/>
+                                    </h:inputText>
+
+                                    <h:outputText value="Last played score if no plays recorded for game:" label="Last played score if not plays recorded for game"/>
                                     <h:inputText value="#{whatToPlayView.noLastPlayScore}">
                                         <f:validateDoubleRange minimum="-100000" maximum="100000"/>
                                     </h:inputText>
 
                                 </h:panelGrid>
 
+                            </div>
+
+                            <div style="padding-top: 10px;">
+                                <h:outputText styleClass="captionText" value="Rating score forumla: (Rating muliplier * (Rating + Rating modifier))^(Rating Exponent)"/>
+                                <br/>
+                                <h:outputText styleClass="captionText" value="Last played score forumla: (Days since last played multiplier * (Days since last played + Days since last played modifier))^(Days since last played exponent) + (Last played score modifier) + (Last played score if no plays recorded for game)"/>
                             </div>
 
                             <div style="padding-top: 15px;">

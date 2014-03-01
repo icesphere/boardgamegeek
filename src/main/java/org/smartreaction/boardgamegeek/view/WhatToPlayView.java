@@ -38,9 +38,13 @@ public class WhatToPlayView implements Serializable
 
     private boolean showRecommendationSettings;
 
+    private double ratingModifier = 0;
+
     private double ratingMultiplier = 3;
 
     private double ratingExponent = 2;
+
+    private double lastPlayedModifier = 0;
 
     private double lastPlayedMultiplier = 1;
 
@@ -92,14 +96,14 @@ public class WhatToPlayView implements Serializable
         else {
             rating = game.getAverageRating();
         }
-        double ratingScore = Math.pow((ratingMultiplier * rating), ratingExponent);
+        double ratingScore = Math.pow((ratingMultiplier * (rating + ratingModifier)), ratingExponent);
         recommendation.setRatingScore(ratingScore);
 
         double lastPlayedScore;
         Date lastPlayed = game.getLastPlayed();
         if (lastPlayed != null) {
             int daysSinceLastPlayed = Days.daysBetween(new DateTime(lastPlayed), new DateTime()).getDays();
-            lastPlayedScore =  Math.pow((lastPlayedMultiplier *daysSinceLastPlayed), lastPlayedExponent);
+            lastPlayedScore =  Math.pow((lastPlayedMultiplier * (daysSinceLastPlayed + lastPlayedModifier)), lastPlayedExponent);
         }
         else {
             lastPlayedScore = noLastPlayScore;
@@ -164,6 +168,26 @@ public class WhatToPlayView implements Serializable
     public void setNoLastPlayScore(double noLastPlayScore)
     {
         this.noLastPlayScore = noLastPlayScore;
+    }
+
+    public double getRatingModifier()
+    {
+        return ratingModifier;
+    }
+
+    public void setRatingModifier(double ratingModifier)
+    {
+        this.ratingModifier = ratingModifier;
+    }
+
+    public double getLastPlayedModifier()
+    {
+        return lastPlayedModifier;
+    }
+
+    public void setLastPlayedModifier(double lastPlayedModifier)
+    {
+        this.lastPlayedModifier = lastPlayedModifier;
     }
 
     public boolean isRecommendationsLoaded()
