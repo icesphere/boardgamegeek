@@ -119,7 +119,7 @@ public class GameDao
 
     public List<GameComment> getGameComments(long gameId)
     {
-        TypedQuery<GameComment> query = em.createQuery("select gc from GameComment gc where gc.gameId = :gameId", GameComment.class);
+        TypedQuery<GameComment> query = em.createQuery("select gc from GameComment gc where gc.gameId = :gameId order by gc.commentDate desc", GameComment.class);
         query.setParameter("gameId", gameId);
         return query.getResultList();
     }

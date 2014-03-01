@@ -188,12 +188,19 @@ public class BoardGameCache
     public List<GameComment> getGameComments(Game game)
     {
         try {
-            List<GameComment> comments = gameComments.getUnchecked(game.getId());
             if (shouldRefreshGameComments(game)) {
                 game.setCommentsLastUpdated(new Date());
-                boardGameAsynchronous.refreshGameComments(game, this);
+                List<GameComment> comments = boardGameUtil.loadGameComments(game);
+                gameComments.put(game.getId(), comments);
+                return comments;
             }
-            return comments;
+            else {
+                List<GameComment> comments = gameComments.getUnchecked(game.getId());
+                if(shouldRefreshGameCommentsAsynchronously(game)) {
+                    boardGameAsynchronous.refreshGameComments(game, this);
+                }
+                return comments;
+            }
         }
         catch (Exception e) {
             e.printStackTrace();
@@ -208,6 +215,13 @@ public class BoardGameCache
         }
         DateTime lastUpdated = new DateTime(game.getCommentsLastUpdated());
         lastUpdated = lastUpdated.plusDays(1);
+        return DateTime.now().isAfter(lastUpdated);
+    }
+
+    private boolean shouldRefreshGameCommentsAsynchronously(Game game)
+    {
+        DateTime lastUpdated = new DateTime(game.getCommentsLastUpdated());
+        lastUpdated = lastUpdated.plusHours(6);
         return DateTime.now().isAfter(lastUpdated);
     }
 
