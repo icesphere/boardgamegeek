@@ -33,6 +33,9 @@
                 <h:panelGroup layout="block" styleClass="mediumRightPadding navigationLink" rendered="#{userSession.usernameSet}">
                     <h:link outcome="/plays.xhtml?faces-redirect=true">Plays</h:link>
                 </h:panelGroup>
+                <h:panelGroup layout="block" styleClass="mediumRightPadding navigationLink" rendered="#{userSession.usernameSet and userSession.user.admin}">
+                    <h:link outcome="/whatToPlay.xhtml?faces-redirect=true">What to play</h:link>
+                </h:panelGroup>
                 <h:panelGroup layout="block" styleClass="mediumRightPadding navigationLink" rendered="#{userSession.loggedIn}">
                     <h:link outcome="/recentlyViewedGames.xhtml?faces-redirect=true">Recently Viewed</h:link>
                 </h:panelGroup>

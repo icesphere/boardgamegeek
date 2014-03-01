@@ -470,4 +470,9 @@ public class UserSession implements Serializable
     {
         boardGameUtil.syncUserGames(user, userGamesMap, false);
     }
+
+    public List<Game> getGamesWithoutExpansions()
+    {
+        return gamesWithoutExpansions;
+    }
 }

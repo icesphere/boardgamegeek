@@ -1,0 +1,141 @@
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:f="http://java.sun.com/jsf/core">
+<ui:composition template="/templates/commonLayout.xhtml">
+    <ui:define name="title">
+        <h:outputText value="What to play"/>
+    </ui:define>
+    <ui:define name="head">
+        <style type="text/css">
+            .ratingBox {
+                height: 20px;
+                width: 100px;
+                float: left;
+            }
+            .ratingScore {
+                height: 20px;
+                background-color: red;
+                float: left;
+            }
+            .lastPlayedScore {
+                height: 20px;
+                background-color: blue;
+                float: left;
+            }
+        </style>
+    </ui:define>
+    <ui:define name="content">
+
+        <h:form id="whatToPlayViewForm">
+
+            <p:remoteCommand name="setupRecommendGames" actionListener="#{whatToPlayView.loadGamesToPlay}" update="whatToPlayViewPage" autoRun="true"/>
+
+            <h:panelGroup layout="block" id="whatToPlayViewPage">
+
+                <h:panelGroup layout="block" rendered="#{!whatToPlayView.recommendationsLoaded}" styleClass="centerDiv" style="text-align: center;">
+                    <h:graphicImage library="images" name="loading.gif"/>
+                </h:panelGroup>
+
+                <h:panelGroup layout="block" rendered="#{whatToPlayView.recommendationsLoaded}">
+
+                    <div style="clear: both; padding-bottom: 10px;" class="captionText">
+                        <div>
+                            <h:outputText style="color: red; padding-right: 10px;" value="Red: Rating Score"/>
+                            <h:outputText style="color: blue; padding-right: 10px;" value="Blue: Last Played Score"/>
+                        </div>
+                    </div>
+
+                    <p:dataTable value="#{whatToPlayView.recommendations}" var="recommendation" style="clear: both;">
+                        <p:column headerText="Name" styleClass="alignLeft" sortBy="#{recommendation.game.name}">
+                            <h:link outcome="game.xhtml?id=#{recommendation.game.id}&amp;faces-redirect=true"><img src="#{recommendation.game.smallThumbnailImage}" alt="#{recommendation.game.name} image" style="margin-right:10px"/></h:link>
+                            <h:panelGroup rendered="#{userSession.mobile}"><br/></h:panelGroup>
+                            <h:link outcome="game.xhtml?id=#{recommendation.game.id}&amp;faces-redirect=true"><h:outputText value="#{recommendation.game.name}"/></h:link>
+                            <h:outputText value=" (#{recommendation.game.yearPublished})" rendered="#{userSession.mobile}"/>
+                        </p:column>
+                        <p:column headerText="Year Published" styleClass="alignCenter" sortBy="#{recommendation.game.yearPublished}" rendered="#{!userSession.mobile}">
+                            <h:outputText value="#{recommendation.game.yearPublished}" rendered="#{recommendation.game.yearPublished gt 0}"/>
+                            <h:outputText value="N/A" rendered="#{recommendation.game.yearPublished eq 0}"/>
+                        </p:column>
+                        <p:column styleClass="alignCenter" sortBy="#{userSession.userGamesMap.get(recommendation.game.id).rating}">
+                            <f:facet name="header">
+                                <h:panelGroup styleClass="smallTableHeader">
+                                    <h:outputText value="Your "/>
+                                    <h:panelGroup rendered="#{userSession.mobile}"><br/></h:panelGroup>
+                                    <h:outputText value="Rating"/>
+                                </h:panelGroup>
+                            </f:facet>
+                            <h:panelGroup id="ratingSection">
+                                <h:panelGroup rendered="#{ratingView.gameId eq recommendation.game.id}">
+                                    <h:inputText value="#{ratingView.rating}" required="true" requiredMessage="Rating required" size="3"/>
+                                    <br/>
+                                    <p:commandLink process="ratingSection" value="Save" action="#{ratingView.saveRating}"
+                                                   update="ratingSection" style="margin-right: 10px;"/>
+                                    <p:commandLink process="@this" value="Cancel" action="#{ratingView.cancelChangeRating}" update=":collectionForm:collectionPage"/>
+                                </h:panelGroup>
+                                <h:panelGroup rendered="#{ratingView.gameId ne recommendation.game.id}">
+                                    <h:outputText value="#{userSession.userGamesMap.get(recommendation.game.id).rating}" rendered="#{userSession.userGamesMap.get(recommendation.game.id).rating gt 0}"/>
+                                    <h:outputText value="N/A" rendered="#{userSession.userGamesMap.get(recommendation.game.id).rating eq 0}"/>
+                                    <br/>
+                                    <p:commandLink value="Change" action="#{ratingView.showGameRating(recommendation.game.id, userSession.userGamesMap.get(recommendation.game.id).rating)}"
+                                                   update="ratingSection" styleClass="smallText" process="@this"
+                                                   rendered="#{userSession.loggedIn and userSession.userGamesMap.get(recommendation.game.id).collectionId gt 0}" />
+                                </h:panelGroup>
+                            </h:panelGroup>
+                        </p:column>
+                        <p:column styleClass="alignCenter" sortBy="#{recommendation.game.averageRating}">
+                            <f:facet name="header">
+                                <h:panelGroup styleClass="smallTableHeader">
+                                    <h:outputText value="Avg "/>
+                                    <h:panelGroup rendered="#{userSession.mobile}"><br/></h:panelGroup>
+                                    <h:outputText value="Rating"/>
+                                </h:panelGroup>
+                            </f:facet>
+                            <h:outputText value="#{recommendation.game.averageRating}"/>
+                            <h:outputText value=" (#{recommendation.game.ratings} ratings)"/>
+                        </p:column>
+                        <p:column sortBy="#{recommendation.game.lastPlayed}">
+                            <f:facet name="header">
+                                <h:panelGroup styleClass="smallTableHeader">
+                                    <h:outputText value="Last "/>
+                                    <h:panelGroup rendered="#{userSession.mobile}"><br/></h:panelGroup>
+                                    <h:outputText value="Played"/>
+                                </h:panelGroup>
+                            </f:facet>
+                            <h:outputText value="#{recommendation.game.lastPlayed}">
+                                <f:convertDateTime pattern="MMM dd, yyyy" />
+                            </h:outputText>
+                        </p:column>
+                        <p:column styleClass="alignCenter" sortBy="#{recommendation.score}">
+                            <f:facet name="header">
+                                <h:panelGroup styleClass="smallTableHeader">
+                                    <h:outputText value="Recommendation "/>
+                                    <br/>
+                                    <h:outputText value="Score"/>
+                                </h:panelGroup>
+                            </f:facet>
+                            <h:panelGroup>
+                                <div style="float: left;">
+                                    <div style="float: left; padding-right: 15px;">
+                                        <h:outputText value="#{recommendation.score}">
+                                            <f:convertNumber type="number" groupingUsed="true" pattern="#0.00"/>
+                                        </h:outputText>
+                                    </div>
+                                    <div class="ratingBox">
+                                        <div class="ratingScore" style="width: #{recommendation.ratingScorePercentage}%"></div>
+                                        <div class="lastPlayedScore" style="width: #{recommendation.lastPlayedScorePercentage}%"></div>
+                                    </div>
+                                </div>
+                            </h:panelGroup>
+                        </p:column>
+                    </p:dataTable>
+                </h:panelGroup>
+
+            </h:panelGroup>
+
+        </h:form>
+
+    </ui:define>
+</ui:composition>
+</html>
