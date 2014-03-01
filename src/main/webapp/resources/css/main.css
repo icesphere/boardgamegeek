@@ -87,6 +87,10 @@ table {
     font-weight: bold;
 }
 
+.underlineText {
+    text-decoration: underline;
+}
+
 a {
     color: #1a56ff;
 }

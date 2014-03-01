@@ -52,6 +52,8 @@ public class WhatToPlayView implements Serializable
 
     private double noLastPlayScore = 500;
 
+    private double minRating = 7;
+
     public void loadGamesToPlay() throws MalformedURLException, JAXBException
     {
         if (userSession.getGames() == null) {
@@ -71,9 +73,12 @@ public class WhatToPlayView implements Serializable
 
         for (Game game : userSession.getGamesWithoutExpansions()) {
             if (userSession.getUserGamesMap().get(game.getId()).isOwned()) {
-                recommendations.add(getRecommendation(game));
-                if (recommendations.size() >= MAX_GAMES_TO_RECOMMEND) {
-                    break;
+                WhatToPlayRecommendation recommendation = getRecommendation(game);
+                if (recommendation != null) {
+                    recommendations.add(recommendation);
+                    if (recommendations.size() >= MAX_GAMES_TO_RECOMMEND) {
+                        break;
+                    }
                 }
             }
         }
@@ -96,6 +101,11 @@ public class WhatToPlayView implements Serializable
         else {
             rating = game.getAverageRating();
         }
+
+        if (rating < minRating) {
+            return null;
+        }
+
         double ratingScore = Math.pow((ratingMultiplier * (rating + ratingModifier)), ratingExponent);
         recommendation.setRatingScore(ratingScore);
 
@@ -203,6 +213,16 @@ public class WhatToPlayView implements Serializable
     public void setShowRecommendationSettings(boolean showRecommendationSettings)
     {
         this.showRecommendationSettings = showRecommendationSettings;
+    }
+
+    public double getMinRating()
+    {
+        return minRating;
+    }
+
+    public void setMinRating(double minRating)
+    {
+        this.minRating = minRating;
     }
 
     @SuppressWarnings("UnusedDeclaration")
