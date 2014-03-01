@@ -120,12 +120,24 @@ a {
     vertical-align: top;
 }
 
+.alignRight {
+    text-align: right;
+}
+
 .smallRightPadding {
     padding-right: 10px;
 }
 
 .mediumRightPadding {
     padding-right: 15px;
+}
+
+.tinyBottomPadding {
+    padding-bottom: 5px;
+}
+
+.smallBottomPadding {
+    padding-bottom: 10px;
 }
 
 .quote {

@@ -36,7 +36,9 @@ public class WhatToPlayView implements Serializable
 
     private boolean recommendationsLoaded;
 
-    private double ratingMultiplier = 2;
+    private boolean showRecommendationSettings;
+
+    private double ratingMultiplier = 3;
 
     private double ratingExponent = 2;
 
@@ -54,18 +56,25 @@ public class WhatToPlayView implements Serializable
 
         userSession.loadLastPlayed();
 
+        createRecommendations();
+
+        recommendationsLoaded = true;
+    }
+
+    public void createRecommendations()
+    {
         recommendations = new ArrayList<>();
 
         for (Game game : userSession.getGamesWithoutExpansions()) {
-            recommendations.add(getRecommendation(game));
-            if (recommendations.size() >= MAX_GAMES_TO_RECOMMEND) {
-                break;
+            if (userSession.getUserGamesMap().get(game.getId()).isOwned()) {
+                recommendations.add(getRecommendation(game));
+                if (recommendations.size() >= MAX_GAMES_TO_RECOMMEND) {
+                    break;
+                }
             }
         }
 
         Collections.sort(recommendations, new WhatToPlayRecommendationComparator());
-
-        recommendationsLoaded = true;
     }
 
     private WhatToPlayRecommendation getRecommendation(Game game)
@@ -160,6 +169,16 @@ public class WhatToPlayView implements Serializable
     public boolean isRecommendationsLoaded()
     {
         return recommendationsLoaded;
+    }
+
+    public boolean isShowRecommendationSettings()
+    {
+        return showRecommendationSettings;
+    }
+
+    public void setShowRecommendationSettings(boolean showRecommendationSettings)
+    {
+        this.showRecommendationSettings = showRecommendationSettings;
     }
 
     @SuppressWarnings("UnusedDeclaration")
