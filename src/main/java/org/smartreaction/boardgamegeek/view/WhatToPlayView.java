@@ -117,14 +117,19 @@ public class WhatToPlayView implements Serializable
         recommendations = new ArrayList<>();
 
         for (Game game : userSession.getGamesWithoutExpansions()) {
-            if (userSession.getUserGamesMap().get(game.getId()).isOwned()) {
-                WhatToPlayRecommendation recommendation = getRecommendation(game);
-                if (recommendation != null) {
-                    recommendations.add(recommendation);
-                    if (recommendations.size() >= MAX_GAMES_TO_RECOMMEND) {
-                        break;
+            try {
+                if (userSession.getUserGamesMap().get(game.getId()).isOwned()) {
+                    WhatToPlayRecommendation recommendation = getRecommendation(game);
+                    if (recommendation != null) {
+                        recommendations.add(recommendation);
+                        if (recommendations.size() >= MAX_GAMES_TO_RECOMMEND) {
+                            break;
+                        }
                     }
                 }
+            }
+            catch (Exception e) {
+                e.printStackTrace();
             }
         }
 

@@ -104,6 +104,11 @@ public class UserSession implements Serializable
                     password = null;
                 }
 
+                String referer = request.getHeader("referer");
+                if (referer != null) {
+                    request.getSession().setAttribute("redirectPage", referer.substring(referer.lastIndexOf("/") + 1));
+                }
+
                 return getPageAfterLogin();
             }
         }
@@ -254,24 +259,29 @@ public class UserSession implements Serializable
     public String logout() throws ServletException
     {
         if (usernameSet) {
-            if (loggedIn) {
-                removeCookies();
+            try {
+                if (loggedIn) {
+                    removeCookies();
 
-                WebResource webResource = boardGameGeekClient.getClient().resource(BoardGameGeekConstants.BBG_WEBSITE + "/logout");
+                    WebResource webResource = boardGameGeekClient.getClient().resource(BoardGameGeekConstants.BBG_WEBSITE + "/logout");
 
-                ClientResponse clientResponse = webResource.get(ClientResponse.class);
-                if (clientResponse.getStatus() == 200) {
-                    loggedIn = false;
+                    ClientResponse clientResponse = webResource.get(ClientResponse.class);
+                    if (clientResponse.getStatus() == 200) {
+                        loggedIn = false;
+                    }
                 }
+
+                usernameSet = false;
+
+                Faces.logout();
+                Faces.invalidateSession();
             }
-
-            usernameSet = false;
-
-            Faces.logout();
-            Faces.invalidateSession();
+            catch (Exception e) {
+                e.printStackTrace();
+            }
         }
 
-        return "login.xhtml?faces-redirect=true";
+        return "login.xhtml";
     }
 
     private void removeCookies()
