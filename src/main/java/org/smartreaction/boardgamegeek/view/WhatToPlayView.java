@@ -38,21 +38,31 @@ public class WhatToPlayView implements Serializable
 
     private boolean showRecommendationSettings;
 
-    private double ratingModifier = 0;
+    private double ratingModifier;
 
-    private double ratingMultiplier = 3;
+    private double ratingMultiplier;
 
-    private double ratingExponent = 2;
+    private double ratingExponent;
 
-    private double lastPlayedModifier = 0;
+    private double lastPlayedModifier;
 
-    private double lastPlayedMultiplier = 1;
+    private double lastPlayedMultiplier;
 
-    private double lastPlayedExponent = 1;
+    private double lastPlayedExponent;
 
-    private double noLastPlayScore = 500;
+    private double noLastPlayScore;
 
     private double minRating = 7;
+
+    private Integer minPlayers;
+
+    private Integer maxPlayers;
+
+    private Integer minPlayingTime;
+
+    private Integer maxPlayingTime;
+
+    private String formulaType = "default";
 
     public void loadGamesToPlay() throws MalformedURLException, JAXBException
     {
@@ -62,9 +72,44 @@ public class WhatToPlayView implements Serializable
 
         userSession.loadLastPlayed();
 
-        createRecommendations();
+        formulaTypeChanged();
 
         recommendationsLoaded = true;
+    }
+
+    public void formulaTypeChanged()
+    {
+        ratingModifier = 0;
+        ratingMultiplier = 2;
+        ratingExponent = 2;
+
+        lastPlayedModifier = 0;
+        lastPlayedMultiplier = 1;
+        lastPlayedExponent = 1;
+
+        noLastPlayScore = 400;
+
+        minRating = 7;
+        minPlayers = null;
+        maxPlayers = null;
+        minPlayingTime = null;
+        maxPlayingTime = null;
+
+        if (formulaType.equals("rating")) {
+            ratingModifier = 2;
+            ratingMultiplier = 3;
+
+            noLastPlayScore = 200;
+        }
+        else if (formulaType.equals("lastPlayed")) {
+            lastPlayedMultiplier = 2;
+
+            noLastPlayScore = 500;
+        }
+
+        if (!formulaType.equals("custom")) {
+            createRecommendations();
+        }
     }
 
     public void createRecommendations()
@@ -103,6 +148,22 @@ public class WhatToPlayView implements Serializable
         }
 
         if (rating < minRating) {
+            return null;
+        }
+
+        if (minPlayers != null && game.getMaxPlayers() > 0 && game.getMaxPlayers() < minPlayers) {
+            return null;
+        }
+
+        if (maxPlayers != null && game.getMaxPlayers() > 0 && game.getMaxPlayers() > maxPlayers) {
+            return null;
+        }
+
+        if (minPlayingTime != null && game.getPlayingTime() > 0 && game.getPlayingTime() < minPlayingTime) {
+            return null;
+        }
+
+        if (maxPlayingTime != null && game.getPlayingTime() > 0 && game.getPlayingTime() > maxPlayingTime) {
             return null;
         }
 
@@ -229,5 +290,55 @@ public class WhatToPlayView implements Serializable
     public void setUserSession(UserSession userSession)
     {
         this.userSession = userSession;
+    }
+
+    public String getFormulaType()
+    {
+        return formulaType;
+    }
+
+    public void setFormulaType(String formulaType)
+    {
+        this.formulaType = formulaType;
+    }
+
+    public Integer getMinPlayers()
+    {
+        return minPlayers;
+    }
+
+    public void setMinPlayers(Integer minPlayers)
+    {
+        this.minPlayers = minPlayers;
+    }
+
+    public Integer getMaxPlayers()
+    {
+        return maxPlayers;
+    }
+
+    public void setMaxPlayers(Integer maxPlayers)
+    {
+        this.maxPlayers = maxPlayers;
+    }
+
+    public Integer getMinPlayingTime()
+    {
+        return minPlayingTime;
+    }
+
+    public void setMinPlayingTime(Integer minPlayingTime)
+    {
+        this.minPlayingTime = minPlayingTime;
+    }
+
+    public Integer getMaxPlayingTime()
+    {
+        return maxPlayingTime;
+    }
+
+    public void setMaxPlayingTime(Integer maxPlayingTime)
+    {
+        this.maxPlayingTime = maxPlayingTime;
     }
 }

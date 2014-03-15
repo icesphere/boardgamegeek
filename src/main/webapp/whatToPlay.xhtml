@@ -2,8 +2,7 @@
       xmlns:h="http://java.sun.com/jsf/html"
       xmlns:p="http://primefaces.org/ui"
       xmlns:ui="http://java.sun.com/jsf/facelets"
-      xmlns:f="http://java.sun.com/jsf/core"
-      xmlns:sr="http://java.sun.com/jsf/composite/components">
+      xmlns:f="http://java.sun.com/jsf/core">
 <ui:composition template="/templates/commonLayout.xhtml">
     <ui:define name="title">
         <h:outputText value="What to play"/>
@@ -41,18 +40,20 @@
 
                 <h:panelGroup layout="block" rendered="#{whatToPlayView.recommendationsLoaded}">
 
-                    <h:panelGroup layout="block" id="recommendationSettings" style="padding-bottom: 10px;">
+                    <h:panelGroup layout="block" id="recommendationSettings" style="padding-top: 10px; padding-bottom: 5px;">
 
                         <h:messages styleClass="errorText" style="margin-bottom: 15px;"/>
 
-                        <p:commandLink value="Change recommendation settings" process="@this" update="recommendationSettings"
-                                       actionListener="#{whatToPlayView.setShowRecommendationSettings(true)}"
-                                       rendered="#{!whatToPlayView.showRecommendationSettings}"/>
+                        <h:selectOneRadio styleClass="radioSpacing" value="#{whatToPlayView.formulaType}">
+                            <f:selectItem itemLabel="Default" itemValue="default"/>
+                            <f:selectItem itemLabel="Higher rated" itemValue="rating"/>
+                            <f:selectItem itemLabel="Longer since played" itemValue="lastPlayed"/>
+                            <f:selectItem itemLabel="Custom" itemValue="custom"/>
 
-                        <h:panelGroup layout="block" rendered="#{whatToPlayView.showRecommendationSettings}">
+                            <p:ajax process="@this" update="whatToPlayViewPage" listener="#{whatToPlayView.formulaTypeChanged}"/>
+                        </h:selectOneRadio>
 
-                            <p:commandLink value="Hide recommendation settings" process="@this" update="recommendationSettings"
-                                           actionListener="#{whatToPlayView.setShowRecommendationSettings(false)}"/>
+                        <h:panelGroup layout="block" rendered="#{whatToPlayView.formulaType eq 'custom'}">
 
                             <div style="padding-top: 10px;">
                                 <h:outputText value="Recommendation formula settings" styleClass="boldText underlineText"/>
@@ -105,7 +106,7 @@
 
                             <div style="padding-top: 10px;">
                                 <h:outputText styleClass="captionText" value="Rating score forumla: (Rating muliplier * (Rating + Rating modifier))^(Rating Exponent)"/>
-                                <br/>
+                                <br/><br/>
                                 <h:outputText styleClass="captionText" value="Last played score forumla: (Days since last played multiplier * (Days since last played + Days since last played modifier))^(Days since last played exponent) + (Last played score modifier) + (Last played score if no plays recorded for game)"/>
                             </div>
 
@@ -117,9 +118,29 @@
 
                                 <h:panelGrid columns="2" columnClasses="boldText smallRightPadding alignRight tinyPaddingBottom, tinyPaddingBottom">
 
-                                    <h:outputText value="Minimum rating:"/>
-                                    <h:inputText value="#{whatToPlayView.minRating}" label="Minimum rating">
+                                    <h:outputText value="Min rating:"/>
+                                    <h:inputText value="#{whatToPlayView.minRating}" label="Min rating">
                                         <f:validateDoubleRange minimum="0" maximum="10"/>
+                                    </h:inputText>
+
+                                    <h:outputText value="Min players:"/>
+                                    <h:inputText value="#{whatToPlayView.minPlayers}" label="Min players">
+                                        <f:validateLongRange minimum="1"/>
+                                    </h:inputText>
+
+                                    <h:outputText value="Max players:"/>
+                                    <h:inputText value="#{whatToPlayView.maxPlayers}" label="Max players">
+                                        <f:validateLongRange minimum="1"/>
+                                    </h:inputText>
+
+                                    <h:outputText value="Min playing time:"/>
+                                    <h:inputText value="#{whatToPlayView.minPlayingTime}" label="Min playing time">
+                                        <f:validateLongRange minimum="1"/>
+                                    </h:inputText>
+
+                                    <h:outputText value="Max playing time:"/>
+                                    <h:inputText value="#{whatToPlayView.maxPlayingTime}" label="Max playing time">
+                                        <f:validateLongRange minimum="1"/>
                                     </h:inputText>
 
                                 </h:panelGrid>
@@ -128,7 +149,7 @@
 
                             <div style="padding-top: 15px;">
 
-                                <p:commandLink value="Create new recommendations" actionListener="#{whatToPlayView.createRecommendations}"
+                                <p:commandLink value="Update recommendations" actionListener="#{whatToPlayView.createRecommendations}"
                                                process="recommendationSettings" update="whatToPlayViewPage"/>
 
                             </div>
