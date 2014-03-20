@@ -2,7 +2,7 @@
       xmlns:h="http://java.sun.com/jsf/html"
       xmlns:p="http://primefaces.org/ui"
       xmlns:ui="http://java.sun.com/jsf/facelets">
-    <h:panelGroup layout="block" id="logPlayDiv" rendered="#{boardGame.gameLoaded and logPlay.playMode}">
+    <h:panelGroup layout="block" id="logPlayDiv" rendered="#{boardGameView.gameLoaded and logPlay.playMode}">
         <h:inputHidden value="#{logPlay.play.gameId}"/>
         <div>
             <h:outputText value="Date: "/>
@@ -18,7 +18,7 @@
         <div style="padding-top:20px;">
             Expansions:
             <div>
-                <h:dataTable value="#{boardGame.game.expansions}" var="expansion">
+                <h:dataTable value="#{boardGameView.game.expansions}" var="expansion">
                     <h:column>
                         <p:selectBooleanCheckbox value="#{logPlay.play.selectedExpansions[expansion.id]}"/>
                         <h:outputText value=" #{expansion.name}"/>

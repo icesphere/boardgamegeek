@@ -19,11 +19,23 @@ import org.smartreaction.boardgamegeek.xml.plays.Play;
 
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
+import javax.json.Json;
+import javax.json.JsonArray;
+import javax.json.JsonObject;
+import javax.json.JsonReader;
 import javax.xml.bind.JAXBException;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.net.MalformedURLException;
+import java.net.URL;
+import java.net.URLConnection;
+import java.nio.charset.Charset;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
+import java.util.zip.GZIPInputStream;
 
 @Stateless
 public class BoardGameUtil
@@ -172,7 +184,7 @@ public class BoardGameUtil
             game.setPublishers(StringUtils.abbreviate(getListFromType(gameItem, BoardGameGeekConstants.PUBLISHER_TYPE), 2000));
         }
         catch (Exception e) {
-            System.out.println("Error updating game from xml: " + game.getName() + game.getId() + " error: "+e.getMessage());
+            System.out.println("Error updating game from xml: " + game.getName() + game.getId() + " error: " + e.getMessage());
             e.printStackTrace();
         }
 
@@ -203,7 +215,7 @@ public class BoardGameUtil
         List<Object> minageOrPlayingtimeOrPoll = gameItem.getMinageOrPlayingtimeOrPoll();
         for (Object object : minageOrPlayingtimeOrPoll) {
             if (object instanceof Playingtime) {
-                return NumberUtils.toInt(((Playingtime)object).getValue());
+                return NumberUtils.toInt(((Playingtime) object).getValue());
             }
         }
         return 0;
@@ -250,7 +262,7 @@ public class BoardGameUtil
 
     private void addExpansionToGame(Game game, long expansionId) throws MalformedURLException, JAXBException
     {
-        if(createGameIfNotExists(expansionId)) {
+        if (createGameIfNotExists(expansionId)) {
             Expansion expansion = new Expansion();
             expansion.setGameId(game.getId());
             expansion.setExpansionId(expansionId);
@@ -315,7 +327,7 @@ public class BoardGameUtil
 
     private void addParentGameToGame(Game game, long parentGameId) throws MalformedURLException, JAXBException
     {
-        if(createGameIfNotExists(parentGameId)) {
+        if (createGameIfNotExists(parentGameId)) {
             ParentGame parentGame = new ParentGame();
             parentGame.setGameId(game.getId());
             parentGame.setParentGameId(parentGameId);
@@ -435,9 +447,9 @@ public class BoardGameUtil
                 for (UserGame userGame : topUserGamesForRatingUser) {
                     if (!topUserGameIds.contains(userGame.getGameId()) && userGame.getRating() >= 8 && !userGamesMap.containsKey(userGame.getGameId())) {
                         float commonDivider = recommendationsInfo.getCommonDivider();
-                        double yourRatingScore = (recommendationsInfo.getYourGameRatingMultiplier()*Math.pow(userGameRating, recommendationsInfo.getYourGameRatingExponent()))/commonDivider;
-                        double otherRatingScore = (recommendationsInfo.getUserGameRatingMultiplier()*Math.pow(userGame.getRating(), recommendationsInfo.getUserGameRatingExponent()))/commonDivider;
-                        double commonGamesScore = (recommendationsInfo.getGamesInCommonMultiplier()*Math.pow(numGamesInCommon, recommendationsInfo.getGamesInCommonExponent()))/commonDivider;
+                        double yourRatingScore = (recommendationsInfo.getYourGameRatingMultiplier() * Math.pow(userGameRating, recommendationsInfo.getYourGameRatingExponent())) / commonDivider;
+                        double otherRatingScore = (recommendationsInfo.getUserGameRatingMultiplier() * Math.pow(userGame.getRating(), recommendationsInfo.getUserGameRatingExponent())) / commonDivider;
+                        double commonGamesScore = (recommendationsInfo.getGamesInCommonMultiplier() * Math.pow(numGamesInCommon, recommendationsInfo.getGamesInCommonExponent())) / commonDivider;
                         double totalScore = yourRatingScore + otherRatingScore + commonGamesScore;
 
                         RecommendedGameScore recommendedGame = recommendedGameMap.get(userGame.getGameId());
@@ -459,7 +471,8 @@ public class BoardGameUtil
         }
     }
 
-    private User createNewUser(String username) {
+    private User createNewUser(String username)
+    {
         User user;
         user = new User();
         user.setUsername(username);
@@ -658,11 +671,13 @@ public class BoardGameUtil
         }
     }
 
-    public List<Game> getTopGames() {
+    public List<Game> getTopGames()
+    {
         return gameDao.getTopGames();
     }
 
-    public List<Game> searchGames(String searchString) {
+    public List<Game> searchGames(String searchString)
+    {
         return gameDao.searchGames(searchString);
     }
 
@@ -740,8 +755,8 @@ public class BoardGameUtil
         }
     }
 
-    private void addGameRatingForUser(Game game, Map<Long, RecommendedGameScore> gameScores, User user) {
-
+    private void addGameRatingForUser(Game game, Map<Long, RecommendedGameScore> gameScores, User user)
+    {
         List<UserGame> topUserGames = gameDao.getTopUserGames(user.getId());
 
         for (UserGame userGame : topUserGames) {
@@ -782,5 +797,111 @@ public class BoardGameUtil
         lastUpdated = lastUpdated.plusDays(10);
         lastUpdated = lastUpdated.plusDays(RandomUtils.nextInt(10));
         return DateTime.now().isAfter(lastUpdated);
+    }
+
+    public List<GameVideo> getGameVideos(Game game) throws IOException
+    {
+        if (shouldRefreshGameVideos(game)) {
+            return loadGameVideos(game);
+        }
+        else {
+            return gameDao.getGameVideos(game.getId());
+        }
+    }
+
+    private boolean shouldRefreshGameVideos(Game game)
+    {
+        if (game.getVideosLastUpdated() == null) {
+            return true;
+        }
+        DateTime lastUpdated = new DateTime(game.getVideosLastUpdated());
+        lastUpdated = lastUpdated.plusDays(1);
+        return DateTime.now().isAfter(lastUpdated);
+    }
+
+    private List<GameVideo> loadGameVideos(Game game) throws IOException
+    {
+        gameDao.deleteGameVideos(game.getId());
+
+        List<GameVideo> videos = new ArrayList<>();
+
+        int page = 1;
+
+        while (page <= 3) {
+            List<GameVideo> gameVideosForPage = getGameVideos(game.getId(), page);
+            if (!gameVideosForPage.isEmpty()) {
+                videos.addAll(gameVideosForPage);
+                page++;
+            }
+            else {
+                break;
+            }
+        }
+
+        game.setVideosLastUpdated(new Date());
+        gameDao.updateGame(game);
+
+        return videos;
+    }
+
+    private List<GameVideo> getGameVideos(long gameId, int page) throws IOException
+    {
+        List<GameVideo> videos = new ArrayList<>();
+
+        String url = BoardGameGeekConstants.BBG_WEBSITE + "/video/module?ajax=1&gallery=all&languageid=0&nosession=1&objectid=" + gameId + "&objecttype=thing&pageid=" + page + "&showcontrols=1&sort=hot&version=v2";
+
+        URLConnection connection = new URL(url).openConnection();
+        connection.setRequestProperty("Accept", "application/json, text/plain, */*");
+        connection.setRequestProperty("Accept-Charset", "UTF-8");
+        InputStream response = connection.getInputStream();
+
+        if ("gzip".equals(connection.getContentEncoding())) {
+            response = new GZIPInputStream(response);
+        }
+
+        BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(response, Charset.forName("UTF-8")));
+
+        try (JsonReader reader = Json.createReader(bufferedReader)) {
+            JsonObject jsonObject = reader.readObject();
+
+            JsonArray videoArrays = jsonObject.getJsonArray("videos");
+
+            for (int i = 0; i < videoArrays.size(); i++) {
+                try {
+                    JsonObject item = videoArrays.getJsonObject(i);
+                    videos.add(getGameVideo(gameId, item));
+                }
+                catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+        catch (Exception e) {
+            e.printStackTrace();
+            for (String headerKey : connection.getHeaderFields().keySet()) {
+                System.out.println(headerKey + ": " + connection.getHeaderField(headerKey));
+            }
+        }
+
+        return videos;
+    }
+
+    private GameVideo getGameVideo(long gameId, JsonObject item) throws ParseException
+    {
+        GameVideo video = new GameVideo();
+        video.setGameId(gameId);
+        video.setThumbs(Integer.parseInt(item.getString("numrecommend")));
+        video.setTitle(item.getString("title"));
+        video.setId(Long.parseLong(item.getString("videoid")));
+        video.setUsername(item.getString("username"));
+
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        if (!StringUtils.isEmpty(item.getString("postdate"))) {
+            video.setPostDate(simpleDateFormat.parse(item.getString("postdate")));
+        }
+
+        gameDao.createGameVideo(video);
+
+        return video;
     }
 }

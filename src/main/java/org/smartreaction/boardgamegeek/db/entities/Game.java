@@ -68,6 +68,10 @@ public class Game
     @Temporal(TemporalType.TIMESTAMP)
     private Date gameRecommendationsLastUpdated;
 
+    @Column(name = "videos_last_updated")
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date videosLastUpdated;
+
     @Column
     private int rank;
 
@@ -482,5 +486,15 @@ public class Game
     public void setGameRecommendationsLastUpdated(Date gameRecommendationsLastUpdated)
     {
         this.gameRecommendationsLastUpdated = gameRecommendationsLastUpdated;
+    }
+
+    public Date getVideosLastUpdated()
+    {
+        return videosLastUpdated;
+    }
+
+    public void setVideosLastUpdated(Date videosLastUpdated)
+    {
+        this.videosLastUpdated = videosLastUpdated;
     }
 }

@@ -296,5 +296,25 @@ public class GameDao
     public void updateRecentlyViewedGame(RecentlyViewedGame recentlyViewedGame)
     {
         em.merge(recentlyViewedGame);
+    }   
+
+    public List<GameVideo> getGameVideos(long gameId)
+    {
+        TypedQuery<GameVideo> query = em.createQuery("select gc from GameVideo gc where gc.gameId = :gameId order by gc.videoDate desc", GameVideo.class);
+        query.setParameter("gameId", gameId);
+        return query.getResultList();
+    }   
+
+    public void deleteGameVideos(long gameId)
+    {
+        Query query = em.createQuery("delete from GameVideo gc where gc.gameId = :gameId");
+        query.setParameter("gameId", gameId);
+        query.executeUpdate();
+        em.flush();
+    }
+
+    public void createGameVideo(GameVideo video)
+    {
+        em.persist(video);
     }
 }

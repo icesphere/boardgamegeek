@@ -14,8 +14,8 @@ import java.util.Date;
 @ViewScoped
 public class LogPlay
 {
-    @ManagedProperty(value = "#{boardGame}")
-    BoardGame boardGame;
+    @ManagedProperty(value = "#{boardGameView}")
+    BoardGameView boardGameView;
 
     @ManagedProperty(value="#{boardGameGeek}")
     BoardGameGeek boardGameGeek;
@@ -43,14 +43,14 @@ public class LogPlay
         showPlayError = false;
         showPlayMessage = false;
         play = new Play();
-        play.setGameId(boardGame.getGame().getId());
+        play.setGameId(boardGameView.getGame().getId());
         play.setDateInput(new Date());
         setSelectedExpansions();
     }
 
     private void setSelectedExpansions()
     {
-        for (Game expansion : boardGame.getGame().getExpansions()) {
+        for (Game expansion : boardGameView.getGame().getExpansions()) {
             play.getSelectedExpansions().put(expansion.getId(), "false");
         }
     }
@@ -63,7 +63,7 @@ public class LogPlay
             showPlayError = true;
         }
         else {
-            UserGame userGame = userSession.getUserGamesMap().get(boardGame.getGame().getId());
+            UserGame userGame = userSession.getUserGamesMap().get(boardGameView.getGame().getId());
             userGame.setNumPlays(userGame.getNumPlays() + play.getQuantity());
             showPlayMessage = true;
             StringBuilder sb = new StringBuilder("You have logged ");
@@ -75,7 +75,7 @@ public class LogPlay
                 sb.append(" plays");
             }
             sb.append(" of ");
-            sb.append(boardGame.getGame().getName());
+            sb.append(boardGameView.getGame().getName());
             playMessage = sb.toString();
         }
     }
@@ -92,9 +92,9 @@ public class LogPlay
     }
 
     @SuppressWarnings("UnusedDeclaration")
-    public void setBoardGame(BoardGame boardGame)
+    public void setBoardGameView(BoardGameView boardGameView)
     {
-        this.boardGame = boardGame;
+        this.boardGameView = boardGameView;
     }
 
     @SuppressWarnings("UnusedDeclaration")

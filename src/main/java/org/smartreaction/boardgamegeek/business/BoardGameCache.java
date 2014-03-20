@@ -7,6 +7,7 @@ import org.apache.commons.lang.math.RandomUtils;
 import org.joda.time.DateTime;
 import org.smartreaction.boardgamegeek.db.entities.Game;
 import org.smartreaction.boardgamegeek.db.entities.GameComment;
+import org.smartreaction.boardgamegeek.db.entities.GameVideo;
 import org.smartreaction.boardgamegeek.services.BoardGameGeekService;
 import org.smartreaction.boardgamegeek.xml.forumlist.Forum;
 import org.smartreaction.boardgamegeek.xml.hotgames.Item;
@@ -247,5 +248,16 @@ public class BoardGameCache
 
     public void setErrorLoadingTopGames(boolean errorLoadingTopGames) {
         this.errorLoadingTopGames = errorLoadingTopGames;
+    }
+
+    public List<GameVideo> getGameVideos(Game game)
+    {
+        try {
+            return boardGameUtil.getGameVideos(game);
+        }
+        catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
     }
 }

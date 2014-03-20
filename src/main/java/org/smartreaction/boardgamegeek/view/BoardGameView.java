@@ -5,6 +5,7 @@ import org.smartreaction.boardgamegeek.business.BoardGameCache;
 import org.smartreaction.boardgamegeek.db.dao.GameDao;
 import org.smartreaction.boardgamegeek.db.entities.Game;
 import org.smartreaction.boardgamegeek.db.entities.GameComment;
+import org.smartreaction.boardgamegeek.db.entities.GameVideo;
 import org.smartreaction.boardgamegeek.db.entities.RecentlyViewedGame;
 import org.smartreaction.boardgamegeek.xml.forumlist.Forum;
 
@@ -21,7 +22,8 @@ import java.util.List;
 
 @ManagedBean
 @ViewScoped
-public class BoardGame {
+public class BoardGameView
+{
     @ManagedProperty(value = "#{userSession}")
     UserSession userSession;
 
@@ -60,6 +62,10 @@ public class BoardGame {
     private List<Game> recommendedGames;
 
     private boolean showRecommendedGames;
+
+    private List<GameVideo> gameVideos;
+
+    private boolean showGameVideos;
 
     @PostConstruct
     public void setup() {
@@ -114,6 +120,17 @@ public class BoardGame {
 
     public void hideGameComments() {
         showGameComments = false;
+    }
+
+    public void loadGameVideos() {
+        if (gameVideos == null) {
+            gameVideos = boardGameCache.getGameVideos(game);
+        }
+        showGameVideos = true;
+    }
+
+    public void hideGameVideos() {
+        showGameVideos = false;
     }
 
     public void loadForums() {
@@ -233,6 +250,21 @@ public class BoardGame {
     public boolean isShowRecommendedGames()
     {
         return showRecommendedGames;
+    }
+
+    public List<GameVideo> getGameVideos()
+    {
+        return gameVideos;
+    }
+
+    public boolean isShowGameVideos()
+    {
+        return showGameVideos;
+    }
+
+    public void setShowGameVideos(boolean showGameVideos)
+    {
+        this.showGameVideos = showGameVideos;
     }
 
     @SuppressWarnings("UnusedDeclaration")
