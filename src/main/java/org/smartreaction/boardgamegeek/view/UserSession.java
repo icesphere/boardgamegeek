@@ -146,7 +146,8 @@ public class UserSession implements Serializable
     }
 
     private String getPageAfterLogin() {
-        if (Faces.getSession().getAttribute("redirectPage") != null) {
+        Object redirectPage = Faces.getSession().getAttribute("redirectPage");
+        if (redirectPage != null && !((String) redirectPage).contains("login")) {
             return Faces.getSession().getAttribute("redirectPage") + "?faces-redirect=true";
         }
         return "index.xhtml?faces-redirect=true";
