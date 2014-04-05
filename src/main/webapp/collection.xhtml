@@ -21,6 +21,9 @@
                     <h:outputText value="Error synching games" styleClass="errorText"/>
                 </h:panelGroup>
                 <h:panelGroup layout="block" rendered="#{userSession.collectionLoaded and !userSession.hasGames()}">
+                    <div style="padding-bottom: 10px;">
+                        <p:commandLink actionListener="#{userSession.fullCollectionRefresh}" update="collectionPage" oncomplete="refreshPage()">Full collection refresh</p:commandLink>
+                    </div>
                     There are no games in this user's collection
                 </h:panelGroup>
                 <h:panelGroup layout="block" rendered="#{userSession.collectionLoaded and userSession.hasGames()}">
