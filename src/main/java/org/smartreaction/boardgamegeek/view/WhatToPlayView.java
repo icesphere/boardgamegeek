@@ -132,7 +132,9 @@ public class WhatToPlayView implements Serializable
 
         Collections.sort(recommendations, new WhatToPlayRecommendationComparator());
 
-        recommendations = recommendations.subList(0, MAX_GAMES_TO_RECOMMEND);
+        if (recommendations.size() > MAX_GAMES_TO_RECOMMEND) {
+            recommendations = recommendations.subList(0, MAX_GAMES_TO_RECOMMEND);
+        }
     }
 
     private WhatToPlayRecommendation getRecommendation(Game game)
