@@ -244,7 +244,9 @@ public class GeekListUtil
         List<GeekListEntry> entries = new ArrayList<>(items.size());
 
         for (Element item : items) {
-            entries.add(getGeekListEntry(item));
+            if (item.attr("data-parent_objecttype").equals("geeklist")) {
+                entries.add(getGeekListEntry(item));
+            }
         }
         return entries;
     }
@@ -289,11 +291,11 @@ public class GeekListUtil
         Element itemDescriptionElement = item.getElementsByClass("doubleright").first();
         entry.setDescription(boardGameGeekUtil.includeBoardGameGeekDomainInAbsoluteLinks(itemDescriptionElement.html()));
 
-        Element commentsElement = item.parent().getElementById("comments_" + entry.getEntryId());
+        /*Element commentsElement = item.parent().getElementById("comments_" + entry.getEntryId());
 
         if (commentsElement != null) {
             entry.setComments(getGeekListComments(commentsElement));
-        }
+        }*/
 
         Element thumbSection = item.children().get(1);
         entry.setThumbs(getThumbs(thumbSection));
@@ -316,8 +318,8 @@ public class GeekListUtil
             else {
                 postingDateElement = informationElement.children().get(1).children().get(0);
             }
-            TextNode dateNode = (TextNode) postingDateElement.childNodes().get(1);
-            String dateString = dateNode.text().substring(8);
+            TextNode dateNode = (TextNode) postingDateElement.childNodes().get(0);
+            String dateString = dateNode.text().substring(7);
             postedDate = DateUtil.getDateFromBggString(dateString);
         }
         catch (Exception e) {
@@ -345,14 +347,21 @@ public class GeekListUtil
 
     private List<GeekListComment> getGeekListComments(Element commentsElement)
     {
-        Elements commentElements = commentsElement.getElementsByAttributeValueStarting("id", "comment_");
+        Elements commentElements = commentsElement.getElementsByAttributeValueStarting("id", "comment");
 
         List<GeekListComment> comments = new ArrayList<>(commentElements.size());
 
         for (Element commentElement : commentElements) {
-            GeekListComment comment = getGeekListComment(commentElement);
+            try {
+                if (!commentElement.attr("id").startsWith("comment_")) {
+                    GeekListComment comment = getGeekListComment(commentElement);
 
-            comments.add(comment);
+                    comments.add(comment);
+                }
+            }
+            catch (Exception e) {
+                e.printStackTrace();
+            }
         }
         return comments;
     }
