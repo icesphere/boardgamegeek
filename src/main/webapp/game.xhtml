@@ -174,7 +174,7 @@
 
                             <p:dataTable value="#{boardGameView.gameComments}" var="comment" paginator="true" rows="10">
                                 <p:column headerText="User" sortBy="#{comment.username}">
-                                    <h:outputText value="#{comment.username}"/>
+                                    <a href="http://boardgamegeek.com/user/#{comment.username}" target="_blank" style="color: blue; font-size: 14px;">#{comment.username}</a>
                                 </p:column>
 
                                 <p:column headerText="Rating" sortBy="#{comment.rating}">
