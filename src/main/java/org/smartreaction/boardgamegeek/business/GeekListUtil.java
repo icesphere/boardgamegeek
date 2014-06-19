@@ -291,10 +291,15 @@ public class GeekListUtil
         Element itemDescriptionElement = item.getElementsByClass("doubleright").first();
         entry.setDescription(boardGameGeekUtil.includeBoardGameGeekDomainInAbsoluteLinks(itemDescriptionElement.html()));
 
-        /*Element commentsElement = item.parent().getElementById("comments_" + entry.getEntryId());
+        /*try {
+            Element commentsElement = item.parent().getElementById("comments_" + entry.getEntryId());
 
-        if (commentsElement != null) {
-            entry.setComments(getGeekListComments(commentsElement));
+            if (commentsElement != null) {
+                entry.setComments(getGeekListComments(commentsElement));
+            }
+        }
+        catch (Exception e) {
+            e.printStackTrace();
         }*/
 
         Element thumbSection = item.children().get(1);
@@ -347,17 +352,14 @@ public class GeekListUtil
 
     private List<GeekListComment> getGeekListComments(Element commentsElement)
     {
-        Elements commentElements = commentsElement.getElementsByAttributeValueStarting("id", "comment");
+        Elements commentElements = commentsElement.getElementsByClass("commentBody");
 
         List<GeekListComment> comments = new ArrayList<>(commentElements.size());
 
         for (Element commentElement : commentElements) {
             try {
-                if (!commentElement.attr("id").startsWith("comment_")) {
-                    GeekListComment comment = getGeekListComment(commentElement);
-
-                    comments.add(comment);
-                }
+                GeekListComment comment = getGeekListComment(commentElement);
+                comments.add(comment);
             }
             catch (Exception e) {
                 e.printStackTrace();
@@ -374,14 +376,24 @@ public class GeekListUtil
 
         Element usernameAndComment = children.get(0);
 
-        Element commentUser = usernameAndComment.children().get(0);
-        String username = commentUser.getElementsByAttribute("data-username").first().attr("data-username");
-        comment.setUsername(username);
+        try {
+            Element commentUser = usernameAndComment.children().get(0);
+            String username = commentUser.getElementsByAttribute("data-username").first().attr("data-username");
+            comment.setUsername(username);
+        }
+        catch (Exception e) {
+            comment.setUsername("");
+        }
 
-        comment.setComment(boardGameGeekUtil.includeBoardGameGeekDomainInAbsoluteLinks(usernameAndComment.children().get(1).html()));
+        Element commentBody = commentElement.getElementsByAttributeValue("ng-bind-html", "comment.body").get(0);
+        comment.setComment(boardGameGeekUtil.includeBoardGameGeekDomainInAbsoluteLinks(commentBody.html()));
 
-        Element thumbSection = children.get(1);
-        comment.setThumbs(getThumbs(thumbSection));
+        try {
+            Element thumbSection = commentElement.parent();
+            comment.setThumbs(getThumbs(thumbSection));
+        }
+        catch (Exception ignored) {
+        }
 
         return comment;
     }
