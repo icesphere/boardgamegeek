@@ -201,10 +201,17 @@ public class GeekListUtil
 
         geekListDetail.setEntries(entries);
 
-        Element commentsElement = document.getElementById("morecomments_geeklist_" + geekListDetail.getGeekListId());
+        /*Element commentsElement = document.getElementById("morecomments_geeklist_" + geekListDetail.getGeekListId());
 
         if (commentsElement != null) {
             geekListDetail.setComments(getGeekListComments(commentsElement));
+        }*/
+
+        try {
+            geekListDetail.setComments(getGeekListComments(geekListId));
+        }
+        catch (IOException e) {
+            e.printStackTrace();
         }
 
         String nextPageLink = getNextPageLink(document);
@@ -256,7 +263,7 @@ public class GeekListUtil
         StringBuilder sb = new StringBuilder();
 
         for (Node node : summaryContent.childNodes()) {
-            if(!node.outerHtml().contains("\"recommend_block\"") && !node.outerHtml().contains("\"geeklist_tags\"")) {
+            if (!node.outerHtml().contains("\"recommend_block\"") && !node.outerHtml().contains("\"geeklist_tags\"")) {
                 sb.append(node.outerHtml());
             }
         }
@@ -290,6 +297,13 @@ public class GeekListUtil
 
         Element itemDescriptionElement = item.getElementsByClass("doubleright").first();
         entry.setDescription(boardGameGeekUtil.includeBoardGameGeekDomainInAbsoluteLinks(itemDescriptionElement.html()));
+
+        try {
+            entry.setComments(getGeekListEntryComments(entry.getEntryId()));
+        }
+        catch (IOException e) {
+            e.printStackTrace();
+        }
 
         /*try {
             Element commentsElement = item.parent().getElementById("comments_" + entry.getEntryId());
@@ -415,5 +429,70 @@ public class GeekListUtil
             thumbs = 0;
         }
         return thumbs;
+    }
+
+    public List<GeekListComment> getGeekListComments(long geeklistId) throws IOException
+    {
+        return getComments("geeklist", geeklistId);
+    }
+
+    public List<GeekListComment> getGeekListEntryComments(long geeklistItemId) throws IOException
+    {
+        return getComments("listitem", geeklistItemId);
+    }
+
+    public List<GeekListComment> getComments(String objectType, long objectId) throws IOException
+    {
+        List<GeekListComment> comments = new ArrayList<>();
+
+        String url = BoardGameGeekConstants.BBG_WEBSITE + "/comments?objecttype=" + objectType + "&objectid=" + objectId;
+
+        URLConnection connection = new URL(url).openConnection();
+        connection.setRequestProperty("Accept", "application/json, text/plain, */*");
+        connection.setRequestProperty("Accept-Charset", "UTF-8");
+        InputStream response = connection.getInputStream();
+
+        if ("gzip".equals(connection.getContentEncoding())) {
+            response = new GZIPInputStream(response);
+        }
+
+        BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(response, Charset.forName("UTF-8")));
+
+        try (JsonReader reader = Json.createReader(bufferedReader)) {
+            JsonObject jsonObject = reader.readObject();
+
+            JsonArray lists = jsonObject.getJsonArray("comments");
+
+            for (int i = 0; i < lists.size(); i++) {
+                JsonObject item = lists.getJsonObject(i);
+                try {
+                    comments.add(getGeekListCommentFromJson(item));
+                }
+                catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+        catch (Exception e) {
+            e.printStackTrace();
+            for (String headerKey : connection.getHeaderFields().keySet()) {
+                System.out.println(headerKey + ": " + connection.getHeaderField(headerKey));
+            }
+        }
+
+        return comments;
+    }
+
+    private GeekListComment getGeekListCommentFromJson(JsonObject item)
+    {
+        GeekListComment comment = new GeekListComment();
+
+        comment.setId(Long.parseLong(item.getString("commentid")));
+        comment.setUserId(Long.parseLong(item.getString("userid")));
+        comment.setComment(item.getString("body"));
+        comment.setThumbs(item.getInt("thumbs", 0));
+        comment.setPostDate(new Date(item.getJsonNumber("postdate_tstamp").longValue()));
+
+        return comment;
     }
 }

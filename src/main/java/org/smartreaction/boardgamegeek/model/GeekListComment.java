@@ -9,6 +9,7 @@ public class GeekListComment
     private int thumbs;
     private long id;
     private Date postDate;
+    private long userId;
 
     public String getComment()
     {
@@ -58,5 +59,15 @@ public class GeekListComment
     public void setPostDate(Date postDate)
     {
         this.postDate = postDate;
+    }
+
+    public long getUserId()
+    {
+        return userId;
+    }
+
+    public void setUserId(long userId)
+    {
+        this.userId = userId;
     }
 }
