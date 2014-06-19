@@ -66,6 +66,15 @@ public class BoardGamePlays
         loaded = true;
     }
 
+    public void refreshPlays()
+    {
+        boardGameUtil.updateUserPlays(userSession.getUser(), true);
+        plays = boardGameUtil.getUserPlays(userSession.getUser());
+        for (UserPlay play : plays) {
+            play.setGame(boardGameCache.getGame(play.getGameId()));
+        }
+    }
+
     public List<UserPlay> getPlays()
     {
         return plays;

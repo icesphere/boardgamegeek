@@ -638,12 +638,27 @@ public class BoardGameUtil
 
     public void updateUserPlays(User user)
     {
+        updateUserPlays(user, false);
+    }
+
+    public void updateUserPlays(User user, boolean refresh)
+    {
         try {
+            if (refresh) {
+                gameDao.deleteUserPlays(user.getId());
+                gameDao.flush();
+                user.setPlaysLastUpdated(null);
+            }
+
             List<UserPlay> userPlays = getUserPlays(user);
 
             UserPlay lastUserPlay = null;
             if (!userPlays.isEmpty()) {
-                lastUserPlay = userPlays.get(0);
+                for (UserPlay userPlay : userPlays) {
+                    if (lastUserPlay == null || lastUserPlay.getPlayId() < userPlay.getPlayId()) {
+                        lastUserPlay = userPlay;
+                    }
+                }
             }
 
             List<Play> plays = boardGameGeekService.getPlays(user.getUsername(), null, user.getPlaysLastUpdated());

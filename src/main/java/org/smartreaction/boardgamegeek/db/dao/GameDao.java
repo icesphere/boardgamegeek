@@ -191,7 +191,7 @@ public class GameDao
 
     public List<UserPlay> getUserPlays(long userId)
     {
-        TypedQuery<UserPlay> query = em.createQuery("select up from UserPlay up where up.userId = :userId order by up.playId desc", UserPlay.class);
+        TypedQuery<UserPlay> query = em.createQuery("select up from UserPlay up where up.userId = :userId order by up.playDate desc", UserPlay.class);
         query.setParameter("userId", userId);
 
         return query.getResultList();
@@ -199,7 +199,7 @@ public class GameDao
 
     public List<UserPlay> getUserPlaysForGame(long userId, long gameId)
     {
-        TypedQuery<UserPlay> query = em.createQuery("select up from UserPlay up where up.userId = :userId and up.gameId = :gameId order by up.playId desc", UserPlay.class);
+        TypedQuery<UserPlay> query = em.createQuery("select up from UserPlay up where up.userId = :userId and up.gameId = :gameId order by up.playDate desc", UserPlay.class);
         query.setParameter("userId", userId);
         query.setParameter("gameId", gameId);
 
@@ -208,7 +208,7 @@ public class GameDao
 
     public List<UserPlay> getUserPlaysForGameByDate(long userId, long gameId, Date startDate, Date endDate)
     {
-        TypedQuery<UserPlay> query = em.createQuery("select up from UserPlay up where up.userId = :userId and up.gameId = :gameId and up.playDate >= :startDate and up.playDate <= :endDate order by up.playId desc", UserPlay.class);
+        TypedQuery<UserPlay> query = em.createQuery("select up from UserPlay up where up.userId = :userId and up.gameId = :gameId and up.playDate >= :startDate and up.playDate <= :endDate order by up.playDate desc", UserPlay.class);
         query.setParameter("userId", userId);
         query.setParameter("gameId", gameId);
         query.setParameter("startDate", startDate);
@@ -316,5 +316,13 @@ public class GameDao
     public void createGameVideo(GameVideo video)
     {
         em.persist(video);
+    }
+
+    public void deleteUserPlays(long userId)
+    {
+        Query query = em.createQuery("delete from UserPlay up where up.userId = :userId");
+        query.setParameter("userId", userId);
+
+        query.executeUpdate();
     }
 }
