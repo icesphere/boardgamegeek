@@ -15,7 +15,7 @@
             <a id="bggLink" href="#{geekListView.boardGameGeekLink}" target="_blank" class="smallRightPadding">View this geeklist on BGG</a>
         </div>
         <h:panelGroup layout="block" style="padding-bottom: 20px; text-align: center;" rendered="#{userSession.user.admin}">
-            <h:link outcome="geeklist.xhtml?id=#{geekListView.geekListId}&amp;faces-redirect=true" value="New geek list page"/>
+            <h:link outcome="geeklistNew.xhtml?id=#{geekListView.geekListId}&amp;faces-redirect=true" value="Alternate geek list page"/>
         </h:panelGroup>
         <h:panelGroup layout="block" style="padding-bottom: 15px; font-size: 150%;" id="geekListHeader">
             <h:outputText value="#{cc.attrs.geeklistDetail.title}" styleClass="boldText"/>
@@ -35,7 +35,7 @@
         <div style="padding-bottom:10px;">
             <h:outputLink value="http://boardgamegeek.com/user/#{cc.attrs.geeklistDetail.username}" target="_blank">#{cc.attrs.geeklistDetail.username}</h:outputLink>
         </div>
-        <div>
+        <div style="white-space: pre-wrap">
             <h:outputText value="#{cc.attrs.geeklistDetail.description}" escape="false"/>
         </div>
         <div style="padding-top:10px;">
@@ -59,7 +59,7 @@
                         <h:graphicImage library="images" name="arrowup.png" alt="thumbs"/>
                         <h:outputText value=")"/>
                     </div>
-                    <div style="padding-top:10px;">
+                    <div style="padding-top: 10px; white-space: pre-wrap">
                         <h:outputText value="#{entry.description}" escape="false"/>
                     </div>
                     <h:panelGroup layout="block" style="padding-top:10px;" rendered="#{!empty entry.comments}">
