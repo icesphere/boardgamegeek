@@ -422,10 +422,7 @@ public class BoardGameUtil
             user = createNewUser(gameRating.getUsername());
         }
 
-        if (user.isCollectionError()) {
-            gameRating.setError(true);
-        }
-        else if (!processedUsers.contains(user.getId())) {
+        if (!processedUsers.contains(user.getId())) {
             if (!user.isCollectionLoaded() && !user.isTopGamesLoaded()) {
                 loadUserTopGames(user, new HashMap<Long, UserGame>(0));
             }

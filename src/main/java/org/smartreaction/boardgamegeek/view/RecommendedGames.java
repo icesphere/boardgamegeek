@@ -62,9 +62,11 @@ public class RecommendedGames implements Serializable
 
     private int mostGamesInCommon;
 
-    private Map<Long,UserGame> userGamesMap;
+    private Map<Long, UserGame> userGamesMap;
 
     private boolean showRecommendationsLoading;
+
+    private Map<Long, Integer> userCollectionErrors = new HashMap<>();
 
     public List<Game> getAllRecommendedGames()
     {
@@ -194,7 +196,9 @@ public class RecommendedGames implements Serializable
                 GameRating nextGameRating = getNextGameRating();
                 if (nextGameRating != null && numRatingsProcessed <= recommendationsInfo.getNumRatingsPerGame()) {
                     addGameRecommendationsForUser(gameRecommendations, nextGameRating, recommendationsInfo);
-                    nextGameRating.setLoaded(true);
+                    if (!nextGameRating.isError()) {
+                        nextGameRating.setLoaded(true);
+                    }
                     numRatingsProcessed++;
                     setLoadingForNextRating();
                     if (numRatingsProcessed == recommendationsInfo.getNumRatingsPerGame()) {
@@ -256,16 +260,32 @@ public class RecommendedGames implements Serializable
             boardGameCache.getBoardGameUtil().addGameRecommendationsForUser(topUserGameIds, processedUsers, gameRecommendations.getUserGame().getRating(), gameRating, userGamesMap, recommendedGameMap, recommendationsInfo);
         }
         catch (Throwable t) {
-            gameRating.setError(true);
-            t.printStackTrace();
             User user = boardGameCache.getBoardGameUtil().getUserDao().getUser(gameRating.getUsername());
             if (user == null) {
                 user = new User();
                 user.setUsername(gameRating.getUsername());
                 user.setCreatedDate(new Date());
+
+                boardGameCache.getBoardGameUtil().getUserDao().saveUser(user);
             }
-            user.setCollectionError(true);
-            boardGameCache.getBoardGameUtil().getUserDao().saveUser(user);
+
+            Integer collectionErrors = userCollectionErrors.get(user.getId());
+            if (collectionErrors == null) {
+                collectionErrors = 0;
+            }
+            collectionErrors++;
+            userCollectionErrors.put(user.getId(), collectionErrors);
+
+            if (collectionErrors > 3) {
+                gameRating.setError(true);
+            }
+
+            try {
+                Thread.sleep(1000);
+            }
+            catch (InterruptedException e) {
+                e.printStackTrace();
+            }
         }
     }
 
