@@ -28,12 +28,14 @@ public class LoginFilter implements Filter
             if (!usernameSet) {
                 String bggUsername = null;
                 String bggPassword = null;
-                for (Cookie cookie : httpRequest.getCookies()) {
-                    if (cookie.getName().equalsIgnoreCase("bggusername")) {
-                        bggUsername = cookie.getValue();
-                    }
-                    else if (cookie.getName().equalsIgnoreCase("bggpassword")) {
-                        bggPassword = cookie.getValue();
+                if (httpRequest.getCookies() != null) {
+                    for (Cookie cookie : httpRequest.getCookies()) {
+                        if (cookie.getName().equalsIgnoreCase("bggusername")) {
+                            bggUsername = cookie.getValue();
+                        }
+                        else if (cookie.getName().equalsIgnoreCase("bggpassword")) {
+                            bggPassword = cookie.getValue();
+                        }
                     }
                 }
 

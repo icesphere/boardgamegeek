@@ -45,7 +45,7 @@
                 <h:panelGroup layout="block" class="navigationLink" rendered="#{userSession.usernameSet}">
                     <p:commandLink action="#{userSession.logout}" ajax="false">Logout</p:commandLink>
                 </h:panelGroup>
-                <h:panelGroup layout="block" style="float:left;" rendered="#{!userSession.usernameSet and view.viewId ne '/login.xhtml'}">
+                <h:panelGroup layout="block" rendered="#{!userSession.usernameSet and view.viewId ne '/login.xhtml'}">
                     <h:link outcome="/login.xhtml?faces-redirect=true">Login</h:link>
                 </h:panelGroup>
             </div>
