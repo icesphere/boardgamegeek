@@ -58,7 +58,7 @@ public class BoardGameGeekUtil
         matcher = pattern.matcher(text);
         result = new StringBuffer();
         while (matcher.find()) {
-            matcher.appendReplacement(result, "href=\"" + BoardGameGeekConstants.BBG_WEBSITE + "/" + matcher.group(1) + "\" target=\"_blank\"");
+            matcher.appendReplacement(result, "href=\"" + BoardGameGeekConstants.BGG_WEBSITE + "/" + matcher.group(1) + "\" target=\"_blank\"");
         }
         matcher.appendTail(result);
         text = result.toString();
@@ -304,10 +304,10 @@ public class BoardGameGeekUtil
         while (matcher.find()) {
             String anchorText = matcher.group(2);
             if (StringUtils.isEmpty(anchorText)) {
-                matcher.appendReplacement(result, "<a href=\"" + BoardGameGeekConstants.BBG_WEBSITE + "/user/" + matcher.group(1) + "\">" + matcher.group(1) + "</a>");
+                matcher.appendReplacement(result, "<a href=\"" + BoardGameGeekConstants.BGG_WEBSITE + "/user/" + matcher.group(1) + "\">" + matcher.group(1) + "</a>");
             }
             else {
-                matcher.appendReplacement(result, "<a href=\"" + BoardGameGeekConstants.BBG_WEBSITE + "/user/" + matcher.group(1) + "\">" + anchorText + "</a>");
+                matcher.appendReplacement(result, "<a href=\"" + BoardGameGeekConstants.BGG_WEBSITE + "/user/" + matcher.group(1) + "\">" + anchorText + "</a>");
             }
         }
         matcher.appendTail(result);
@@ -345,84 +345,84 @@ public class BoardGameGeekUtil
         pattern = Pattern.compile(starImagePattern, Pattern.CASE_INSENSITIVE);
         matcher = pattern.matcher(text);
         if (matcher.find()) {
-            text = matcher.replaceAll("<img src=\""+BoardGameGeekConstants.BBG_STATIC_IMAGE+"star_yellow.gif\"/>");
+            text = matcher.replaceAll("<img src=\""+BoardGameGeekConstants.BGG_STATIC_IMAGE +"star_yellow.gif\"/>");
         }
 
         String halfStarImagePattern = "\\:halfstar\\:";
         pattern = Pattern.compile(halfStarImagePattern, Pattern.CASE_INSENSITIVE);
         matcher = pattern.matcher(text);
         if (matcher.find()) {
-            text = matcher.replaceAll("<img src=\""+BoardGameGeekConstants.BBG_STATIC_IMAGE+"star_yellowhalf.gif\"/>");
+            text = matcher.replaceAll("<img src=\""+BoardGameGeekConstants.BGG_STATIC_IMAGE +"star_yellowhalf.gif\"/>");
         }
 
         String noStarImagePattern = "\\:nostar\\:";
         pattern = Pattern.compile(noStarImagePattern, Pattern.CASE_INSENSITIVE);
         matcher = pattern.matcher(text);
         if (matcher.find()) {
-            text = matcher.replaceAll("<img src=\""+BoardGameGeekConstants.BBG_STATIC_IMAGE+"star_white.gif\"/>");
+            text = matcher.replaceAll("<img src=\""+BoardGameGeekConstants.BGG_STATIC_IMAGE +"star_white.gif\"/>");
         }
 
         String thumbsUpImagePattern = "\\:thumbsup\\:";
         pattern = Pattern.compile(thumbsUpImagePattern, Pattern.CASE_INSENSITIVE);
         matcher = pattern.matcher(text);
         if (matcher.find()) {
-            text = matcher.replaceAll("<img src=\""+BoardGameGeekConstants.BBG_STATIC_IMAGE+"thumbs-up.gif\"/>");
+            text = matcher.replaceAll("<img src=\""+BoardGameGeekConstants.BGG_STATIC_IMAGE +"thumbs-up.gif\"/>");
         }
 
         String thumbsDownImagePattern = "\\:thumbsdown\\:";
         pattern = Pattern.compile(thumbsDownImagePattern, Pattern.CASE_INSENSITIVE);
         matcher = pattern.matcher(text);
         if (matcher.find()) {
-            text = matcher.replaceAll("<img src=\""+BoardGameGeekConstants.BBG_STATIC_IMAGE+"thumbs-down.gif\"/>");
+            text = matcher.replaceAll("<img src=\""+BoardGameGeekConstants.BGG_STATIC_IMAGE +"thumbs-down.gif\"/>");
         }
 
         String smileImagePattern = "\\:\\)\\s";
         pattern = Pattern.compile(smileImagePattern, Pattern.CASE_INSENSITIVE);
         matcher = pattern.matcher(text);
         if (matcher.find()) {
-            text = matcher.replaceAll("<img src=\""+BoardGameGeekConstants.BBG_STATIC_IMAGE+"smile.gif\"/>");
+            text = matcher.replaceAll("<img src=\""+BoardGameGeekConstants.BGG_STATIC_IMAGE +"smile.gif\"/>");
         }
 
         String sadImagePattern = "\\:\\(\\s";
         pattern = Pattern.compile(sadImagePattern, Pattern.CASE_INSENSITIVE);
         matcher = pattern.matcher(text);
         if (matcher.find()) {
-            text = matcher.replaceAll("<img src=\""+BoardGameGeekConstants.BBG_STATIC_IMAGE+"sad.gif\"/>");
+            text = matcher.replaceAll("<img src=\""+BoardGameGeekConstants.BGG_STATIC_IMAGE +"sad.gif\"/>");
         }
 
         String bigGrinImagePattern = "\\:D\\s";
         pattern = Pattern.compile(bigGrinImagePattern, Pattern.CASE_INSENSITIVE);
         matcher = pattern.matcher(text);
         if (matcher.find()) {
-            text = matcher.replaceAll("<img src=\""+BoardGameGeekConstants.BBG_STATIC_IMAGE+"biggrin.gif\"/>");
+            text = matcher.replaceAll("<img src=\""+BoardGameGeekConstants.BGG_STATIC_IMAGE +"biggrin.gif\"/>");
         }
 
         String tongueImagePattern = "\\:p\\s";
         pattern = Pattern.compile(tongueImagePattern, Pattern.CASE_INSENSITIVE);
         matcher = pattern.matcher(text);
         if (matcher.find()) {
-            text = matcher.replaceAll("<img src=\""+BoardGameGeekConstants.BBG_STATIC_IMAGE+"tongue.gif\"/>");
+            text = matcher.replaceAll("<img src=\""+BoardGameGeekConstants.BGG_STATIC_IMAGE +"tongue.gif\"/>");
         }
 
         String ninjaImagePattern = "\\:ninja\\:";
         pattern = Pattern.compile(ninjaImagePattern, Pattern.CASE_INSENSITIVE);
         matcher = pattern.matcher(text);
         if (matcher.find()) {
-            text = matcher.replaceAll("<img src=\""+BoardGameGeekConstants.BBG_STATIC_IMAGE+"ninja.gif\"/>");
+            text = matcher.replaceAll("<img src=\""+BoardGameGeekConstants.BGG_STATIC_IMAGE +"ninja.gif\"/>");
         }
 
         String bagImagePattern = "\\:bag\\:";
         pattern = Pattern.compile(bagImagePattern, Pattern.CASE_INSENSITIVE);
         matcher = pattern.matcher(text);
         if (matcher.find()) {
-            text = matcher.replaceAll("<img src=\""+BoardGameGeekConstants.BBG_STATIC_IMAGE+"bag.gif\"/>");
+            text = matcher.replaceAll("<img src=\""+BoardGameGeekConstants.BGG_STATIC_IMAGE +"bag.gif\"/>");
         }
 
         String geekGoldImagePattern = "\\:gg\\:";
         pattern = Pattern.compile(geekGoldImagePattern, Pattern.CASE_INSENSITIVE);
         matcher = pattern.matcher(text);
         if (matcher.find()) {
-            text = matcher.replaceAll("<img src=\""+BoardGameGeekConstants.BBG_STATIC_IMAGE+"geekgold.gif\"/>");
+            text = matcher.replaceAll("<img src=\""+BoardGameGeekConstants.BGG_STATIC_IMAGE +"geekgold.gif\"/>");
         }
 
         for (int i=0; i<=9; i++) {
@@ -430,7 +430,7 @@ public class BoardGameGeekUtil
             pattern = Pattern.compile(d10ImagePattern, Pattern.CASE_INSENSITIVE);
             matcher = pattern.matcher(text);
             if (matcher.find()) {
-                text = matcher.replaceAll("<img src=\""+BoardGameGeekConstants.BBG_STATIC_IMAGE+"d10-"+i+".gif\"/>");
+                text = matcher.replaceAll("<img src=\""+BoardGameGeekConstants.BGG_STATIC_IMAGE +"d10-"+i+".gif\"/>");
             }
         }
 
@@ -439,7 +439,7 @@ public class BoardGameGeekUtil
             pattern = Pattern.compile(blackd6ImagePattern, Pattern.CASE_INSENSITIVE);
             matcher = pattern.matcher(text);
             if (matcher.find()) {
-                text = matcher.replaceAll("<img src=\""+BoardGameGeekConstants.BBG_STATIC_IMAGE+"die-black-"+i+".gif\"/>");
+                text = matcher.replaceAll("<img src=\""+BoardGameGeekConstants.BGG_STATIC_IMAGE +"die-black-"+i+".gif\"/>");
             }
         }
 
@@ -448,7 +448,7 @@ public class BoardGameGeekUtil
             pattern = Pattern.compile(whited6ImagePattern, Pattern.CASE_INSENSITIVE);
             matcher = pattern.matcher(text);
             if (matcher.find()) {
-                text = matcher.replaceAll("<img src=\""+BoardGameGeekConstants.BBG_STATIC_IMAGE+"die-white-"+i+".gif\"/>");
+                text = matcher.replaceAll("<img src=\""+BoardGameGeekConstants.BGG_STATIC_IMAGE +"die-white-"+i+".gif\"/>");
             }
         }
 
@@ -459,10 +459,10 @@ public class BoardGameGeekUtil
         while (matcher.find()) {
             String threadText = matcher.group(2);
             if (StringUtils.isEmpty(threadText)) {
-                matcher.appendReplacement(result, "<a href=\"" + BoardGameGeekConstants.BBG_WEBSITE + "/thread/" + matcher.group(1) + "\">thread " + matcher.group(1) + "</a>");
+                matcher.appendReplacement(result, "<a href=\"" + BoardGameGeekConstants.BGG_WEBSITE + "/thread/" + matcher.group(1) + "\">thread " + matcher.group(1) + "</a>");
             }
             else {
-                matcher.appendReplacement(result, "<a href=\"" + BoardGameGeekConstants.BBG_WEBSITE + "/thread/" + matcher.group(1) + "\">" + threadText + "</a>");
+                matcher.appendReplacement(result, "<a href=\"" + BoardGameGeekConstants.BGG_WEBSITE + "/thread/" + matcher.group(1) + "\">" + threadText + "</a>");
             }
         }
         matcher.appendTail(result);

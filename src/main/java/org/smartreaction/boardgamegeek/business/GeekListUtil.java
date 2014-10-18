@@ -60,7 +60,7 @@ public class GeekListUtil
     {
         List<GeekList> geekLists = new ArrayList<>();
 
-        String url = BoardGameGeekConstants.BBG_WEBSITE + "/geeklist/module?ajax=1&domain=boardgame&nosession=1&objectid=0&objecttype=&pageid=" + page + "&showcontrols=1&showcount=12&sort=" + sort + "&tradelists=0&version=v2";
+        String url = BoardGameGeekConstants.BGG_WEBSITE + "/geeklist/module?ajax=1&domain=boardgame&nosession=1&objectid=0&objecttype=&pageid=" + page + "&showcontrols=1&showcount=12&sort=" + sort + "&tradelists=0&version=v2";
 
         URLConnection connection = new URL(url).openConnection();
         connection.setRequestProperty("Accept", "application/json, text/plain, */*");
@@ -98,7 +98,7 @@ public class GeekListUtil
         GeekList geekList = new GeekList();
         geekList.setThumbs(Integer.parseInt(item.getString("numpositive")));
         geekList.setTitle(item.getString("title"));
-        String link = BoardGameGeekConstants.BBG_WEBSITE + item.getString("href");
+        String link = BoardGameGeekConstants.BGG_WEBSITE + item.getString("href");
         geekList.setId(getId(link));
         geekList.setLink(link);
         geekList.setCreator(item.getString("username"));
@@ -176,7 +176,7 @@ public class GeekListUtil
         GeekListDetail geekListDetail = new GeekListDetail();
         geekListDetail.setGeekListId(geekListId);
 
-        String url = BoardGameGeekConstants.BBG_WEBSITE + "/geeklist/" + geekListId;
+        String url = BoardGameGeekConstants.BGG_WEBSITE + "/geeklist/" + geekListId;
 
         Document document = Jsoup.connect(url).timeout(30000).get();
 
@@ -216,7 +216,7 @@ public class GeekListUtil
 
         String nextPageLink = getNextPageLink(document);
         while (nextPageLink != null) {
-            document = Jsoup.connect(BoardGameGeekConstants.BBG_WEBSITE + nextPageLink).timeout(30000).get();
+            document = Jsoup.connect(BoardGameGeekConstants.BGG_WEBSITE + nextPageLink).timeout(30000).get();
 
             geekListDetail.getEntries().addAll(getGeekListEntries(document));
 
@@ -445,7 +445,7 @@ public class GeekListUtil
     {
         List<GeekListComment> comments = new ArrayList<>();
 
-        String url = BoardGameGeekConstants.BBG_WEBSITE + "/comments?objecttype=" + objectType + "&objectid=" + objectId;
+        String url = BoardGameGeekConstants.BGG_WEBSITE + "/comments?objecttype=" + objectType + "&objectid=" + objectId;
 
         URLConnection connection = new URL(url).openConnection();
         connection.setRequestProperty("Accept", "application/json, text/plain, */*");

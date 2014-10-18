@@ -304,12 +304,12 @@ public class Game
 
     public String getGameLink()
     {
-        return BoardGameGeekConstants.BBG_WEBSITE + "/boardgame/"+id;
+        return BoardGameGeekConstants.BGG_WEBSITE + "/boardgame/"+id;
     }
 
     public String getForumsLink()
     {
-        return BoardGameGeekConstants.BBG_WEBSITE + "/forums/thing/"+id;
+        return BoardGameGeekConstants.BGG_WEBSITE + "/forums/thing/"+id;
     }
 
     public int getRank()

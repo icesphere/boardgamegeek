@@ -28,7 +28,7 @@ public class GeekListUtilTest extends TestCase
 
             GeekListUtil geekListUtil = new GeekListUtil();
 
-            String url = BoardGameGeekConstants.BBG_WEBSITE + "/geeklist/module?ajax=1&domain=boardgame&nosession=1&objectid=0&objecttype=&pageid=" + 1 + "&showcontrols=1&showcount=12&sort=hot&tradelists=0&version=v2";
+            String url = BoardGameGeekConstants.BGG_WEBSITE + "/geeklist/module?ajax=1&domain=boardgame&nosession=1&objectid=0&objecttype=&pageid=" + 1 + "&showcontrols=1&showcount=12&sort=hot&tradelists=0&version=v2";
 
             URLConnection connection = new URL(url).openConnection();
             connection.setRequestProperty("Accept-Charset", "UTF-8");

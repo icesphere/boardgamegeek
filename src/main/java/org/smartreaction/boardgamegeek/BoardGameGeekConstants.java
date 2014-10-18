@@ -2,8 +2,8 @@ package org.smartreaction.boardgamegeek;
 
 public class BoardGameGeekConstants
 {
-    public static final String BBG_WEBSITE = "http://boardgamegeek.com";
-    public static final String BBG_STATIC_IMAGE = "http://cf.geekdo-static.com/images/";
+    public static final String BGG_WEBSITE = "http://boardgamegeek.com";
+    public static final String BGG_STATIC_IMAGE = "http://cf.geekdo-static.com/images/";
 
     public static final String EXPANSION_TYPE = "boardgameexpansion";
     public static final String PRIMARY_TYPE = "primary";

@@ -139,7 +139,7 @@ public class BoardGameGeekService
     {
         try {
             List<Long> gameIds = new ArrayList<>();
-            Document doc = Jsoup.connect(BoardGameGeekConstants.BBG_WEBSITE + "/browse/boardgame").get();
+            Document doc = Jsoup.connect(BoardGameGeekConstants.BGG_WEBSITE + "/browse/boardgame").get();
             Elements gameElements = doc.select("td.collection_thumbnail");
             for (Element element : gameElements) {
                 Element link = element.getElementsByTag("a").first();
@@ -172,7 +172,7 @@ public class BoardGameGeekService
     {
         List<GameComment> comments = new ArrayList<>();
 
-        Document doc = Jsoup.connect(BoardGameGeekConstants.BBG_WEBSITE + "/collection/items/boardgame/" + gameId + "/page/" + page + "?comment=1&sort=comment_tstamp&sortdir=desc").timeout(10000).get();
+        Document doc = Jsoup.connect(BoardGameGeekConstants.BGG_WEBSITE + "/collection/items/boardgame/" + gameId + "/page/" + page + "?comment=1&sort=comment_tstamp&sortdir=desc").timeout(10000).get();
 
         Element commentTable = doc.getElementsByClass("forum_table").first();
 

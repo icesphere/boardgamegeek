@@ -87,6 +87,6 @@ public class GameVideo
 
     public String getLink()
     {
-        return BoardGameGeekConstants.BBG_WEBSITE + "/video/" + id;
+        return BoardGameGeekConstants.BGG_WEBSITE + "/video/" + id;
     }
 }

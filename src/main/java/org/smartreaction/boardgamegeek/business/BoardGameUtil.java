@@ -860,7 +860,7 @@ public class BoardGameUtil
     {
         List<GameVideo> videos = new ArrayList<>();
 
-        String url = BoardGameGeekConstants.BBG_WEBSITE + "/video/module?ajax=1&gallery=all&languageid=0&nosession=1&objectid=" + gameId + "&objecttype=thing&pageid=" + page + "&showcontrols=1&sort=hot&version=v2";
+        String url = BoardGameGeekConstants.BGG_WEBSITE + "/video/module?ajax=1&gallery=all&languageid=0&nosession=1&objectid=" + gameId + "&objecttype=thing&pageid=" + page + "&showcontrols=1&sort=hot&version=v2";
 
         URLConnection connection = new URL(url).openConnection();
         connection.setRequestProperty("Accept", "application/json, text/plain, */*");

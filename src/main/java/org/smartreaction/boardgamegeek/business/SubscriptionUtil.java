@@ -26,7 +26,7 @@ public class SubscriptionUtil
         Subscriptions subscriptions = new Subscriptions();
 
         try {
-            Connection connection = Jsoup.connect(BoardGameGeekConstants.BBG_WEBSITE + "/subscriptions");
+            Connection connection = Jsoup.connect(BoardGameGeekConstants.BGG_WEBSITE + "/subscriptions");
             connection = connection.timeout(10000);
             for (Cookie cookie : cookies) {
                 connection = connection.cookie(cookie.getName(), cookie.getValue());

@@ -166,7 +166,7 @@ public class GeekListView
 
     public String getBoardGameGeekLink()
     {
-        return BoardGameGeekConstants.BBG_WEBSITE + "/geeklist/" + geekListId;
+        return BoardGameGeekConstants.BGG_WEBSITE + "/geeklist/" + geekListId;
     }
 
     public long getGeekListId()

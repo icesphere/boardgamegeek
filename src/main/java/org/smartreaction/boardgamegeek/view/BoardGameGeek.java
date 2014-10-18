@@ -56,7 +56,7 @@ public class BoardGameGeek {
         formParams.add("nowinstats", play.isNoWinStats() ? "1" : "0");
         formParams.add("comments", play.getComments());
 
-        WebResource.Builder builder = boardGameGeekClient.getClient().resource(BoardGameGeekConstants.BBG_WEBSITE + "/geekplay.php").type("application/x-www-form-urlencoded");
+        WebResource.Builder builder = boardGameGeekClient.getClient().resource(BoardGameGeekConstants.BGG_WEBSITE + "/geekplay.php").type("application/x-www-form-urlencoded");
 
         builder = getBuilderWithCookies(builder);
 
@@ -106,7 +106,7 @@ public class BoardGameGeek {
         formParams.add("sortdir", "desc");
         formParams.add("viewfilter", "new");
 
-        WebResource.Builder builder = boardGameGeekClient.getClient().resource(BoardGameGeekConstants.BBG_WEBSITE + "/geekviews.php").type("application/x-www-form-urlencoded");
+        WebResource.Builder builder = boardGameGeekClient.getClient().resource(BoardGameGeekConstants.BGG_WEBSITE + "/geekviews.php").type("application/x-www-form-urlencoded");
 
         builder = getBuilderWithCookies(builder);
 
@@ -128,7 +128,7 @@ public class BoardGameGeek {
         formParams.add("rating", String.valueOf(rating));
         formParams.add("B1", "Cancel");
 
-        WebResource.Builder builder = boardGameGeekClient.getClient().resource(BoardGameGeekConstants.BBG_WEBSITE + "/geekcollection.php").type("application/x-www-form-urlencoded");
+        WebResource.Builder builder = boardGameGeekClient.getClient().resource(BoardGameGeekConstants.BGG_WEBSITE + "/geekcollection.php").type("application/x-www-form-urlencoded");
 
         builder = getBuilderWithCookies(builder);
 
@@ -154,7 +154,7 @@ public class BoardGameGeek {
         formParams.add("itemtype", "geeklist");
         formParams.add("value", "1");
 
-        WebResource.Builder builder = boardGameGeekClient.getClient().resource(BoardGameGeekConstants.BBG_WEBSITE + "/geekrecommend.php").type("application/x-www-form-urlencoded");
+        WebResource.Builder builder = boardGameGeekClient.getClient().resource(BoardGameGeekConstants.BGG_WEBSITE + "/geekrecommend.php").type("application/x-www-form-urlencoded");
 
         builder = getBuilderWithCookies(builder);
 
@@ -189,7 +189,7 @@ public class BoardGameGeek {
         formParams.add("objectid", String.valueOf(id));
         formParams.add("objecttype", objectType);
 
-        WebResource.Builder builder = boardGameGeekClient.getClient().resource(BoardGameGeekConstants.BBG_WEBSITE + "/geeksubscription.php").type("application/x-www-form-urlencoded");
+        WebResource.Builder builder = boardGameGeekClient.getClient().resource(BoardGameGeekConstants.BGG_WEBSITE + "/geeksubscription.php").type("application/x-www-form-urlencoded");
 
         builder = getBuilderWithCookies(builder);
 
@@ -214,7 +214,7 @@ public class BoardGameGeek {
         formParams.add("objecttype", "thing");
         formParams.add("objectid", String.valueOf(game.getId()));
 
-        WebResource.Builder builder = boardGameGeekClient.getClient().resource(BoardGameGeekConstants.BBG_WEBSITE + "/geekcollection.php").type("application/x-www-form-urlencoded");
+        WebResource.Builder builder = boardGameGeekClient.getClient().resource(BoardGameGeekConstants.BGG_WEBSITE + "/geekcollection.php").type("application/x-www-form-urlencoded");
 
         builder = getBuilderWithCookies(builder);
 

@@ -264,7 +264,7 @@ public class UserSession implements Serializable
                 if (loggedIn) {
                     removeCookies();
 
-                    WebResource webResource = boardGameGeekClient.getClient().resource(BoardGameGeekConstants.BBG_WEBSITE + "/logout");
+                    WebResource webResource = boardGameGeekClient.getClient().resource(BoardGameGeekConstants.BGG_WEBSITE + "/logout");
 
                     ClientResponse clientResponse = webResource.get(ClientResponse.class);
                     if (clientResponse.getStatus() == 200) {

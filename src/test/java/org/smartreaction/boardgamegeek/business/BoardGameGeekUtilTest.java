@@ -150,7 +150,7 @@ public class BoardGameGeekUtilTest
     public void convertUsers()
     {
         String result = boardGameGeekUtil.convertBoardGameGeekXmlText("Check out this user [user=someusername]some user text[/user] it is cool, then check out this one [user=someusername][/user] too.");
-        assertEquals("Check out this user <a href=\""+ BoardGameGeekConstants.BBG_WEBSITE + "/user/someusername\">some user text</a> it is cool, then check out this one <a href=\"" + BoardGameGeekConstants.BBG_WEBSITE + "/user/someusername\">someusername</a> too.", result);
+        assertEquals("Check out this user <a href=\""+ BoardGameGeekConstants.BGG_WEBSITE + "/user/someusername\">some user text</a> it is cool, then check out this one <a href=\"" + BoardGameGeekConstants.BGG_WEBSITE + "/user/someusername\">someusername</a> too.", result);
     }
 
     @Test
@@ -178,34 +178,34 @@ public class BoardGameGeekUtilTest
     public void convertThreads()
     {
         String result = boardGameGeekUtil.convertBoardGameGeekXmlText("Check out this thread [thread=1234]some thread text[/thread] it is cool, then check out this one [thread=456][/thread] too.");
-        assertEquals("Check out this thread <a href=\""+ BoardGameGeekConstants.BBG_WEBSITE + "/thread/1234\">some thread text</a> it is cool, then check out this one <a href=\"" + BoardGameGeekConstants.BBG_WEBSITE + "/thread/456\">thread 456</a> too.", result);
+        assertEquals("Check out this thread <a href=\""+ BoardGameGeekConstants.BGG_WEBSITE + "/thread/1234\">some thread text</a> it is cool, then check out this one <a href=\"" + BoardGameGeekConstants.BGG_WEBSITE + "/thread/456\">thread 456</a> too.", result);
     }
 
     @Test
     public void convertBoardGameGeekXmlText_star()
     {
         String result = boardGameGeekUtil.convertBoardGameGeekXmlText("There should be :star: :halfstar: :nostar: images");
-        assertEquals("There should be <img src=\""+BoardGameGeekConstants.BBG_STATIC_IMAGE+"star_yellow.gif\"/> <img src=\""+BoardGameGeekConstants.BBG_STATIC_IMAGE+"star_yellowhalf.gif\"/> <img src=\""+BoardGameGeekConstants.BBG_STATIC_IMAGE+"star_white.gif\"/> images", result);
+        assertEquals("There should be <img src=\""+BoardGameGeekConstants.BGG_STATIC_IMAGE +"star_yellow.gif\"/> <img src=\""+BoardGameGeekConstants.BGG_STATIC_IMAGE +"star_yellowhalf.gif\"/> <img src=\""+BoardGameGeekConstants.BGG_STATIC_IMAGE +"star_white.gif\"/> images", result);
     }
 
     @Test
     public void convertBoardGameGeekXmlText_thumbs_up()
     {
         String result = boardGameGeekUtil.convertBoardGameGeekXmlText("There should be a :thumbsup: image");
-        assertEquals("There should be a <img src=\""+BoardGameGeekConstants.BBG_STATIC_IMAGE+"thumbs-up.gif\"/> image", result);
+        assertEquals("There should be a <img src=\""+BoardGameGeekConstants.BGG_STATIC_IMAGE +"thumbs-up.gif\"/> image", result);
     }
 
     @Test
     public void convertBoardGameGeekXmlText_dice()
     {
         String result = boardGameGeekUtil.convertBoardGameGeekXmlText("There should be :d10-7: :d10-5: images");
-        assertEquals("There should be <img src=\""+BoardGameGeekConstants.BBG_STATIC_IMAGE+"d10-7.gif\"/> <img src=\""+BoardGameGeekConstants.BBG_STATIC_IMAGE+"d10-5.gif\"/> images", result);
+        assertEquals("There should be <img src=\""+BoardGameGeekConstants.BGG_STATIC_IMAGE +"d10-7.gif\"/> <img src=\""+BoardGameGeekConstants.BGG_STATIC_IMAGE +"d10-5.gif\"/> images", result);
     }
 
     @Test
     public void convertBoardGameGeekXmlText_smileys()
     {
         String result = boardGameGeekUtil.convertBoardGameGeekXmlText("There should be :) :( images");
-        assertEquals("There should be <img src=\""+BoardGameGeekConstants.BBG_STATIC_IMAGE+"smile.gif\"/> <img src=\""+BoardGameGeekConstants.BBG_STATIC_IMAGE+"sad.gif\"/> images", result);
+        assertEquals("There should be <img src=\""+BoardGameGeekConstants.BGG_STATIC_IMAGE +"smile.gif\"/> <img src=\""+BoardGameGeekConstants.BGG_STATIC_IMAGE +"sad.gif\"/> images", result);
     }
 }
