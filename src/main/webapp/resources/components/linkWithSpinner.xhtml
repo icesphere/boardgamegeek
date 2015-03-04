@@ -1,8 +1,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml"
       xmlns:h="http://java.sun.com/jsf/html"
       xmlns:composite="http://java.sun.com/jsf/composite"
-      xmlns:p="http://primefaces.org/ui"
-      xmlns:fn="http://java.sun.com/jsp/jstl/functions">
+      xmlns:p="http://primefaces.org/ui">
 
 <composite:interface>
     <composite:attribute name="linkText" required="true"/>
@@ -14,23 +13,23 @@
 
 <composite:implementation>
     <script type="text/javascript">
-        function linkWithSpinnerStart_#{fn:replace(cc.clientId, ':', '_')}()
+        function linkWithSpinnerStart_#{viewUtil.replace(cc.clientId, ':', '_')}()
         {
-            $(".#{fn:replace(cc.clientId, ':', '_')}_link").hide();
-            $(".#{fn:replace(cc.clientId, ':', '_')}_loading").show();
+            $(".#{viewUtil.replace(cc.clientId, ':', '_')}_link").hide();
+            $(".#{viewUtil.replace(cc.clientId, ':', '_')}_loading").show();
         }
 
-        function linkWithSpinnerEnd_#{fn:replace(cc.clientId, ':', '_')}()
+        function linkWithSpinnerEnd_#{viewUtil.replace(cc.clientId, ':', '_')}()
         {
-            $(".#{fn:replace(cc.clientId, ':', '_')}_loading").hide();
-            $(".#{fn:replace(cc.clientId, ':', '_')}_link").show();
+            $(".#{viewUtil.replace(cc.clientId, ':', '_')}_loading").hide();
+            $(".#{viewUtil.replace(cc.clientId, ':', '_')}_link").show();
         }
     </script>
 
-    <h:graphicImage id="loadingImage" library="images" name="loadingSmall.gif" style="display:none;" styleClass="#{fn:replace(cc.clientId, ':', '_')}_loading"/>
+    <h:graphicImage id="loadingImage" library="images" name="loadingSmall.gif" style="display:none;" styleClass="#{viewUtil.replace(cc.clientId, ':', '_')}_loading"/>
     <p:commandLink id="link" value="#{cc.attrs.linkText}" action="#{cc.attrs.actionMethod}" style="#{cc.attrs.linkStyle}"
-                   process="#{cc.attrs.process}" update="#{cc.attrs.update}" styleClass="#{fn:replace(cc.clientId, ':', '_')}_link"
-                   onstart="linkWithSpinnerStart_#{fn:replace(cc.clientId, ':', '_')}()" oncomplete="linkWithSpinnerEnd_#{fn:replace(cc.clientId, ':', '_')}()"/>
+                   process="#{cc.attrs.process}" update="#{cc.attrs.update}" styleClass="#{viewUtil.replace(cc.clientId, ':', '_')}_link"
+                   onstart="linkWithSpinnerStart_#{viewUtil.replace(cc.clientId, ':', '_')}()" oncomplete="linkWithSpinnerEnd_#{viewUtil.replace(cc.clientId, ':', '_')}()"/>
 </composite:implementation>
 
 </html>
